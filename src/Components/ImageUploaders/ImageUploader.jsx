@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 import placeholder from "./placeholder.png";
 import { useTheme } from "../../Contexts/ThemeContext";
 
-const ImageUploader = () => {
-  const [image, setImage] = useState(null);
+const ImageUploader = ({setImageFile, setImage, image}) => {
+ 
   const { theme } = useTheme();
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      setImageFile(file)
       const imageUrl = URL.createObjectURL(file);
       setImage(imageUrl);
     }

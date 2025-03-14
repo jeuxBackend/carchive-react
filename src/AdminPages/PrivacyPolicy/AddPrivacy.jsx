@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useTheme } from "../../Contexts/ThemeContext";
 import back from "../../assets/back.png";
 import backLight from "../../assets/backLight.png";
-import { updateSettings, getSettings } from "../../API/apiService";
+import { updateSettings, getSettings } from "../../API/adminServices";
 
 function AddPrivacy({ open, setOpen, label, fetchSettingData }) {
   if (!open) return null;

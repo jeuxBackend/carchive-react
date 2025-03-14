@@ -4,7 +4,7 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
-const CountryCode = () => {
+const CountryCode = ({setCountryCode}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [countryCodes, setCountryCodes] = useState([]);
   const [selectedCountry, setSelectedCountry] = useState({
@@ -35,6 +35,7 @@ const CountryCode = () => {
             flag: formattedData[0].flag,
             code: formattedData[0].code,
           });
+          setCountryCode(formattedData[0].code)
         }
       }
     } catch (error) {
@@ -48,9 +49,9 @@ const CountryCode = () => {
 
   return (
     <div className="relative w-full">
-      <motion.button
+      <motion.div
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full py-3 px-4 flex justify-between items-center font-medium rounded-xl focus:outline-none ${
+        className={`w-full py-3 px-4 flex justify-between items-center font-medium rounded-xl cursor-pointer focus:outline-none ${
           theme === "dark"
             ? "bg-[#323335] text-white"
             : "bg-[#f7f7f7] text-black border border-[#e8e8e8]"
@@ -60,10 +61,10 @@ const CountryCode = () => {
           {selectedCountry.flag && (
             <img src={selectedCountry.flag} alt="flag" className="w-5 h-5 rounded-full" />
           )}
-          <span>{selectedCountry.code || "Select Country Code"}</span>
+          <span>{selectedCountry.code || "+1"}</span>
         </div>
         {isOpen ? <FaChevronUp /> : <FaChevronDown />}
-      </motion.button>
+      </motion.div>
 
       <AnimatePresence>
         {isOpen && (
@@ -85,6 +86,7 @@ const CountryCode = () => {
                 className="px-4 py-3 flex items-center gap-3 cursor-pointer"
                 onClick={() => {
                   setSelectedCountry({ flag: country.flag, code: country.code });
+                  setCountryCode(country.code)
                   setIsOpen(false);
                 }}
               >

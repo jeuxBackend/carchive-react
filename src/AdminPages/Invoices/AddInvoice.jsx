@@ -7,7 +7,7 @@ import backLight from "../../assets/backLight.png";
 import CustomDropdown from "../../AdminComponents/DropDown/CustomDropdown";
 import CustomDatePicker from "../../AdminComponents/DropDown/BasicDatePicker";
 import ImageUploader from "../../AdminComponents/ImageUploader/ImageUploader";
-import { addAdminInvoice } from "../../API/apiService";
+import { addAdminInvoice } from "../../API/adminServices";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { toast } from "react-toastify";
 

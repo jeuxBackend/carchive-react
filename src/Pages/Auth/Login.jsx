@@ -5,46 +5,70 @@ import Logo from "../../assets/logo.png";
 import Bg from "./assets/login-bg.png";
 import Lock from "./assets/password.png";
 import Mail from "./assets/email.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import Forgot from "./ForgotPassword/Forgot";
 import OTP from "./ForgotPassword/OTP";
 import ConfirmPassword from "./ForgotPassword/ConfirmPassword";
+import { portalLogin } from "../../API/portalServices";
+import { toast, ToastContainer } from "react-toastify";
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [open, setOpen] = useState(false)
-    const [otp, setOTP] = useState(false)
-    const [confirm, setConfirm] = useState(false)
     const [loading, setLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [error, setError] = useState(false);
     const navigate = useNavigate();
+    const adminToken = localStorage.getItem("CarchiveAdminToken");
+    const portalToken = localStorage.getItem("CarchivePortalToken");
+
+    if (portalToken) {
+        return <Navigate to="/Dashboard" />; 
+    }
+
+    if (adminToken) {
+        return <Navigate to="/Admin" />; 
+    }
 
 
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
         if (!email || !password) {
             setError(true);
             setTimeout(() => setError(false), 500);
         } else {
             setLoading(true);
-            setTimeout(() => {
-                setLoading(false);
-                navigate("/Dashboard");
-            }, 1500);
+            try{
+                const response = await portalLogin({ email, password });
+                if(response?.data){ 
+                    if(response?.data?.user?.userType === "Admin"){
+                        toast.warn("Admin Can't Login on Portal!")
+
+                    }else{
+                    localStorage.setItem("CarchivePortalToken", response?.data?.data?.token);
+                    navigate('/Dashboard')
+                    }
+                }
+                
+            }catch(error){
+                console.error("Error Logging in:", error.response);
+                toast.error(error?.response?.data?.message);
+            }finally{
+                setLoading(false)
+            }
         }
     };
 
     return (
         <div>
-            <Forgot open={open} setOpen={setOpen} setOTP={setOTP}/>
-            <OTP open={otp} setOpen={setOTP} setPass={setConfirm}/>
-            <ConfirmPassword open={confirm} setOpen={setConfirm}/>
+            <ToastContainer/>
+            <Forgot open={open} setOpen={setOpen}/>
+      
         <motion.div
             className="min-h-screen flex flex-col items-center justify-center relative w-full h-full bg-cover bg-center"
             style={{ backgroundImage: `url(${Bg})` }}

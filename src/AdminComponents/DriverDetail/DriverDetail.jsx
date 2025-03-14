@@ -6,7 +6,7 @@ import back from "../../assets/back.png";
 import backLight from "../../assets/backLight.png";
 import DetailDiv from "./DetailDiv";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
-import { getAdminDriverDetail } from "../../API/apiService";
+import { getAdminDriverDetail } from "../../API/adminServices";
 
 function DriverDetail({ open, setOpen, full }) {
   if (!open) return null;

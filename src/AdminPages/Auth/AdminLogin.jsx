@@ -5,10 +5,9 @@ import Logo from "../../assets/logo.png";
 import Bg from "./assets/login-bg.png";
 import Lock from "./assets/password.png";
 import Mail from "./assets/email.png";
-import { Link, useNavigate } from "react-router-dom";
-import { adminLogin } from "../../API/apiService";
-
-import BeatLoader   from "react-spinners/BeatLoader";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { adminLogin } from "../../API/adminServices";
+import BeatLoader from "react-spinners/BeatLoader";
 import { toast, ToastContainer } from "react-toastify";
 
 
@@ -19,6 +18,16 @@ const AdminLogin = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [error, setError] = useState(false);
   const navigate = useNavigate();
+  const adminToken = localStorage.getItem("CarchiveAdminToken");
+  const portalToken = localStorage.getItem("CarchivePortalToken");
+
+  if (portalToken) {
+    return <Navigate to="/Dashboard" />;
+  }
+
+  if (adminToken) {
+    return <Navigate to="/Admin" />;
+  }
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -28,15 +37,25 @@ const AdminLogin = () => {
     e.preventDefault()
     setLoading(true)
     try {
-      const credentials = { email: email, password: password};
+      const credentials = { email: email, password: password };
       const response = await adminLogin(credentials);
-      localStorage.setItem("CarchiveAdminToken", response?.data?.data?.token);
-      navigate('/Admin/Dashboard')
+      if (response.data) {
+        if (response?.data?.user?.userType === "Admin") {
+          toast.warn("Admin Can't Login on Portal!")
+          localStorage.setItem("CarchiveAdminToken", response?.data?.data?.token);
+          navigate('/Admin')
+
+        } else {
+          toast.warn("Company Can't Login on Admin Side!")
+
+        }
+      }
+
 
     } catch (error) {
       console.error("Error Logging in:", error.response);
       toast.error(error?.response?.data?.message);
-    }finally{
+    } finally {
       setLoading(false)
     }
   };
@@ -78,9 +97,8 @@ const AdminLogin = () => {
             <p className="text-lg text-white/80">Sign in with your email</p>
 
             <motion.div
-              className={`w-full pt-5 flex flex-col gap-5 ${
-                error ? "shake" : ""
-              }`}
+              className={`w-full pt-5 flex flex-col gap-5 ${error ? "shake" : ""
+                }`}
               animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
               transition={{ duration: 0.3 }}
             >

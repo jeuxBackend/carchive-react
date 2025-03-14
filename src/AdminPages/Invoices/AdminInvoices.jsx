@@ -3,8 +3,9 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion } from "framer-motion";
 import AddInvoice from "./AddInvoice";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
-import { getAdminCompanyDetail } from "../../API/apiService";
+import { getAdminCompanyDetail } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
+import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 
 const AdminInvoices = () => {
   const { theme } = useTheme();
@@ -50,7 +51,8 @@ const AdminInvoices = () => {
         <div className="flex justify-center items-center h-[80vh]">
           <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
         </div>
-      ) : (
+      ) :  (invoices?.length > 0 ?
+        (
         <div className="overflow-x-auto ">
           <div className="min-w-[800px]">
             <motion.table
@@ -167,7 +169,7 @@ const AdminInvoices = () => {
               </tbody>
             </motion.table>
           </div>
-        </div>
+        </div>) : <div className="h-[74vh] flex items-center justify-center"><NoDataFound /></div>
       )}
     </>
   );

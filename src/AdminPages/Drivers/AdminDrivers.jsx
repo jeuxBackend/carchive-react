@@ -6,12 +6,13 @@ import DriverDetail from "../../AdminComponents/DriverDetail/DriverDetail";
 import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import Search from "../../AdminComponents/Search/Search";
 import GradientButton from "../../AdminComponents/Logout/GradientButton";
-import { getAllAdminDrivers } from "../../API/apiService";
-import { getApproveAdminDrivers } from "../../API/apiService";
-import { getUnapproveAdminDrivers } from "../../API/apiService";
+import { getAllAdminDrivers } from "../../API/adminServices";
+import { getApproveAdminDrivers } from "../../API/adminServices";
+import { getUnapproveAdminDrivers } from "../../API/adminServices";
 import Pagination from "../../AdminComponents/Pagination/pagination";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { BeatLoader } from "react-spinners";
+import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 
 function AdminDrivers() {
   const { theme } = useTheme();
@@ -85,118 +86,111 @@ function AdminDrivers() {
         </div>
       </div>
 
+
       {loading ? (
         <div className="flex justify-center items-center h-[80vh]">
           <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
         </div>
-      ) : (
-      <div className="overflow-x-auto ">
-        <div className="min-w-[1000px] mt-5">
-          <motion.table
-            initial="hidden"
-            animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
-            className={`min-w-full rounded-lg transition-all text-center
-            ${
-              theme === "dark"
-                ? "bg-[#1B1C1E] text-white"
-                : "bg-white text-[#1B1C1E]"
-            }`}
-          >
-            <thead>
-              <tr>
-                {["Sr.No", "Driver", "Phone Number", "Action"].map(
-                  (heading, index) => (
-                    <th key={index} className="py-3 border-0 mb-3">
-                      <p
-                        className={`${
-                          theme === "dark"
+      ) : (allDriverData?.length > 0 ?
+        (<div className="overflow-x-auto ">
+          <div className="min-w-[1000px] mt-5">
+            <motion.table
+              initial="hidden"
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
+              className={`min-w-full rounded-lg transition-all text-center
+            ${theme === "dark"
+                  ? "bg-[#1B1C1E] text-white"
+                  : "bg-white text-[#1B1C1E]"
+                }`}
+            >
+              <thead>
+                <tr>
+                  {["Sr.No", "Driver", "Phone Number", "Action"].map(
+                    (heading, index) => (
+                      <th key={index} className="py-3 border-0 mb-3">
+                        <p
+                          className={`${theme === "dark"
                             ? "bg-[#323335] border-[#4f4f4f]"
                             : "bg-transparent border border-[#b5b5b7]"
-                        } text-center py-3 border-r border-[#4f4f4f] ${
-                          index === 0 ? "rounded-tl-xl" : ""
-                        } ${index === 3 ? "rounded-tr-xl border-r-none" : ""}`}
-                      >
-                        {heading}
-                      </p>
-                    </th>
-                  )
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {allDriverData.map((item, index) => (
-                <motion.tr
-                  key={index}
-                  variants={rowVariants}
-                  className={`${
-                    theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-50"
-                  }`}
-                >
-                  <td
-                    className={`py-3 border w-[10%] ${
-                      theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
-                    }`}
+                            } text-center py-3 border-r border-[#4f4f4f] ${index === 0 ? "rounded-tl-xl" : ""
+                            } ${index === 3 ? "rounded-tr-xl border-r-none" : ""}`}
+                        >
+                          {heading}
+                        </p>
+                      </th>
+                    )
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {allDriverData.map((item, index) => (
+                  <motion.tr
+                    key={index}
+                    variants={rowVariants}
+                    className={`${theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-50"
+                      }`}
                   >
-                    {index + 1}
-                  </td>
-                  <td
-                    className={`py-3 border w-[35%] ${
-                      theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
-                    }`}
-                  >
-                    <div
-                      onClick={function () {
-                        setOpen(true);
-                        setSelectedDriverId(item.id);
-                      }}
-                      className="flex items-center gap-x-2 justify-center cursor-pointer"
+                    <td
+                      className={`py-3 border w-[10%] ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
+                        }`}
                     >
-                      <img
-                        src={item?.image || Dummy}
-                        className="w-[50px] h-[50px] rounded-full"
-                        alt=""
-                      />
+                      {index + 1}
+                    </td>
+                    <td
+                      className={`py-3 border w-[35%] ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
+                        }`}
+                    >
+                      <div
+                        onClick={function () {
+                          setOpen(true);
+                          setSelectedDriverId(item.id);
+                        }}
+                        className="flex items-center gap-x-2 justify-start pl-3 cursor-pointer"
+                      >
+                        <img
+                          src={item?.image || Dummy}
+                          className="w-[50px] h-[50px] rounded-full"
+                          alt=""
+                        />
 
-                      {item?.name}
-                    </div>
-                  </td>
-                  <td
-                    className={`py-3 border w-[30%] ${
-                      theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
-                    }`}
-                  >
-                    {item?.phNumber}
-                  </td>
-                  <td
-                    className={`py-3 border w-[25%] ${
-                      theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
-                    }`}
-                  >
-                    <div className="px-12">
-                      <GradientButton
-                        driverData={fetchAdminDriverData}
-                        name={item?.status === "0" ? "Deactivate" : "Activate"}
-                        driverId={item?.id}
-                      />
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </motion.table>
-        </div>
-      </div>
+                        {item?.name}
+                      </div>
+                    </td>
+                    <td
+                      className={`py-3 border w-[30%] ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
+                        }`}
+                    >
+                      {item?.phNumber}
+                    </td>
+                    <td
+                      className={`py-3 border w-[25%] ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
+                        }`}
+                    >
+                      <div className="px-12">
+                        <GradientButton
+                          driverData={fetchAdminDriverData}
+                          name={item?.status === "0" ? "Deactivate" : "Activate"}
+                          driverId={item?.id}
+                        />
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </motion.table>
+          </div>
+        </div>) : <div className="h-[74vh] flex items-center justify-center"><NoDataFound /></div>
       )}
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        setTake={setTake}
-        setSkip={setSkip}
-        take={take}
-      />
+      {allDriverData?.length > 0 &&
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          setTake={setTake}
+          setSkip={setSkip}
+          take={take}
+        />}
     </div>
   );
 }

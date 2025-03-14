@@ -21,7 +21,6 @@ function Sidebar({ side, setSide,setLogout }) {
     const { theme } = useTheme();
     useEffect(() => {
         setActive(location.pathname)
-        console.log(location.pathname)
 
     }, [location])
 

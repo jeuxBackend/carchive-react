@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTheme } from "../../Contexts/ThemeContext";
 import { motion } from "framer-motion";
+import { getDashboard } from "../../API/portalServices";
+import { BeatLoader } from "react-spinners";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 50, rotate: -2, scale: 0.9 },
@@ -38,16 +40,40 @@ const StatCard = ({ title, value, theme, delay }) => (
   </motion.div>
 );
 
+
+
 function Dashboard() {
   const { theme } = useTheme();
+  const [loading, setLoading] = useState(false);
+  const [dashboardData, setDashboardData] = useState({})
+
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getDashboard();
+      setDashboardData(response?.data?.data || {});
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const stats = [
-    { title: "Number of Vehicles", value: "234", delay: 0 },
-    { title: "Number of Drivers", value: "194", delay: 0.2 },
-    { title: "Number of Unpaid Invoices", value: "4,532", delay: 0.4 },
+    { title: "Number of Vehicles", value: dashboardData?.cars, delay: 0 },
+    { title: "Number of Drivers", value: dashboardData?.drivers, delay: 0.2 },
+    { title: "Number of Unpaid Invoices", value: dashboardData?.invoices, delay: 0.4 },
   ];
 
   return (
+    <>
+    {loading?<div className="h-[80vh] flex items-center justify-center">
+      <BeatLoader color="#2d9bff"/>
+    </div>:
     <motion.div 
       className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-5 "
       initial="hidden"
@@ -57,7 +83,8 @@ function Dashboard() {
       {stats.map((stat, index) => (
         <StatCard key={index} {...stat} theme={theme} />
       ))}
-    </motion.div>
+    </motion.div>}
+    </>
   );
 }
 

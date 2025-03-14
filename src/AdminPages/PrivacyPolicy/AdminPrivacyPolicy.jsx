@@ -3,7 +3,7 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion } from "framer-motion";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import AddAbout from "../AboutUs/AddAbout";
-import { getSettings } from "../../API/apiService";
+import { getSettings } from "../../API/adminServices";
 import AddPrivacy from "./AddPrivacy";
 import { BeatLoader } from "react-spinners";
 
@@ -42,19 +42,17 @@ const AdminPrivacy = () => {
         label={"Privacy Policy"}
       />
       <div
-        className={` ${
-          theme === "dark"
-            ? "bg-[#1B1C1E] text-[#8D8D8E]"
-            : "bg-[#FFFFFF] text-[#4D4E50]"
-        }`}
+        className={` ${theme === "dark"
+          ? "bg-[#1B1C1E] text-[#8D8D8E]"
+          : "bg-[#FFFFFF] text-[#4D4E50]"
+          }`}
       >
         {loading ? (
           <div className="flex justify-center items-center h-[80vh]">
             <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
           </div>
-        ) : (
+        ) : (settingData?.length > 0 ?
           <div className="">
-            {/* Description */}
 
             <motion.p
               className="text-lg leading-relaxed text-justify"
@@ -64,7 +62,9 @@ const AdminPrivacy = () => {
             >
               {settingData}
             </motion.p>
-          </div>
+
+
+          </div> : <div className="h-[80vh] flex items-center justify-center"><NoDataFound /></div>
         )}
       </div>
     </>

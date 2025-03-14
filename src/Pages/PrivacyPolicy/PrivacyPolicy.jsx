@@ -3,9 +3,8 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion } from "framer-motion";
 import { getSettings } from "../../API/portalServices";
 import { BeatLoader } from "react-spinners";
-import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 
-const About = () => {
+const PrivacyPolicy = () => {
     const { theme } = useTheme();
     const [loading, setLoading] = useState(false);
     const [settingData, setSettingData] = useState({})
@@ -14,8 +13,8 @@ const About = () => {
         setLoading(true);
         try {
             const response = await getSettings();
-            if (response) {
-                setSettingData(response?.data?.data[0] || {});
+            if(response){
+             setSettingData(response?.data?.data[0] || {});
             }
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
@@ -28,12 +27,11 @@ const About = () => {
         fetchSettingData();
     }, [fetchSettingData]);
 
-
     return (
         <div className={` ${theme === "dark" ? "bg-[#1B1C1E] text-[#8D8D8E]" : "bg-[#FFFFFF] text-[#4D4E50]"}`}>
             {loading ? <div className="h-[80vh] flex items-center justify-center">
                 <BeatLoader color="#2d9bff" />
-            </div> : (settingData?.aboutUs?.length > 0 ?
+            </div> :
                 <div className="">
 
                     <motion.p
@@ -42,13 +40,13 @@ const About = () => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                     >
-                        {settingData?.aboutUs}
+                        {settingData?.privacyPolicy}
                     </motion.p>
 
 
-                </div> : <div className="h-[80vh] flex items-center justify-center"><NoDataFound /></div>)}
+                </div>}
         </div>
     );
 };
 
-export default About;
+export default PrivacyPolicy;

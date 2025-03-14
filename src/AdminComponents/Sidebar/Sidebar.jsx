@@ -29,7 +29,7 @@ function Sidebar({ side, setSide,setLogout }) {
         {
             icon: dashboard,
             name: "Dashboard",
-            path: "/Admin/Dashboard",
+            path: "/Admin",
             subPath: null
         },
         {

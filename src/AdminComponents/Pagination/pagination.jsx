@@ -1,9 +1,13 @@
 import React from "react";
+import { useTheme } from "../../Contexts/ThemeContext";
+
 
 const Pagination = ({ currentPage, totalPages, onPageChange, setTake, take, setSkip }) => {
+  const {theme} = useTheme()
   const getVisiblePages = () => {
     const maxVisiblePages = 5;
     const sideCount = 1;
+   
 
     if (totalPages <= maxVisiblePages) {
       return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -38,13 +42,13 @@ const Pagination = ({ currentPage, totalPages, onPageChange, setTake, take, setS
 
   return (
     <div className="flex sm:flex-row flex-col-reverse gap-3 justify-between items-center mt-5 text-sm">
-      <div className="text-gray-500">
+      <div className={`${theme==="dark"?"text-white":"text-gray-500"} `}>
         Showing {(currentPage - 1) * take + 1} to {Math.min(currentPage * take, totalPages * take)} of {totalPages * take}
       </div>
 
       <div className="flex items-center space-x-2">
         <button
-          className="px-3 py-1 border-2 rounded-lg text-gray-500 hover:bg-gray-200 disabled:opacity-50"
+          className={`${theme==="dark"?"text-white":"text-gray-500 hover:bg-gray-200"} px-3 py-1 border-2 rounded-lg  disabled:opacity-50`}
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
@@ -58,7 +62,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, setTake, take, setS
             <button
               key={page}
               className={`px-3 py-1 rounded-lg ${
-                currentPage === page ? "bg-[#f40c0b] text-white" : "border text-gray-700 hover:bg-gray-200"
+                currentPage === page ? "bg-[#2d9bff] text-white" : (`${theme==="dark"?"text-white":"text-gray-500 hover:bg-gray-200"} border`)
               }`}
               onClick={() => onPageChange(Number(page))}
             >
@@ -68,7 +72,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange, setTake, take, setS
         )}
 
         <button
-          className="px-3 py-1 border rounded-lg text-gray-500 hover:bg-gray-200 disabled:opacity-50"
+          className={`${theme==="dark"?"text-white":"text-gray-500 hover:bg-gray-200"} px-3 py-1 border rounded-lg disabled:opacity-50`}
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
@@ -77,10 +81,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange, setTake, take, setS
       </div>
 
       <div>
-        <label className="text-gray-500 mr-2">Show</label>
+        <label className={`${theme==="dark"?"text-white":"text-gray-500"}  mr-2`}>Show</label>
         <select
           onChange={(e) => {setTake(Number(e.target.value)), setSkip(0)}}
-          className="border rounded-lg px-3 py-1"
+          className={`${theme==="dark"?"text-white bg-[#1b1c1e]":"text-gray-500"} border rounded-lg px-3 py-1`}
           defaultValue={take}
         >
           <option value={10}>10 entries</option>

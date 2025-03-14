@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTheme } from "../../Contexts/ThemeContext";
 import { motion } from "framer-motion";
-import { getAdminDashboard } from "../../API/apiService";
+import { getAdminDashboard } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
 
 const cardVariants = {

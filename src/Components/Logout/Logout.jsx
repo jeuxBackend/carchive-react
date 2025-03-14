@@ -16,6 +16,7 @@ function Logout({ logout, setLogout }) {
   const navigate = useNavigate()
 
   const logoutHandle=()=>{
+    localStorage.clear()
     navigate('/')
     setLogout(false)
 

@@ -26,6 +26,7 @@ import AdminGarageOwners from "./AdminPages/GarageOwners/AdminGarageOwners";
 import AdminSettings from "./AdminPages/Settings/AdminSettings";
 import AdminAbout from "./AdminPages/AboutUs/AdminAbout";
 import AdminPrivacy from "./AdminPages/PrivacyPolicy/AdminPrivacyPolicy";
+import PrivacyPolicy from "./Pages/PrivacyPolicy/PrivacyPolicy";
 
 function App() {
   return (
@@ -44,22 +45,21 @@ function App() {
           <Route path="/Settings" element={<Settings />} />
           <Route path="/Language" element={<Language />} />
           <Route path="/About" element={<About />} />
-          <Route path="/Privacy-Policy" element={<About />} />
+          <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
           <Route path="/Update-Profile" element={<UpdateProfile />} />
           <Route path="/Add-Vehicle" element={<AddVehicle />} />
         </Route>
-
         <Route path="/Admin/Login" element={<AdminLogin />} />
-        <Route element={<AdminLayout />}>
-          <Route path="/Admin/Dashboard" element={<AdminDashboard />} />
-          <Route path="/Admin/Companies" element={<AdminCompany />} />
-          <Route path="/Admin/Company/:id" element={<AdminCompanyDetail />} />
-          <Route path="/Admin/Invoices" element={<AdminInvoices />} />
-          <Route path="/Admin/Drivers" element={<AdminDrivers />} />
-          <Route path="/Admin/Garages" element={<AdminGarageOwners />} />
-          <Route path="/Admin/Settings" element={<AdminSettings />} />
-          <Route path="/Admin/About" element={<AdminAbout />} />
-          <Route path="/Admin/Privacy-Policy" element={<AdminPrivacy />} />
+        <Route path="/Admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="Companies" element={<AdminCompany />} />
+          <Route path="Company/:id" element={<AdminCompanyDetail />} />
+          <Route path="Invoices" element={<AdminInvoices />} />
+          <Route path="Drivers" element={<AdminDrivers />} />
+          <Route path="Garages" element={<AdminGarageOwners />} />
+          <Route path="Settings" element={<AdminSettings />} />
+          <Route path="About" element={<AdminAbout />} />
+          <Route path="Privacy-Policy" element={<AdminPrivacy />} />
         </Route>
       </Routes>
     </>

@@ -30,9 +30,9 @@ const Topbar = ({ setSide }) => {
   const titles = {
     "/Admin/Settings": "Settings",
     "/Admin/Companies": "Company",
-    "/Admin/Dashboard": "Dashboard",
+    "/Admin": "Dashboard",
     "/Admin/Chat": "Chat",
-
+   
     "/Admin/Drivers": "Drivers",
     "/Admin/Garages": "Garage Owners",
   };
@@ -101,7 +101,7 @@ const Topbar = ({ setSide }) => {
                 </p>
               </div>
             )}
-            {active === "/Privacy-Policy" && (
+            {active === "/Admin/Privacy-Policy" && (
               <div className="flex items-center gap-2">
                 <img
                   src={theme === "dark" ? back : backLight}
@@ -114,7 +114,7 @@ const Topbar = ({ setSide }) => {
                 </p>
               </div>
             )}
-            {active === "/About" && (
+            {active === "/Admin/About" && (
               <div className="flex items-center gap-2">
                 <img
                   src={theme === "dark" ? back : backLight}
@@ -140,7 +140,7 @@ const Topbar = ({ setSide }) => {
                 </p>
               </div>
             )}
-            {active === "/Invoices" && (
+            {active === "/Admin/Invoices" && (
               <div className="flex items-center gap-2">
                 <img
                   src={theme === "dark" ? back : backLight}

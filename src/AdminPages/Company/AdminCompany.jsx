@@ -1,18 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import img1 from "./assets/img1.png";
-import img2 from "./assets/img2.png";
-import img3 from "./assets/img3.png";
 import Search from "../../AdminComponents/Search/Search";
 import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import GradientCards from "../../AdminComponents/Cards/GradientCards";
-import { getAdminCompanies } from "../../API/apiService";
-import { getApproveAdminCompanies } from "../../API/apiService";
-import { getUnapproveAdminCompanies } from "../../API/apiService";
+import { getAdminCompanies } from "../../API/adminServices";
+import { getApproveAdminCompanies } from "../../API/adminServices";
+import { getUnapproveAdminCompanies } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
-import { div } from "framer-motion/client";
-import { useGlobalContext } from "../../Contexts/GlobalContext";
-import { Link } from "react-router-dom";
 import Pagination from "../../AdminComponents/Pagination/pagination";
+import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 
 function AdminCompany() {
   const [loading, setLoading] = useState(false);
@@ -76,13 +71,13 @@ function AdminCompany() {
         </div>
       </div>
       {loading ? (
-        <div className="flex justify-center items-center h-[80vh]">
+        <div className="flex justify-center items-center h-[75vh]">
           <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
         </div>
-      ) : (
+      ) : (allCompanyData.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
           {/* for all company */}
-          {allCompanyData.length > 0 ? (
+       {
             allCompanyData.map((data, index) => (
               <div key={index}>
                 <GradientCards
@@ -94,12 +89,11 @@ function AdminCompany() {
                   contact={data?.phNumber || "Not Found"}
                 />
               </div>
-            ))
-          ) : (
-            <p className="">No companies available</p>
-          )}
-        </div>
+            ))}
+        
+        </div>):<div className="h-[73vh] flex items-center justify-center"><NoDataFound/></div>
       )}
+      {allCompanyData.length > 0 &&
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -107,7 +101,7 @@ function AdminCompany() {
         setTake={setTake}
         setSkip={setSkip}
         take={take}
-      />
+      />}
     </div>
   );
 }

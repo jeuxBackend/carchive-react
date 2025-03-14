@@ -3,7 +3,7 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion } from "framer-motion";
 import AddAbout from "./AddAbout";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
-import { getSettings } from "../../API/apiService";
+import { getSettings } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
 const AdminAbout = () => {
     const { theme } = useTheme();
@@ -37,18 +37,20 @@ const AdminAbout = () => {
             <div className="flex justify-center items-center h-[80vh]">
               <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
             </div>
-          ) : (
+          ) : (settingData?.length > 0?
             <div className="">
-                {/* Description */}
-                <motion.p 
+
+                <motion.p
                     className="text-lg leading-relaxed text-justify"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                   {settingData}
+                    {settingData}
                 </motion.p>
-            </div>
+
+
+            </div>:<div className="h-[80vh] flex items-center justify-center"><NoDataFound/></div>
           )}
         </div>
         </>

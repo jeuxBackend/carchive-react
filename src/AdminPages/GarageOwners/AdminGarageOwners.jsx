@@ -8,11 +8,12 @@ import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import Search from "../../AdminComponents/Search/Search";
 import GradientButton from "../../AdminComponents/Logout/GradientButton";
 import Pagination from "../../AdminComponents/Pagination/pagination";
-import { getAllAdminGarage } from "../../API/apiService";
-import { getApproveAdminGarage } from "../../API/apiService";
-import { getUnapproveAdminGarage } from "../../API/apiService";
+import { getAllAdminGarage } from "../../API/adminServices";
+import { getApproveAdminGarage } from "../../API/adminServices";
+import { getUnapproveAdminGarage } from "../../API/adminServices";
 import GarageDetail from "../../AdminComponents/DriverDetail/GarageDetail";
 import { BeatLoader } from "react-spinners";
+import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 
 function AdminGarageOwners() {
   const { theme } = useTheme();
@@ -89,8 +90,8 @@ function AdminGarageOwners() {
         <div className="flex justify-center items-center h-[80vh]">
           <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
         </div>
-      ) : (
-      <div className="overflow-x-auto ">
+      ) :  (allGarageData?.length > 0 ?
+        (<div className="overflow-x-auto ">
         <div className="min-w-[1000px] mt-5">
           <motion.table
             initial="hidden"
@@ -147,7 +148,7 @@ function AdminGarageOwners() {
                   >
                     <div
                       onClick={function(){ setOpen(true); setSelectedGarageId(item?.id)}}
-                      className="flex items-center gap-x-2 justify-center cursor-pointer"
+                      className="flex items-center gap-x-2 justify-start pl-3 cursor-pointer"
                     >
                       <img
                         src={item?.image || Dummy}
@@ -178,8 +179,9 @@ function AdminGarageOwners() {
             </tbody>
           </motion.table>
         </div>
-      </div>
+      </div>) : <div className="h-[74vh] flex items-center justify-center"><NoDataFound /></div>
       )}
+       {allGarageData?.length > 0 &&
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -187,7 +189,7 @@ function AdminGarageOwners() {
         setTake={setTake}
         setSkip={setSkip}
         take={take}
-      />
+      />}
     </div>
   );
 }

@@ -12,7 +12,7 @@ import d3 from "./assets/d3.png";
 import { useTheme } from "../../Contexts/ThemeContext";
 import AdminDriverCards from "./AdminDriverCard";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
-import { getAdminCompanyDetail } from "../../API/apiService";
+import { getAdminCompanyDetail } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
 
 function AdminCompanyDetail() {
