@@ -13,7 +13,7 @@ const API = axios.create({
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("CarchiveAdminToken"); 
-    console.log("Token:", token);
+    // console.log("Token:", token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; 
     }

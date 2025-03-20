@@ -15,13 +15,13 @@ const itemVariants = {
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } }
 };
 
-function Specification() {
+function Specification({data}) {
     const { theme } = useTheme();
     const specs = [
-        { label: 'Vin Number', value: 'WBY41DU070S397595', darkImg: vin, lightImg: vinLight },
-        { label: 'Number Plate', value: 'MM2359', darkImg: plate, lightImg: plateLight },
-        { label: 'Mileage', value: '70', darkImg: mileage, lightImg: mileageLight },
-        { label: 'Manufacturing Year', value: '2024', darkImg: year, lightImg: yearLight }
+        { label: 'Vin Number', value: data?.vinNumber, darkImg: vin, lightImg: vinLight },
+        { label: 'Number Plate', value: data?.numberPlate, darkImg: plate, lightImg: plateLight },
+        { label: 'Mileage', value: data?.mileage, darkImg: mileage, lightImg: mileageLight },
+        { label: 'Manufacturing Year', value: data?.manufacturingYear, darkImg: year, lightImg: yearLight }
     ];
 
     return (

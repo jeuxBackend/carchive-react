@@ -61,7 +61,7 @@ function Dashboard() {
   
   useEffect(() => {
     fetchDashboardData();
-  }, [fetchDashboardData]);
+  }, []);
 
   const stats = [
     { title: "Number of Vehicles", value: dashboardData?.cars, delay: 0 },

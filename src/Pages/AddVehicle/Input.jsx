@@ -3,9 +3,15 @@ import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { IoEye, IoEyeOff } from "react-icons/io5";
 
-function InputField({ label, type = "text" }) {
+function InputField({ label, type = "text", value="", setValue, fieldKey, isNumber  }) {
     const { theme } = useTheme();
-    
+    const handleChange = (e) => {
+        let inputValue = e.target.value;
+        if (isNumber) {
+            inputValue = inputValue.replace(/[^0-9]/g, '');
+        }
+        setValue((prev) => ({ ...prev, [fieldKey]: inputValue }));
+    }
 
     return (
         <motion.div 
@@ -17,6 +23,9 @@ function InputField({ label, type = "text" }) {
             <input
                 type={type}
                 placeholder={label}
+                value={value[fieldKey] || ""}
+                required
+                onChange={handleChange}
                 className={`flex-1 outline-none border-none font-medium ${theme === "dark" ? "text-white" : "text-black"}`}
             /> 
         </motion.div>

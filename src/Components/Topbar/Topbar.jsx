@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FiPlus } from "react-icons/fi";
@@ -12,6 +12,9 @@ import { BiSolidEditAlt } from 'react-icons/bi';
 import { RiDeleteBin4Fill } from 'react-icons/ri';
 import { IoArchiveSharp, IoShareSocial } from 'react-icons/io5';
 import backLight from "../../assets/backLight.png"
+import { useGlobalContext } from '../../Contexts/GlobalContext';
+import { archiveVehicle, delVehicle } from '../../API/portalServices';
+import { toast } from 'react-toastify';
 
 const Topbar = ({ setSide }) => {
     const [active, setActive] = useState('');
@@ -19,6 +22,20 @@ const Topbar = ({ setSide }) => {
     const location = useLocation();
     const [open, setOpen] = useState(false)
     const navigate = useNavigate()
+    const {vehicle, setVehicle} = useGlobalContext()
+    const dropdownRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     useEffect(() => {
         setActive(location.pathname);
@@ -34,6 +51,42 @@ const Topbar = ({ setSide }) => {
         "/Requests": "Requests",
         
     };
+
+     const [loadingArchive, setLoadingArchive] = useState(false);
+     const [loadingDelete, setLoadingDelete] = useState(false);
+      
+     const handleArchive = async (id) => {
+        setLoadingArchive(true);
+        try {
+          const response = await archiveVehicle(id);
+          if (response.data) {
+            toast.success("Vehicle Archived Status Changed Successfully");
+            const updatedVehicle = { ...vehicle, isArchive: vehicle.isArchive === "1" ? "0" : "1" };
+            setVehicle(updatedVehicle);
+            localStorage.setItem("vehicle", JSON.stringify(updatedVehicle));  
+            setOpen(false)
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setLoadingArchive(false);
+        }
+      };
+      const handleDelete = async (id) => {
+        setLoadingDelete(true);
+        try {
+          const response = await delVehicle(id);
+          if (response.data) {
+            toast.success("Vehicle Deleted Successfully");
+            navigate("/Vehicles")
+            setOpen(false)
+          }
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+            setLoadingDelete(false);
+        }
+      };
 
     return (
         <motion.div
@@ -107,6 +160,7 @@ const Topbar = ({ setSide }) => {
                             <p>Welcome Back, Julia 👋</p>
                         )}
                     </div>
+                    {}
 
                     {active === "/Vehicles" && (
                         <Link to='/Add-Vehicle' className="flex items-center gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]">
@@ -115,13 +169,13 @@ const Topbar = ({ setSide }) => {
                         </Link>
                     )}
                     {active.startsWith("/Vehicles/") && (
-                        <div className='relative'>
+                        <div  className='relative'>
                             <img src={theme==="dark"?ham:hamLightCar} alt="" className='w-[2rem] cursor-pointer' onClick={()=>setOpen(!open)}/>
                             {open&&
-                            <div className='absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg  rounded-tl-3xl'>
-                                <p className='flex items-center gap-2 p-3'><BiSolidEditAlt /> Edit Vehicle</p>
-                                <p className='flex items-center gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]'><RiDeleteBin4Fill /> Delete Vehicle</p>
-                                <p className='flex items-center gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]'><IoArchiveSharp /> Archive</p>
+                            <div  className='absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg  rounded-tl-3xl'>
+                                <p  className='flex items-center gap-2 p-3'><BiSolidEditAlt /> Edit Vehicle</p>
+                                <p onClick={()=>handleDelete(vehicle?.id)} className='flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]'><RiDeleteBin4Fill /> {loadingDelete? "Please Wait..." : "Delete Vehicle"}</p>
+                                <p onClick={()=>handleArchive(vehicle?.id)} className='flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]'><IoArchiveSharp />{loadingArchive? "Please Wait..." : (vehicle?.isArchive==="0"?"Archive Vehicle":"Unarchive Vehicle")} </p>
                                 <p className='flex items-center gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]'><IoShareSocial /> Share</p>
                             </div>}
                         </div>

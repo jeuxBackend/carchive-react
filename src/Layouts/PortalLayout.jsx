@@ -4,6 +4,7 @@ import Sidebar from '../Components/Sidebar/Sidebar';
 import { useTheme } from '../Contexts/ThemeContext';
 import Topbar from '../Components/Topbar/Topbar';
 import Logout from '../Components/Logout/Logout';
+import { ToastContainer } from 'react-toastify';
 // import Logout from '../../Components/Logout/Logout'
 
 
@@ -21,6 +22,7 @@ function Layout() {
 
     return (
         <div>
+            <ToastContainer/>
             {portalToken ?
         <>
             <Logout logout={logout} setLogout={setLogout} />

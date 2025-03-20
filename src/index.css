@@ -79,3 +79,14 @@
 .switch-label:active .switch-button {
   width: 60px;
 }
+
+.slick-slider {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.slick-list {
+  max-width: 100%;
+  overflow: hidden !important;
+}
+

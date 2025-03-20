@@ -25,7 +25,7 @@ const PrivacyPolicy = () => {
 
     useEffect(() => {
         fetchSettingData();
-    }, [fetchSettingData]);
+    }, []);
 
     return (
         <div className={` ${theme === "dark" ? "bg-[#1B1C1E] text-[#8D8D8E]" : "bg-[#FFFFFF] text-[#4D4E50]"}`}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "../../Contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import ham from "../../assets/hamburger.png";
@@ -39,6 +39,21 @@ const menuVariants = {
 const Drivers = () => {
     const { theme } = useTheme();
     const [openMenu, setOpenMenu] = useState(null);
+    const dropdownRef = useRef(null);
+
+      useEffect(() => {
+            const handleClickOutside = (event) => {
+                if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                    setOpenMenu(null);
+                }
+            };
+            document.addEventListener("mousedown", handleClickOutside);
+            return () => {
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, []);
+    
+        
 
     return (
         <motion.div
@@ -51,6 +66,7 @@ const Drivers = () => {
                 {users.map((user, i) => (
                     <motion.div
                         key={user.id}
+                        ref={dropdownRef}
                         className={`relative flex items-center space-x-4 p-4 rounded-lg shadow-lg transition-all  
                             ${theme === "dark" ? "bg-[#323335] text-white" : "bg-[#FFFFFF] text-black border-2 border-[#ECECEC]"}`}
                         variants={cardVariants}

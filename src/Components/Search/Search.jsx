@@ -4,7 +4,7 @@ import searchDark from "../../assets/search-dark.png";
 import searchLight from "../../assets/search-light.png";
 import { motion } from "framer-motion";
 
-function Search() {
+function Search({value, setValue}) {
   const { theme } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
 
@@ -31,6 +31,8 @@ function Search() {
         />
         <input
           type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
           className={`w-full border-none outline-none ${
             theme === "dark" ? "placeholder:text-white" : "placeholder:text-black"
           }`}

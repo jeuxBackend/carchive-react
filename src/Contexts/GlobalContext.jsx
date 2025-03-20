@@ -18,6 +18,17 @@ export const GlobalContextProvider = ({ children }) => {
       localStorage.removeItem("companyId");
     }
   }, [companyId]);
+
+  const [vehicle, setVehicle] = useState(() => {
+    const savedvehicle = localStorage.getItem("vehicle");
+    return savedvehicle ? JSON.parse(savedvehicle) : {};
+  });
+
+  useEffect(() => {
+    if (vehicle !== null) {
+      localStorage.setItem("vehicle", JSON.stringify(vehicle));
+    }
+  }, [vehicle]);
   return (
     <GlobalContext.Provider
       value={{
@@ -33,6 +44,7 @@ export const GlobalContextProvider = ({ children }) => {
         setSelectedDriverId,
         selectedGarageId,
         setSelectedGarageId,
+        vehicle, setVehicle
       }}
     >
       {children}

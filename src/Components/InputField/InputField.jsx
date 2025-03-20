@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { IoEye, IoEyeOff } from "react-icons/io5";
 
-function InputField({ label, type = "text", value, setValue, fieldKey, isNumber }) {
+function InputField({ label, type = "text", value="", setValue, fieldKey, isNumber }) {
     const { theme } = useTheme();
     const [showPass, setShowPass] = useState(false);
 
