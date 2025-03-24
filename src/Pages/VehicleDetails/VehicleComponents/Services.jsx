@@ -3,14 +3,16 @@ import { useTheme } from '../../../Contexts/ThemeContext';
 import Switch from '../../../Components/Buttons/Switch';
 import { IoIosArrowForward } from 'react-icons/io';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
 };
 
-function Services() {
+function Services({data}) {
     const { theme } = useTheme();
+    const navigate = useNavigate();
 
     return (
         <motion.div 
@@ -21,13 +23,14 @@ function Services() {
         >
             {[
                 { title: "Insurance", subtitle: "(09/02/2026) ", expired: "Expired", showSwitch: true },
-                { title: "Maintenance Records", showArrow: true },
+                { title: "Maintenance Records", showArrow: true, route: `/VehicleMaintenence/${data?.id}` },
                 { title: "Start Drive", showArrow: true }
             ].map((item, index) => (
                 <motion.div
                     key={index}
-                    className={`w-full rounded-xl p-4 2xl:p-5 ${theme === "dark" ? 'bg-[#323335]' : "bg-white border border-[#ececec]"} shadow-md flex items-center justify-between`}
+                    className={`w-full rounded-xl p-4 2xl:p-5 ${theme === "dark" ? 'bg-[#323335]' : "bg-white border border-[#ececec]"} shadow-md flex items-center justify-between cursor-pointer`}
                     variants={itemVariants}
+                    onClick={() => item.route && navigate(item.route)}
                 >
                     <div className="flex items-center gap-2">
                         <p className={`${theme === "dark" ? 'text-white' : "text-black"} text-[1.4rem] font-medium`}>

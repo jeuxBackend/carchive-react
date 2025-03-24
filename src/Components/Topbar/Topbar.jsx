@@ -22,7 +22,7 @@ const Topbar = ({ setSide }) => {
     const location = useLocation();
     const [open, setOpen] = useState(false)
     const navigate = useNavigate()
-    const {vehicle, setVehicle} = useGlobalContext()
+    const {vehicle, setVehicle, addRecord, setAddRecord} = useGlobalContext()
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -125,6 +125,12 @@ const Topbar = ({ setSide }) => {
                                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">Vehicle Details</p>
                             </div>
                         )}
+                        {active.startsWith("/VehicleMaintenence/") && (
+                            <div className='flex items-center gap-2'>
+                                <img src={theme==="dark"?back:backLight} alt="" className='w-[1.6rem] cursor-pointer' onClick={() => navigate(-1)} />
+                                <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">Maintenance Record</p>
+                            </div>
+                        )}
                         {active==="/Update-Profile" && (
                             <div className='flex items-center gap-2'>
                                 <img src={theme==="dark"?back:backLight} alt="" className='w-[1.6rem] cursor-pointer' onClick={() => navigate(-1)} />
@@ -167,6 +173,12 @@ const Topbar = ({ setSide }) => {
                             <FiPlus className="text-[1.5rem]" />
                             <span className="sm:block hidden">Add Vehicles</span>
                         </Link>
+                    )}
+                    {active.startsWith("/VehicleMaintenence/") && (
+                        <div onClick={() => setAddRecord(true)} className="flex items-center cursor-pointer gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]">
+                            <FiPlus className="text-[1.5rem]" />
+                            <span className="sm:block hidden">Add Record</span>
+                        </div>
                     )}
                     {active.startsWith("/Vehicles/") && (
                         <div  className='relative'>

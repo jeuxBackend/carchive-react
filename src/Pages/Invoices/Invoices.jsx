@@ -25,7 +25,7 @@ const Invoices = () => {
 
     useEffect(() => {
         fetchInvoiceData();
-    }, [fetchInvoiceData]);
+    }, []);
 
     const data = [
         { startDate: "12-2-2024", endDate: "12-2-2025", status: "Paid", document: "#" },

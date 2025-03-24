@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useTheme } from '../../../Contexts/ThemeContext'
 import pic from "./assets/p1.png"
@@ -7,9 +7,29 @@ import chat from "./assets/message.png"
 import NoDataFound from '../../../GlobalComponents/NoDataFound/NoDataFound'
 import { FaUserSlash } from 'react-icons/fa'
 import { CiCirclePlus } from 'react-icons/ci'
+import { unassignDriver } from '../../../API/portalServices'
+import { toast } from 'react-toastify'
 
-function DriversCard({ data, setOpen }) {
+function DriversCard({ data, setOpen, fetchVehicleData }) {
     const { theme } = useTheme()
+    const [loading, setLoading] = useState(false);
+
+    const handleUnassign = async (driverId) => {
+        setLoading(true);
+        try {
+            const response = await unassignDriver(data?.id, driverId);
+            if (response.data) {
+                toast.success("Driver Unassigned Successfully");
+                fetchVehicleData()
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            toast.error(error?.response?.data?.message);
+        }finally{
+            setLoading(false);
+        }
+        
+    }
 
     return (
         <motion.div
@@ -17,7 +37,7 @@ function DriversCard({ data, setOpen }) {
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className={`w-full rounded-xl p-2 sm:p-4 ${theme === "dark" ? 'bg-[#323335]' : "bg-white border border-[#ececec]"} relative shadow-md min-h-[390px]`}
+            className={`w-full rounded-xl p-2 sm:p-4 ${theme === "dark" ? 'bg-[#323335]' : "bg-white border border-[#ececec]"} relative shadow-md h-[390px] overflow-auto`}
         >
             <div className='flex items-center justify-between'>
             <motion.p
@@ -34,7 +54,7 @@ function DriversCard({ data, setOpen }) {
 
 
                 <div className='flex flex-col gap-3 justify-between mt-2 lg:min-h-[250px]'>
-                    {data?.drivers.map((_, index) => (
+                    {data?.drivers?.map((data, index) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 20 }}
@@ -45,7 +65,7 @@ function DriversCard({ data, setOpen }) {
                         >
                             <div className='flex items-center gap-3'>
                                 <motion.img
-                                    src={pic}
+                                    src={data?.user?.image}
                                     alt=""
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -57,9 +77,9 @@ function DriversCard({ data, setOpen }) {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: 0.3 * index, duration: 0.5 }}
-                                        className={`${theme === "dark" ? 'text-white' : "text-black"} font-medium lg:text-[0.9rem] 2xl:text-[1.1rem]`}
+                                        className={`${theme === "dark" ? 'text-white' : "text-black"} font-medium lg:text-[0.9rem] 2xl:text-[1.1rem] capitalize`}
                                     >
-                                        Cameron Williamson
+                                        {data?.user?.name}
                                     </motion.p>
                                     <motion.p
                                         initial={{ opacity: 0, x: -20 }}
@@ -67,7 +87,7 @@ function DriversCard({ data, setOpen }) {
                                         transition={{ delay: 0.4 * index, duration: 0.5 }}
                                         className={`${theme === "dark" ? 'text-white' : "text-black"} font-medium text-[0.6rem] lg:text-[0.5rem] 2xl:text-[0.9rem]`}
                                     >
-                                        kenzi.lawson@example.com
+                                        {data?.user?.email}
                                     </motion.p>
                                 </div>
                             </div>
@@ -77,7 +97,7 @@ function DriversCard({ data, setOpen }) {
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.5 * index, duration: 0.5 }}
                                 >
-                                    <GradientButton name="Un-Assign Vehicle" />
+                                    <GradientButton name="Un-Assign Vehicle" handleClick={()=>handleUnassign(data?.driver?.id)} loading={loading}/>
                                 </motion.div>
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.8 }}

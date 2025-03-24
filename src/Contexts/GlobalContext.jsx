@@ -29,6 +29,7 @@ export const GlobalContextProvider = ({ children }) => {
       localStorage.setItem("vehicle", JSON.stringify(vehicle));
     }
   }, [vehicle]);
+  const [addRecord, setAddRecord] = useState(false);
   return (
     <GlobalContext.Provider
       value={{
@@ -44,7 +45,8 @@ export const GlobalContextProvider = ({ children }) => {
         setSelectedDriverId,
         selectedGarageId,
         setSelectedGarageId,
-        vehicle, setVehicle
+        vehicle, setVehicle,
+        addRecord, setAddRecord
       }}
     >
       {children}

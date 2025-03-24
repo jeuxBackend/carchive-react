@@ -11,7 +11,7 @@ export default function CustomDatePicker({ label, value = {}, setValue, fieldKey
   const handleChange = (newValue) => {
     setValue((prev) => ({
       ...prev,
-      [fieldKey]: newValue ? newValue.format("YYYY-MM-DD") : "", // ✅ Store date in a readable format
+      [fieldKey]: newValue ? newValue.format("YYYY-MM-DD") : "", 
     }));
   };
 
@@ -19,11 +19,12 @@ export default function CustomDatePicker({ label, value = {}, setValue, fieldKey
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         label={label}
-        value={value?.[fieldKey] ? dayjs(value?.[fieldKey]) : null} // ✅ Fix syntax
+        value={value?.[fieldKey] ? dayjs(value?.[fieldKey]) : null} 
         onChange={handleChange} 
         sx={{
           width: "100%",
           fontWeight: 500,
+         
           borderRadius: "0.75rem",
           backgroundColor: theme === "dark" ? "#1b1c1e" : "#f7f7f7",
           "& .MuiOutlinedInput-root": {

@@ -42,7 +42,7 @@ function VehicleDetails() {
           <InfoCard data={vehicleDetail}/>
         </div>
         <div className='w-full h-full'>
-          <DriversCard data={vehicleDetail} setOpen={setOpen}/>
+          <DriversCard data={vehicleDetail} setOpen={setOpen} fetchVehicleData={fetchVehicleData}/>
         </div>
       </div>
       <div className='grid lg:grid-cols-2 gap-4 h-full'>
@@ -54,7 +54,7 @@ function VehicleDetails() {
           </div>
         </div>
         <div className='w-full  h-full'>
-          <Services />
+          <Services data={vehicleDetail}/>
           <div className='grid grid-cols-2 gap-5 my-4'>
             <BlueButton name='View Garages'/>
             <BlueButton name='View Requests'/>

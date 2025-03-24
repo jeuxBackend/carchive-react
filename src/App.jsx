@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "./Pages/Auth/Login";
 import Layout from "./Layouts/PortalLayout";
 import Settings from "./Pages/Settings/Settings";
@@ -27,17 +27,20 @@ import AdminSettings from "./AdminPages/Settings/AdminSettings";
 import AdminAbout from "./AdminPages/AboutUs/AdminAbout";
 import AdminPrivacy from "./AdminPages/PrivacyPolicy/AdminPrivacyPolicy";
 import PrivacyPolicy from "./Pages/PrivacyPolicy/PrivacyPolicy";
+import MaintenanceRecord from "./Pages/MaintenanceRecord/MaintenanceRecord";
 
 function App() {
   return (
     <>
       <Routes>
+        <Route path="/Portal" element={<Navigate to="/" />} />
         <Route path="/" element={<Login />} />
         <Route path="/Signup" element={<Signup />} />
         <Route element={<Layout />}>
           <Route path="/Dashboard" element={<Dashboard />} />
           <Route path="/Vehicles" element={<Vehicles />} />
-          <Route path="/Vehicles/:id" element={<VehicleDetails />} />
+          <Route path="/Vehicles/:id" element={<VehicleDetails />} />,
+          <Route path="/VehicleMaintenence/:id" element={<MaintenanceRecord />} />,
           <Route path="/Invoices" element={<Invoices />} />
           <Route path="/Drivers" element={<Drivers />} />
           <Route path="/Requests" element={<Requests />} />

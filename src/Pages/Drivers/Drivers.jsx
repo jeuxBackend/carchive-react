@@ -1,24 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTheme } from "../../Contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import ham from "../../assets/hamburger.png";
 import hamLight from "../../assets/hamLight.png";
 import msg from "./assets/msg.png";
-import person1 from "./assets/person1.png";
-import person2 from "./assets/person2.png";
-import person3 from "./assets/person3.png";
-import person4 from "./assets/person4.png";
-import person5 from "./assets/person5.png";
 import Search from "../../Components/Search/Search";
 import { RiDeleteBin4Fill } from "react-icons/ri";
+import { delDriver, getDrivers } from "../../API/portalServices";
+import { BeatLoader } from "react-spinners";
+import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
+import { toast } from "react-toastify";
 
-const users = [
-    { id: 1, name: "Leslie Alexander", email: "willie.jens@example.com", image: person1 },
-    { id: 2, name: "Leslie Alexander", email: "willie.jens@example.com", image: person2 },
-    { id: 3, name: "Leslie Alexander", email: "willie.jens@example.com", image: person3 },
-    { id: 4, name: "Leslie Alexander", email: "willie.jens@example.com", image: person4 },
-    { id: 5, name: "Leslie Alexander", email: "willie.jens@example.com", image: person5 }
-];
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20, scale: 0.9 },
@@ -40,20 +32,64 @@ const Drivers = () => {
     const { theme } = useTheme();
     const [openMenu, setOpenMenu] = useState(null);
     const dropdownRef = useRef(null);
+    const [search, setSearch] = useState('');
 
-      useEffect(() => {
-            const handleClickOutside = (event) => {
-                if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                    setOpenMenu(null);
-                }
-            };
-            document.addEventListener("mousedown", handleClickOutside);
-            return () => {
-                document.removeEventListener("mousedown", handleClickOutside);
-            };
-        }, []);
-    
-        
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setOpenMenu(null);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+    const [driverData, setDriversData] = useState([])
+    const [loading, setLoading] = useState(false);
+
+    const fetchDriverData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const response = await getDrivers();
+            setDriversData(response?.data?.data || {});
+        } catch (error) {
+            console.error("Error fetching dashboard data:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchDriverData();
+    }, []);
+
+    const removeDriver = async (companyId) => {
+        setLoading(true);
+        try {
+            const response = await delDriver(companyId);
+            if (response.data) {
+                toast.success("Driver Deleted Successfully");
+                fetchDriverData();
+            }
+        } catch (error) {
+            console.error("Error fetching dashboard data:", error);
+            toast.error(error?.response?.data?.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const filteredDrivers = driverData.filter(driver => {
+        const searchTerm = search.toLowerCase();
+        return (
+            driver?.name?.toLowerCase().includes(searchTerm) ||  
+            driver?.email?.toLowerCase().includes(searchTerm)
+        );
+    });
+
+
+
 
     return (
         <motion.div
@@ -61,9 +97,12 @@ const Drivers = () => {
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
         >
-            <Search />
+            <Search value={search} setValue={setSearch} />
+            {loading ? <div className="h-[80vh] flex items-center justify-center">
+            <BeatLoader color="#2d9bff" />
+        </div> : (filteredDrivers.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-                {users.map((user, i) => (
+                {filteredDrivers.map((user, i) => (
                     <motion.div
                         key={user.id}
                         ref={dropdownRef}
@@ -85,7 +124,7 @@ const Drivers = () => {
 
                         <div>
                             <div className="flex-1">
-                                <h3 className="text-lg font-semibold">{user.name}</h3>
+                                <h3 className="text-lg font-semibold capitalize">{user.name}</h3>
                                 <p className="text-sm text-gray-400">{user.email}</p>
                             </div>
 
@@ -99,8 +138,6 @@ const Drivers = () => {
                                 Message
                             </motion.button>
                         </div>
-
-
                         <motion.img
                             src={theme === "dark" ? ham : hamLight}
                             onClick={() => setOpenMenu(openMenu === i ? null : i)}
@@ -108,30 +145,26 @@ const Drivers = () => {
                             whileHover={{ rotate: 180, scale: 1.2 }}
                             layout="position"
                         />
-
-
-
-
                         <AnimatePresence>
                             {openMenu === i && (
-                               <motion.div
-                               className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-10 top-7 rounded-b-3xl flex flex-col rounded-tr-sm rounded-tl-3xl p-3"
-                               variants={menuVariants}
-                               initial="hidden"
-                               animate="visible"
-                               exit="exit"
-                           >
-                               <p  onClick={() => setOpenMenu(null)} className="flex items-center gap-2 cursor-pointer">
-                                   <RiDeleteBin4Fill /> Delete Vehicle
-                               </p>
-                           </motion.div>
-                           
+                                <motion.div
+                                    className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[150px] right-10 top-7 rounded-b-3xl flex flex-col rounded-tr-sm rounded-tl-3xl p-3"
+                                    variants={menuVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="exit"
+                                >
+                                    <p onClick={() =>{ setOpenMenu(null), removeDriver(user?.driverCompanyId)}} className="flex items-center gap-2 cursor-pointer justify-center">
+                                        <RiDeleteBin4Fill /> Delete 
+                                    </p>
+                                </motion.div>
+
 
                             )}
                         </AnimatePresence>
                     </motion.div>
                 ))}
-            </div>
+            </div>) : <div className="h-[80vh] flex items-center justify-center"><NoDataFound /></div>)}
         </motion.div>
     );
 };

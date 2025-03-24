@@ -15,11 +15,19 @@ export const getVehicleById = (id) => API.get(`/portal/vehicle-details/${id}`);
 export const archiveVehicle = (id) => API.get(`/portal/makeArchive/${id}`);
 export const delVehicle = (id) => API.delete(`/portal/deleteCar/${id}`);
 export const assignDriver = (data) => API.post(`/portal/getDriverByEmail`, data);
+export const unassignDriver = (carId, driverId) => API.get(`portal/unassignCar/${carId}/${driverId}`);
+export const maintenanceRecord = (id) => API.get(`portal/viewMaintenanceRequestPortal/${id}`);
 export const getMakes = () => API.get("/getMakes");
+
+// Drivers API's
+export const getDrivers = () => API.get("/portal/getCompanyDrivers");
+export const delDriver = (companyId) => API.get(`/portal/deleteDriver/${companyId}`);
 
 // Invoices API's
 export const getInvoices = () => API.get("/portal/get-invoices");
 
 // Settings API's
 export const getSettings = () => API.get("/getSettings");
+export const getProfile = () => API.get("/user");
+export const updateProfile = (data) => API.post("/portal/updateProfile",data);
 

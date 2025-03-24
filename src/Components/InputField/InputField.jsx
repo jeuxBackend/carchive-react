@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { IoEye, IoEyeOff } from "react-icons/io5";
 
-function InputField({ label, type = "text", value="", setValue, fieldKey, isNumber }) {
+function InputField({ label, type = "text", value="", setValue, fieldKey, isNumber, isReadOnly=false, isRequired=true }) {
     const { theme } = useTheme();
     const [showPass, setShowPass] = useState(false);
 
@@ -32,7 +32,8 @@ function InputField({ label, type = "text", value="", setValue, fieldKey, isNumb
             <input
                 type={type === "password" ? (showPass ? "text" : "password") : type}
                 value={value[fieldKey] || ""}
-                required
+                required={isRequired}
+                readOnly={isReadOnly}
                 onChange={handleChange}
                 className={`outline-none border-none font-medium 
                             ${theme === "dark" ? "text-white" : "text-black"}

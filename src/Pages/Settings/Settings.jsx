@@ -14,9 +14,32 @@ import notifyDark from "./assets/notifyDark.png";
 import { IoIosArrowForward } from "react-icons/io";
 import Switch from "../../Components/Buttons/Switch";
 import { Link } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { getProfile } from "../../API/portalServices";
+import avatar from "/avatar.png"
 
 const Settings = () => {
   const { theme, toggleTheme } = useTheme();
+  const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState({})
+
+  const fetchProfileData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getProfile();
+      if (response) {
+        setProfileData(response?.data || {});
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
 
   return (
     <motion.div
@@ -25,23 +48,36 @@ const Settings = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center gap-5 sm:flex-row flex-col">
-        <div className="flex items-center gap-3">
-          <img src={img} alt="" className="w-[4rem] sm:w-[9rem]" />
-          <div>
-            <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[1.2rem] sm:text-[1.6rem]`}>Savannah Nguyen</p>
-            <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[0.9rem]`}>michelle.rivera@example.com</p>
+      {loading ? <div className="h-[20vh] flex items-center justify-center">
+        <motion.div
+          className="w-7 h-7 border-2 border-[#479cff] border-t-transparent rounded-full mx-auto animate-spin"
+        />
+      </div> :
+        <div className="flex items-center gap-5 sm:flex-row flex-col">
+          <div className="flex items-center gap-3">
+            <img
+              src={profileData?.image || avatar}
+              onError={(e) => {
+                e.target.src = avatar;
+              }}
+              alt="profile"
+              className="w-[4rem] sm:w-[9rem] border-2 border-[#479cff] rounded-xl h-[4rem] sm:h-[9rem] object-cover"
+            />
+
+            <div>
+              <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[1.2rem] sm:text-[1.6rem]`}>{profileData?.name} {profileData?.lastName}</p>
+              <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[0.9rem]`}>{profileData?.email}</p>
+            </div>
           </div>
-        </div>
-        <Link to='/Update-Profile' className="bg-[#479cff] text-white py-2 px-5 rounded-lg">
-          Update Profile
-        </Link>
-      </div>
-      
+          <Link to='/Update-Profile' className="bg-[#479cff] text-white py-2 px-5 rounded-lg">
+            Update Profile
+          </Link>
+        </div>}
+
       <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {[{ to: "/Language", icon: lang, iconDark: langDark, label: "Language" },
-          { to: "/About", icon: about, iconDark: aboutDark, label: "About Us" },
-          { to: "/Privacy-Policy", icon: privacy, iconDark: privacyDark, label: "Privacy Policy",  iconSize: "w-[1.7rem]" }].map((item, index) => (
+        { to: "/About", icon: about, iconDark: aboutDark, label: "About Us" },
+        { to: "/Privacy-Policy", icon: privacy, iconDark: privacyDark, label: "Privacy Policy", iconSize: "w-[1.7rem]" }].map((item, index) => (
           <motion.div
             key={index}
             whileHover={{ scale: 1.05 }}

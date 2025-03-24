@@ -67,23 +67,23 @@ function AddVehicle() {
         }
     }
 
-     const [makesData, setMakesData] = useState([])
-    
-      const fetchMakesData = useCallback(async () => {
+    const [makesData, setMakesData] = useState([])
+
+    const fetchMakesData = useCallback(async () => {
         setLoading(true);
         try {
-          const response = await getMakes();
-          setMakesData(response?.data?.data || {});
+            const response = await getMakes();
+            setMakesData(response?.data?.data || {});
         } catch (error) {
-          console.error("Error fetching dashboard data:", error);
+            console.error("Error fetching dashboard data:", error);
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      }, []);
-      
-      useEffect(() => {
+    }, []);
+
+    useEffect(() => {
         fetchMakesData();
-      }, []);
+    }, []);
     return (
         <div>
             <div className='flex gap-5 lg:flex-row flex-col'>
