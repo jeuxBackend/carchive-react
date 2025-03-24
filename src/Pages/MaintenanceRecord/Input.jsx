@@ -18,7 +18,7 @@ function InputField({ label, type = "text", value="", setValue, fieldKey, isNumb
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className={`flex items-center gap-2 w-full p-5 rounded-xl font-medium ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-[#f7f7f7] border border-[#e8e8e8]"}`}
+            className={`flex items-center gap-2 w-full p-4 rounded-xl font-medium ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-[#f7f7f7] border border-[#e8e8e8]"}`}
         >
             <input
                 type={type}

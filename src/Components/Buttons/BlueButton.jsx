@@ -1,20 +1,21 @@
 import React from 'react'
 import { useTheme } from '../../Contexts/ThemeContext'
 import { motion } from "framer-motion";
-function BlueButton({ name }) {
+import {Link} from 'react-router-dom'
+function BlueButton({ name, to}) {
     const { theme } = useTheme()
     return (
        
-            <motion.button
+            <Link
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-
+                to={to}
                 className={`w-full py-3 px-3 xl:text-[1rem] lg:text-[0.6rem] text-center 2xl:px-4 flex justify-center items-center rounded-xl focus:outline-none ${theme === "dark" ? "bg-[#479cff] text-white" : "bg-[#1b1c1e] text-white "
                     }`}
             >
                 {name}
 
-            </motion.button>
+            </Link>
     )
 }
 

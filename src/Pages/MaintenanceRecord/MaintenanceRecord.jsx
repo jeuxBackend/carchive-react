@@ -36,7 +36,7 @@ function MaintenanceRecord() {
     }, [id]);
     return (
         <>
-        <AddRecord open={addRecord} setOpen={setAddRecord}/>
+        <AddRecord open={addRecord} setOpen={setAddRecord} fetchMaintenanceData={fetchMaintenanceData}/>
         <motion.div
             initial="hidden"
             animate="visible"

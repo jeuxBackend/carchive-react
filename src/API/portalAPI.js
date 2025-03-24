@@ -36,7 +36,7 @@ API.interceptors.response.use(
       if (error.response?.status === 401) {
         console.warn("Unauthorized! Redirecting to login...");
         localStorage.removeItem("CarchivePortalToken");
-        window.location.href = "/Admin/Login";
+        window.location.href = "/";
       } else if (error.response?.status === 500) {
         console.error("Server error. Please try again later.");
       }

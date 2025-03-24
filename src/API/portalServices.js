@@ -18,6 +18,8 @@ export const assignDriver = (data) => API.post(`/portal/getDriverByEmail`, data)
 export const unassignDriver = (carId, driverId) => API.get(`portal/unassignCar/${carId}/${driverId}`);
 export const maintenanceRecord = (id) => API.get(`portal/viewMaintenanceRequestPortal/${id}`);
 export const getMakes = () => API.get("/getMakes");
+export const createMaintenanceRecord = (data) => API.post("portal/createMaintenanceRequestPortal", data);
+export const getLogs= (id) => API.get(`/portal/viewLog/${id}`);
 
 // Drivers API's
 export const getDrivers = () => API.get("/portal/getCompanyDrivers");

@@ -50,7 +50,7 @@ function VehicleDetails() {
           <Specification data={vehicleDetail}/>
           <div className='grid grid-cols-2 gap-5 my-4'>
             <BlueButton name='Release Vehicle'/>
-            <BlueButton name='View Logs'/>
+            <BlueButton name='View Logs' to={`/ViewLogs/${id}`} />
           </div>
         </div>
         <div className='w-full  h-full'>
