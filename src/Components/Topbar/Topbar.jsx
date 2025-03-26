@@ -188,7 +188,7 @@ const Topbar = ({ setSide }) => {
                     <div className='flex items-center gap-2'>
                     {active === "/Vehicles" && (
                         <div onClick={()=>setAddTransfer(true)} className="flex items-center gap-2 py-2.5 shadow-md px-3 cursor-pointer rounded-lg text-white bg-[#323334]">
-                            {/* <FiPlus className="text-[1.5rem]" /> */}
+                            <FiPlus className="text-[1.5rem]" />
                             <span className="sm:block hidden">Transfer Vehicle</span>
                         </div>
                     )}
