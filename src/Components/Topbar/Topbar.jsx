@@ -181,7 +181,7 @@ const Topbar = ({ setSide }) => {
                         )}
 
                         {active === "/Dashboard" && (
-                            <p>Welcome Back, Julia 👋</p>
+                            <p>Welcome Back👋</p>
                         )}
                     </div>
                     {}
