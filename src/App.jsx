@@ -29,6 +29,8 @@ import AdminPrivacy from "./AdminPages/PrivacyPolicy/AdminPrivacyPolicy";
 import PrivacyPolicy from "./Pages/PrivacyPolicy/PrivacyPolicy";
 import MaintenanceRecord from "./Pages/MaintenanceRecord/MaintenanceRecord";
 import ViewLogs from "./Pages/ViewLogs/ViewLogs";
+import Garages from "./Pages/Garages/Garages";
+import SearchedVehicle from "./Pages/VehicleDetails/SearchedVehicle";
 
 function App() {
   return (
@@ -43,6 +45,8 @@ function App() {
           <Route path="/Vehicles/:id" element={<VehicleDetails />} />
           <Route path="/VehicleMaintenence/:id" element={<MaintenanceRecord />} />
           <Route path="/ViewLogs/:id" element={<ViewLogs />} />
+          <Route path="/VehicleGarages/:id" element={<Garages />} />
+          <Route path="/SearchedVehicle" element={<SearchedVehicle />} />
           <Route path="/Invoices" element={<Invoices />} />
           <Route path="/Drivers" element={<Drivers />} />
           <Route path="/Requests" element={<Requests />} />

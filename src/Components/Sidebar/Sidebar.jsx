@@ -37,7 +37,9 @@ function Sidebar({ side, setSide,setLogout }) {
             path: "/Vehicles",
             subPath: "/Add-Vehicle",
             subPath1: "/VehicleMaintenence/",
-            subPath2: "/ViewLogs/"
+            subPath2: "/ViewLogs/",
+            subPath3: "/VehicleGarages/",
+            subPath4: "/SearchedVehicle"
         },
         {
             icon: drivers,
@@ -121,7 +123,7 @@ function Sidebar({ side, setSide,setLogout }) {
                            
                             <motion.div
                             onClick={function(){setSide(false)}}
-                                className={`flex ml-2 lg:ml-4 pl-3 lg:pl-5 w-full items-center gap-3 transition-all ${data?.name==="Vehicles"?"p-3":"p-2"}  rounded-md ${active === data.path || active.startsWith(data.path) || active === data.subPath || active===data.subPath1 || active===data.subPath2 || active===data.subPath3 || active.startsWith(data.subPath1) || active.startsWith(data.subPath2)
+                                className={`flex ml-2 lg:ml-4 pl-3 lg:pl-5 w-full items-center gap-3 transition-all ${data?.name==="Vehicles"?"p-3":"p-2"}  rounded-md ${active === data.path || active.startsWith(data.path) || active === data.subPath || active===data.subPath1 || active===data.subPath2 || active===data.subPath3 || active.startsWith(data.subPath1) || active.startsWith(data.subPath2) || active.startsWith(data.subPath3) || active === data.subPath4
                                     ? 'bg-[#1b1c1e]'
                                     : 'hover:bg-white/20'
                                     }`}

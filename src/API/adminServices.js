@@ -27,7 +27,7 @@ export const getApproveAdminGarage = (data) => postRequest("admin/approved-grage
 export const getUnapproveAdminGarage = (data) => postRequest("admin/unapproved-grages", data);
 export const getAdminGarageDetail = (id) => postRequest("admin/grage-detail", { id });
 
-// Active/Block API
+// Active/Block APIs
 export const activeBlock = (id) => postRequest("admin/active-block", { id });
 
 // Settings APIs

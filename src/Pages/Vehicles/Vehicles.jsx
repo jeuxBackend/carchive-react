@@ -6,11 +6,15 @@ import VehicleCard from '../../Components/VehicleCard/VehicleCard';
 import { getVehicles } from '../../API/portalServices';
 import { BeatLoader } from 'react-spinners';
 import NoDataFound from '../../GlobalComponents/NoDataFound/NoDataFound';
+import { useGlobalContext } from '../../Contexts/GlobalContext';
+import TransferVehicle from './TransferVehicle';
 
 function Vehicles() {
     const [loading, setLoading] = useState(false);
     const [vehiclesData, setVehiclesData] = useState([]);
     const [search, setSearch] = useState('');
+    const {addTransfer, setAddTransfer} = useGlobalContext()
+    const [selectedValue, setSelectedValue] = useState("");
 
     const fetchVehiclesData = useCallback(async () => {
         setLoading(true);
@@ -31,18 +35,25 @@ function Vehicles() {
  
     const filteredVehicles = vehiclesData.filter(vehicle => {
         const searchTerm = search.toLowerCase();
-        return (
+        const matchesSearch = 
             vehicle?.make?.toLowerCase().includes(searchTerm) ||  
             vehicle?.vinNumber?.toLowerCase().includes(searchTerm) || 
-            vehicle?.plateNumber?.toLowerCase().includes(searchTerm)   
-        );
+            vehicle?.plateNumber?.toLowerCase().includes(searchTerm);
+    
+     
+        if (selectedValue === "1") {
+            return matchesSearch && vehicle.isArchive === "1";
+        }
+    
+        return matchesSearch;
     });
 
     return (
         <div>
+            <TransferVehicle open={addTransfer} setOpen={setAddTransfer}/>
             <div className='flex items-center justify-center gap-3 md:flex-row flex-col'>
                 <div className='w-full md:w-[25%]'>
-                    <Dropdown />
+                    <Dropdown setValue={setSelectedValue}/>
                 </div>
                 <div className='w-full md:w-[75%]'>
                     <Search value={search} setValue={setSearch} />

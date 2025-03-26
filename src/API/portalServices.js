@@ -20,6 +20,10 @@ export const maintenanceRecord = (id) => API.get(`portal/viewMaintenanceRequestP
 export const getMakes = () => API.get("/getMakes");
 export const createMaintenanceRecord = (data) => API.post("portal/createMaintenanceRequestPortal", data);
 export const getLogs= (id) => API.get(`/portal/viewLog/${id}`);
+export const releaseVehicle= (id) => API.get(`/portal/soldCar/${id}`);
+export const getGarages= (id) => API.get(`/portal/getCarGarages/${id}`);
+export const searchVehicle= (data) => API.post(`/portal/getCarWithVin`, data);
+export const buyCarApi= (data) => API.post(`/portal/buyCar`, data);
 
 // Drivers API's
 export const getDrivers = () => API.get("/portal/getCompanyDrivers");
@@ -27,6 +31,12 @@ export const delDriver = (companyId) => API.get(`/portal/deleteDriver/${companyI
 
 // Invoices API's
 export const getInvoices = () => API.get("/portal/get-invoices");
+
+// Requests API's
+export const getRequests = () => API.get("/portal/getCustomerRequests");
+export const changeRequestStatus = (data) => API.post("/portal/respondCustomerRequests", data);
+export const changeGarageStatus = (data) => API.post("/portal/updateDocumentRequest", data);
+
 
 // Settings API's
 export const getSettings = () => API.get("/getSettings");

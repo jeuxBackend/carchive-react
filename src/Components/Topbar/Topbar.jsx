@@ -22,7 +22,7 @@ const Topbar = ({ setSide }) => {
     const location = useLocation();
     const [open, setOpen] = useState(false)
     const navigate = useNavigate()
-    const {vehicle, setVehicle, addRecord, setAddRecord} = useGlobalContext()
+    const {vehicle, setVehicle, addRecord, setAddRecord, addTransfer, setAddTransfer} = useGlobalContext()
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -149,10 +149,22 @@ const Topbar = ({ setSide }) => {
                                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">About Us</p>
                             </div>
                         )}
+                        {active==="/SearchedVehicle" && (
+                            <div className='flex items-center gap-2'>
+                                <img src={theme==="dark"?back:backLight} alt="" className='w-[1.6rem] cursor-pointer' onClick={() => navigate(-1)} />
+                                <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">Vehicle Details</p>
+                            </div>
+                        )}
                         {active.startsWith("/ViewLogs/") && (
                             <div className='flex items-center gap-2'>
                                 <img src={theme==="dark"?back:backLight} alt="" className='w-[1.6rem] cursor-pointer' onClick={() => navigate(-1)} />
                                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">View Logs</p>
+                            </div>
+                        )}
+                        {active.startsWith("/VehicleGarages/") && (
+                            <div className='flex items-center gap-2'>
+                                <img src={theme==="dark"?back:backLight} alt="" className='w-[1.6rem] cursor-pointer' onClick={() => navigate(-1)} />
+                                <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">Vehicle Garages</p>
                             </div>
                         )}
                         {active==="/Language" && (
@@ -173,13 +185,20 @@ const Topbar = ({ setSide }) => {
                         )}
                     </div>
                     {}
-
+                    <div className='flex items-center gap-2'>
+                    {active === "/Vehicles" && (
+                        <div onClick={()=>setAddTransfer(true)} className="flex items-center gap-2 py-2.5 shadow-md px-3 cursor-pointer rounded-lg text-white bg-[#323334]">
+                            {/* <FiPlus className="text-[1.5rem]" /> */}
+                            <span className="sm:block hidden">Transfer Vehicle</span>
+                        </div>
+                    )}
                     {active === "/Vehicles" && (
                         <Link to='/Add-Vehicle' className="flex items-center gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]">
                             <FiPlus className="text-[1.5rem]" />
                             <span className="sm:block hidden">Add Vehicles</span>
                         </Link>
                     )}
+                    </div>
                     {active.startsWith("/VehicleMaintenence/") && (
                         <div onClick={() => setAddRecord(true)} className="flex items-center cursor-pointer gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]">
                             <FiPlus className="text-[1.5rem]" />

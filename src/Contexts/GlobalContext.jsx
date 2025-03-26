@@ -6,6 +6,7 @@ export const GlobalContextProvider = ({ children }) => {
   const [addInvoice, setAddInvoice] = useState(false);
   const [addAbout, setAddAbout] = useState(false);
   const [addPrivacy, setAddPrivacy] = useState(false);
+  const [addTransfer, setAddTransfer] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState("");
   const [selectedGarageId, setSelectedGarageId] = useState("");
   const [companyId, setCompanyId] = useState(
@@ -29,6 +30,16 @@ export const GlobalContextProvider = ({ children }) => {
       localStorage.setItem("vehicle", JSON.stringify(vehicle));
     }
   }, [vehicle]);
+  const [vehicleData, setVehicleData] = useState(() => {
+    const savedvehicleData = localStorage.getItem("vehicleData");
+    return savedvehicleData ? JSON.parse(savedvehicleData) : {};
+  });
+
+  useEffect(() => {
+    if (vehicleData !== null) {
+      localStorage.setItem("vehicleData", JSON.stringify(vehicleData));
+    }
+  }, [vehicleData]);
   const [addRecord, setAddRecord] = useState(false);
   return (
     <GlobalContext.Provider
@@ -46,7 +57,9 @@ export const GlobalContextProvider = ({ children }) => {
         selectedGarageId,
         setSelectedGarageId,
         vehicle, setVehicle,
-        addRecord, setAddRecord
+        addRecord, setAddRecord,
+        addTransfer, setAddTransfer,
+        vehicleData, setVehicleData
       }}
     >
       {children}
