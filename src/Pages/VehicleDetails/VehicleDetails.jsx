@@ -8,6 +8,7 @@ import BlueButton from '../../Components/Buttons/BlueButton'
 import { getVehicleById } from '../../API/portalServices'
 import { BeatLoader } from 'react-spinners'
 import AddDriver from './VehicleComponents/AddDriver'
+import Specs from './VehicleComponents/Specs'
 
 function VehicleDetails() {
   const { id } = useParams()
@@ -47,7 +48,7 @@ function VehicleDetails() {
           </div>
           <div className='grid lg:grid-cols-2 gap-4 h-full'>
             <div className='w-full h-full'>
-              <Specification data={vehicleDetail} />
+              <Specs data={vehicleDetail} />
               <div className='grid grid-cols-1 gap-5 my-4'>
 
                 <BlueButton name='View Logs' to={`/ViewLogs/${id}`} />

@@ -6,6 +6,7 @@ import AddAbout from "../AboutUs/AddAbout";
 import { getSettings } from "../../API/adminServices";
 import AddPrivacy from "./AddPrivacy";
 import { BeatLoader } from "react-spinners";
+import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 
 const AdminPrivacy = () => {
   const { theme } = useTheme();

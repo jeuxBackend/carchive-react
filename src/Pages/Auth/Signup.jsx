@@ -100,6 +100,9 @@ function Signup() {
                 })
                 setImage(null)
                 setImageFile(null)
+                setTimeout(() => {
+                    navigate('/')
+                }, 2000)
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Registration failed!");

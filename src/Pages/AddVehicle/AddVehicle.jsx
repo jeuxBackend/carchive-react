@@ -49,7 +49,10 @@ function AddVehicle() {
         } else if (regDocs.length === 0 || insuranceDocs.length === 0 || inspectionDocs.length === 0 || vehicleImages.length === 0 || additionalDocs.length === 0) {
             toast.error("All documents are required")
 
-        } else {
+        }else if(vehicleData.vinNumber.length !== 17){
+            toast.error("Vin Number must be 17 characters")
+        } 
+        else {
             setLoading(true)
             try {
                 const response = await addVehicle({ ...vehicleData, image: vehicleImages, registrationDocument: regDocs, insuranceDocument: insuranceDocs, inspectionDocument: inspectionDocs, additionalDocuments: additionalDocs })
@@ -58,9 +61,25 @@ function AddVehicle() {
                     console.log(response.data);
                     navigate("/Vehicles")
                 }
-            } catch (err) {
-                console.log(err);
-                toast.error("Something went wrong")
+            } catch (error) {
+                console.log(error);
+                if (error.response?.data?.error) {
+                    const errorData = error?.response?.data?.error;
+
+                    if (errorData.vinNumber && Array.isArray(errorData.vinNumber)) {
+                        toast.error(errorData.vinNumber[0]); 
+                    }
+                   
+                    else if (Array.isArray(errorData) && errorData.length > 0) {
+                        toast.error(errorData[0]); 
+                    } 
+         
+                    else {
+                        toast.error("Something went wrong");
+                    }
+                } else {
+                    toast.error("Something went wrong");
+                }
             } finally {
                 setLoading(false)
             }

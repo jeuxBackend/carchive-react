@@ -40,13 +40,17 @@ function Vehicles() {
             vehicle?.vinNumber?.toLowerCase().includes(searchTerm) || 
             vehicle?.plateNumber?.toLowerCase().includes(searchTerm);
     
-     
         if (selectedValue === "1") {
-            return matchesSearch && vehicle.isArchive === "1";
+            return matchesSearch && vehicle.isArchive === "1"; 
+        } 
+        
+        if (selectedValue === "0") {
+            return matchesSearch && vehicle.isArchive !== "1"; 
         }
     
         return matchesSearch;
     });
+    
 
     return (
         <div>

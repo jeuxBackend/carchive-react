@@ -5,6 +5,7 @@ import AddAbout from "./AddAbout";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { getSettings } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
+import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 const AdminAbout = () => {
     const { theme } = useTheme();
     const {addAbout, setAddAbout}=useGlobalContext()

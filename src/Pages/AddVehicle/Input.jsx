@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
-import { IoEye, IoEyeOff } from "react-icons/io5";
 
-function InputField({ label, type = "text", value="", setValue, fieldKey, isNumber  }) {
+function InputField({ label, type = "text", value = "", setValue, fieldKey, isNumber }) {
     const { theme } = useTheme();
+
     const handleChange = (e) => {
         let inputValue = e.target.value;
+
         if (isNumber) {
             inputValue = inputValue.replace(/[^0-9]/g, '');
         }
+
+        if (fieldKey === "vinNumber") {
+            inputValue = inputValue.toUpperCase().slice(0, 17); 
+        }
+
         setValue((prev) => ({ ...prev, [fieldKey]: inputValue }));
-    }
+    };
 
     return (
         <motion.div 

@@ -11,6 +11,7 @@ import { MdDelete } from "react-icons/md";
 import { createMaintenanceRecord } from "../../API/portalServices";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
+import CustomDropdown from "./CustomDropdown";
 
 function AddRecord({ open, setOpen, fetchMaintenanceData }) {
     if (!open) return null;
@@ -24,6 +25,8 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
         serviceType: "",
         id: id
     });
+
+    console.log(formData)
 
 
     const [itemName, setItemName] = useState("");
@@ -106,11 +109,12 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
 
                     <div className="w-full flex flex-col gap-3">
                         <div className="w-full flex gap-2">
-                            <InputField label="Mileage" fieldKey="mileage" value={formData} setValue={setFormData} isNumber={true}/>
+                            <InputField label="Mileage" fieldKey="millage" value={formData} setValue={setFormData} isNumber={true}/>
                             <InputField label="Dealer Name" fieldKey="dealerName" value={formData} setValue={setFormData} />
                         </div>
                         <BasicDatePicker label="Date" fieldKey="date" value={formData} setValue={setFormData} />
-                        <InputField label="Service Type" fieldKey="serviceType" value={formData} setValue={setFormData} />
+                        <CustomDropdown label="Service Type" fieldKey="serviceType" value={formData} setValue={setFormData} />
+                        
                     </div>
 
 

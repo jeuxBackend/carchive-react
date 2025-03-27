@@ -17,7 +17,7 @@ function TransferVehicle({ open, setOpen }) {
     const { theme } = useTheme()
     const navigate = useNavigate()
     const [value, setValue] = useState('');
-    const {vehicleData, setVehicleData} = useGlobalContext()
+    const { vehicleData, setVehicleData } = useGlobalContext()
 
     const [loading, setLoading] = useState(false);
 
@@ -28,9 +28,9 @@ function TransferVehicle({ open, setOpen }) {
             setLoading(true);
             try {
                 const response = await searchVehicle({ vinNumber: value });
-                  setVehicleData(response?.data?.data || {});
-                  toast.success("Vehicle Found")
-                  navigate("/SearchedVehicle")
+                setVehicleData(response?.data?.data || {});
+                toast.success("Vehicle Found")
+                navigate("/SearchedVehicle")
             } catch (error) {
                 console.error("Error fetching data:", error);
                 toast.error("Vehicle not found")
@@ -75,11 +75,16 @@ function TransferVehicle({ open, setOpen }) {
                                             type='text'
                                             placeholder={"Vin Number"}
                                             value={value}
-                                            onChange={(e) => setValue(e.target.value)}
+                                            onChange={(e) => {
+                                                const newValue = e.target.value.toUpperCase();
+                                                if (newValue.length <= 17) {
+                                                    setValue(newValue);
+                                                }
+                                            }}
                                             required
-
                                             className={`flex-1 outline-none border-none font-medium ${theme === "dark" ? "text-white" : "text-black"}`}
                                         />
+
                                     </motion.div>
 
                                 </div>
@@ -93,7 +98,7 @@ function TransferVehicle({ open, setOpen }) {
 
                             </div>
                             <div className="w-full cursor-pointer" >
-                                <RequestButton name="Transfer" handleClick={() => vinSearch()} loading={loading} />
+                                <RequestButton name="Search" handleClick={() => vinSearch()} loading={loading} />
 
                             </div>
                         </div>
