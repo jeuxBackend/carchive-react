@@ -31,10 +31,15 @@ import MaintenanceRecord from "./Pages/MaintenanceRecord/MaintenanceRecord";
 import ViewLogs from "./Pages/ViewLogs/ViewLogs";
 import Garages from "./Pages/Garages/Garages";
 import SearchedVehicle from "./Pages/VehicleDetails/SearchedVehicle";
+import TermsCondition from "./AdminPages/TermsCondition/TermsCondition";
+import PublicPage from "./PublicPage/PublicPage";
 
 function App() {
   return (
     <>
+      <Routes>
+        <Route path="/PublicPage/:id" element={<PublicPage />} />
+      </Routes>
       <Routes>
         <Route path="/Portal" element={<Navigate to="/" />} />
         <Route path="/" element={<Login />} />
@@ -44,7 +49,10 @@ function App() {
           <Route path="/Dashboard" element={<Dashboard />} />
           <Route path="/Vehicles" element={<Vehicles />} />
           <Route path="/Vehicles/:id" element={<VehicleDetails />} />
-          <Route path="/VehicleMaintenence/:id" element={<MaintenanceRecord />} />
+          <Route
+            path="/VehicleMaintenence/:id"
+            element={<MaintenanceRecord />}
+          />
           <Route path="/ViewLogs/:id" element={<ViewLogs />} />
           <Route path="/VehicleGarages/:id" element={<Garages />} />
           <Route path="/SearchedVehicle" element={<SearchedVehicle />} />
@@ -70,6 +78,7 @@ function App() {
           <Route path="Settings" element={<AdminSettings />} />
           <Route path="About" element={<AdminAbout />} />
           <Route path="Privacy-Policy" element={<AdminPrivacy />} />
+          <Route path="TermsCondition" element={<TermsCondition />} />
         </Route>
       </Routes>
     </>

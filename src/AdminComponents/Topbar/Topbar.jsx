@@ -20,7 +20,7 @@ const Topbar = ({ setSide }) => {
   const { theme } = useTheme();
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const { setAddInvoice, setAddAbout, setAddPrivacy } = useGlobalContext();
+  const { setAddInvoice, setAddAbout, setAddPrivacy, setAddTerm } = useGlobalContext();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -127,6 +127,19 @@ const Topbar = ({ setSide }) => {
                 </p>
               </div>
             )}
+            {active === "/Admin/TermsCondition" && (
+              <div className="flex items-center gap-2">
+                <img
+                  src={theme === "dark" ? back : backLight}
+                  alt=""
+                  className="w-[1.6rem] cursor-pointer"
+                  onClick={() => navigate(-1)}
+                />
+                <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
+                  Terms & Condition
+                </p>
+              </div>
+            )}
             {active === "/Language" && (
               <div className="flex items-center gap-2">
                 <img
@@ -213,6 +226,15 @@ const Topbar = ({ setSide }) => {
             >
               <FiPlus />
               <span className="sm:block hidden">Privacy Policy</span>
+            </div>
+          )}
+          {active.startsWith("/Admin/TermsCondition") && (
+            <div
+              onClick={() => setAddTerm(true)}
+              className={`text-white flex items-center gap-2 bg-[#2d9bff] py-2 px-2 sm:px-5 rounded sm:rounded-xl cursor-pointer`}
+            >
+              <FiPlus />
+              <span className="sm:block hidden">Terms & Condition</span>
             </div>
           )}
           {/* {active.startsWith("/Company/") && (

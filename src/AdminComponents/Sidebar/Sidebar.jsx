@@ -57,7 +57,8 @@ function Sidebar({ side, setSide,setLogout }) {
             name: "Settings",
             path: "/Admin/Settings",
              path1: "/Admin/About",
-            subPath: "/Admin/Privacy-Policy"
+            subPath: "/Admin/Privacy-Policy",
+            subPath: "/Admin/TermsCondition"
         },
        
         

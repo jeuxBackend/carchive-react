@@ -13,26 +13,26 @@ function DriverDetail({ open, setOpen, full }) {
   const { theme } = useTheme();
   const { selectedDriverId } = useGlobalContext();
   const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [driverDetailData, setDriverDetailData] = useState("");
-  
-    const fetchAdminDriverDetailData = useCallback(async (id) => {
-      setLoading(true);
-      try {
-        const response = await getAdminDriverDetail(id);
-        if(response){
-          console.log(response.data)
-        }
-        setDriverDetailData(response?.data?.data || {});
-      } catch (error) {
-        console.log("Error while fetching data:", error);
-      } finally {
-        setLoading(false);
+  const [loading, setLoading] = useState(false);
+  const [driverDetailData, setDriverDetailData] = useState("");
+
+  const fetchAdminDriverDetailData = useCallback(async (id) => {
+    setLoading(true);
+    try {
+      const response = await getAdminDriverDetail(id);
+      if (response) {
+        console.log(response.data);
       }
-    }, []);
-    useEffect(() => {
-        fetchAdminDriverDetailData(selectedDriverId);
-    }, [fetchAdminDriverDetailData, selectedDriverId]);
+      setDriverDetailData(response?.data?.data || {});
+    } catch (error) {
+      console.log("Error while fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  useEffect(() => {
+    fetchAdminDriverDetailData(selectedDriverId);
+  }, [fetchAdminDriverDetailData, selectedDriverId]);
 
   const logoutHandle = () => {
     navigate("/");
@@ -78,10 +78,36 @@ function DriverDetail({ open, setOpen, full }) {
             </p>
           </div>
           <div className="w-full flex flex-col gap-4">
-            <DetailDiv label="Driver Name" value={driverDetailData?.name || "Name Not Found"} />
-            <DetailDiv label="Email" value={driverDetailData?.email || "Email Not Found"} />
-            <DetailDiv label="Phone Number" value={driverDetailData?.phNumber || "Phone Not Found"} />
-            {full && <DetailDiv label="VAT Number" value={driverDetailData?.vatNum || "Vat Not Found"} />}
+            <DetailDiv
+              label="Driver Name"
+              value={driverDetailData?.name || "Name Not Found"}
+            />
+            <DetailDiv
+              label="Email"
+              value={driverDetailData?.email || "Email Not Found"}
+            />
+            <DetailDiv
+              label="Phone Number"
+              value={driverDetailData?.phNumber || "Phone Not Found"}
+            />
+            <DetailDiv
+              label="Address"
+              value={
+                driverDetailData?.city ||
+                driverDetailData?.street ||
+                driverDetailData?.houseNum
+                  ? `${driverDetailData?.city || ""} ${
+                      driverDetailData?.street || ""
+                    } ${driverDetailData?.houseNum || ""}`.trim()
+                  : "Address Not Found"
+              }
+            />
+            {full && (
+              <DetailDiv
+                label="VAT Number"
+                value={driverDetailData?.vatNum || "Vat Not Found"}
+              />
+            )}
             {full && (
               <DetailDiv
                 label="Address"

@@ -20,7 +20,7 @@ function VehicleDetails() {
     setLoading(true);
     try {
       const response = await getVehicleById(id);
-      setVehicleDetail(response?.data?.data || {});
+      setVehicleDetail(response?.data?.car || {});
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {

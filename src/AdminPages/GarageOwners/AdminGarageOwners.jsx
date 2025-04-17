@@ -17,7 +17,7 @@ import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 
 function AdminGarageOwners() {
   const { theme } = useTheme();
-  const {selectedGarageId, setSelectedGarageId} = useGlobalContext();
+  const { selectedGarageId, setSelectedGarageId } = useGlobalContext();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [allGarageData, setAllGarageData] = useState([]);
@@ -70,7 +70,7 @@ function AdminGarageOwners() {
       <div className="flex items-center justify-center gap-3 md:flex-row flex-col">
         <div className="w-full md:w-[25%]">
           <Dropdown
-             label={dropdownSelected}
+            label={dropdownSelected}
             options={["All Garages", "Active Garages", "Inactive Garages"]}
             selected={dropdownSelected}
             onSelect={setDropdownSelected}
@@ -78,10 +78,11 @@ function AdminGarageOwners() {
           />
         </div>
         <div className="w-full md:w-[75%]">
-          <Search 
-           value={search}
-           onChange={(e) => {
-             setSearch(e.target.value), setSkip(0);}}
+          <Search
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value), setSkip(0);
+            }}
           />
         </div>
       </div>
@@ -90,106 +91,140 @@ function AdminGarageOwners() {
         <div className="flex justify-center items-center h-[80vh]">
           <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
         </div>
-      ) :  (allGarageData?.length > 0 ?
-        (<div className="overflow-x-auto ">
-        <div className="min-w-[1000px] mt-5">
-          <motion.table
-            initial="hidden"
-            animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
-            className={`min-w-full rounded-lg transition-all text-center
+      ) : allGarageData?.length > 0 ? (
+        <div className="overflow-x-auto ">
+          <div className="min-w-[1000px] mt-5">
+            <motion.table
+              initial="hidden"
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
+              className={`min-w-full rounded-lg transition-all text-center
             ${
               theme === "dark"
                 ? "bg-[#1B1C1E] text-white"
                 : "bg-white text-[#1B1C1E]"
             }`}
-          >
-            <thead>
-              <tr>
-                {["Sr.No", "Company", "Address", "Action"].map(
-                  (heading, index) => (
-                    <th key={index} className="py-3 border-0 mb-3">
-                      <p
-                        className={`${
-                          theme === "dark"
-                            ? "bg-[#323335] border-[#4f4f4f]"
-                            : "bg-transparent border border-[#b5b5b7]"
-                        } text-center py-3 border-r border-[#4f4f4f] ${
-                          index === 0 ? "rounded-tl-xl" : ""
-                        } ${index === 3 ? "rounded-tr-xl border-r-none" : ""}`}
-                      >
-                        {heading}
-                      </p>
-                    </th>
-                  )
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {allGarageData.map((item, index) => (
-                <motion.tr
-                  key={index}
-                  variants={rowVariants}
-                  className={`${
-                    theme === "dark" ? "hover:bg-gray-800" : "hover:bg-gray-50"
-                  }`}
-                >
-                  <td
-                    className={`py-3 border w-[10%] ${
-                      theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
+            >
+              <thead>
+                <tr>
+                  {["Sr.No", "Company", "Address", "Action"].map(
+                    (heading, index) => (
+                      <th key={index} className="py-3 border-0 mb-3">
+                        <p
+                          className={`${
+                            theme === "dark"
+                              ? "bg-[#323335] border-[#4f4f4f]"
+                              : "bg-transparent border border-[#b5b5b7]"
+                          } text-center py-3 border-r border-[#4f4f4f] ${
+                            index === 0 ? "rounded-tl-xl" : ""
+                          } ${
+                            index === 3 ? "rounded-tr-xl border-r-none" : ""
+                          }`}
+                        >
+                          {heading}
+                        </p>
+                      </th>
+                    )
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {allGarageData.map((item, index) => (
+                  <motion.tr
+                    key={index}
+                    variants={rowVariants}
+                    className={`${
+                      theme === "dark"
+                        ? "hover:bg-gray-800"
+                        : "hover:bg-gray-50"
                     }`}
                   >
-                    {index + 1}
-                  </td>
-                  <td
-                    className={`py-3 border w-[35%] ${
-                      theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
-                    }`}
-                  >
-                    <div
-                      onClick={function(){ setOpen(true); setSelectedGarageId(item?.id)}}
-                      className="flex items-center gap-x-2 justify-start pl-3 cursor-pointer"
+                    <td
+                      className={`py-3 border w-[10%] ${
+                        theme === "dark"
+                          ? "border-[#323335]"
+                          : "border-[#b5b5b7]"
+                      }`}
                     >
-                      <img
-                        src={item?.image || Dummy}
-                        className="w-[50px] h-[50px] rounded-full"
-                        alt="image"
-                      />
-                      {item?.name || "Name Not Found"}
-                    </div>
-                  </td>
-                  <td
-                    className={`py-3 border w-[30%] ${
-                      theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
-                    }`}
-                  >
-                    {item?.address || "Address Not Found"}
-                  </td>
-                  <td
-                    className={`py-3 border w-[25%] ${
-                      theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
-                    }`}
-                  >
-                    <div className="px-12">
-                      <GradientButton  driverData={fetchAdminGarageData}  driverId={item?.id}  name={item?.status === "0" ? "Deactivate" : "Activate"} />
-                    </div>
-                  </td>
-                </motion.tr>
-              ))}
-            </tbody>
-          </motion.table>
+                      {index + 1}
+                    </td>
+                    <td
+                      className={`py-3 border w-[35%] ${
+                        theme === "dark"
+                          ? "border-[#323335]"
+                          : "border-[#b5b5b7]"
+                      }`}
+                    >
+                      <div
+                        onClick={function () {
+                          setOpen(true);
+                          setSelectedGarageId(item?.id);
+                        }}
+                        className="flex items-center gap-x-2 justify-start pl-3 cursor-pointer"
+                      >
+                        <img
+                          src={item?.image || Dummy}
+                          className="w-[50px] h-[50px] rounded-full"
+                          alt="image"
+                        />
+                        {item?.name || "Name Not Found"}
+                      </div>
+                    </td>
+                    <td
+                      className={`py-3 border w-[30%] ${
+                        theme === "dark"
+                          ? "border-[#323335]"
+                          : "border-[#b5b5b7]"
+                      }`}
+                    >
+                      {item?.city || item?.street || item?.houseNum ? (
+                        <>
+                          {item?.city ? `${item.city}, ` : ""}
+                          {item?.street ? `${item.street}, ` : ""}
+                          {item?.houseNum ? `${item.houseNum}` : ""}
+                        </>
+                      ) : (
+                        "Address not found"
+                      )}
+                    </td>
+                    <td
+                      className={`py-3 border w-[25%] ${
+                        theme === "dark"
+                          ? "border-[#323335]"
+                          : "border-[#b5b5b7]"
+                      }`}
+                    >
+                      <div className="px-12">
+                        <GradientButton
+                          driverData={fetchAdminGarageData}
+                          driverId={item?.id}
+                          name={
+                            item?.status === "0" ? "Deactivate" : "Activate"
+                          }
+                        />
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </motion.table>
+          </div>
         </div>
-      </div>) : <div className="h-[74vh] flex items-center justify-center"><NoDataFound /></div>
+      ) : (
+        <div className="h-[74vh] flex items-center justify-center">
+          <NoDataFound />
+        </div>
       )}
-       {allGarageData?.length > 0 &&
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        setTake={setTake}
-        setSkip={setSkip}
-        take={take}
-      />}
+      {allGarageData?.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          setTake={setTake}
+          setSkip={setSkip}
+          take={take}
+        />
+      )}
     </div>
   );
 }

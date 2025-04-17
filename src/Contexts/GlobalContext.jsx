@@ -5,6 +5,7 @@ const GlobalContext = createContext();
 export const GlobalContextProvider = ({ children }) => {
   const [addInvoice, setAddInvoice] = useState(false);
   const [addAbout, setAddAbout] = useState(false);
+  const [addTerm, setAddTerm] = useState(false);
   const [addPrivacy, setAddPrivacy] = useState(false);
   const [addTransfer, setAddTransfer] = useState(false);
   const [selectedDriverId, setSelectedDriverId] = useState("");
@@ -66,11 +67,24 @@ export const GlobalContextProvider = ({ children }) => {
         setSelectedDriverId,
         selectedGarageId,
         setSelectedGarageId,
+<<<<<<< HEAD
         vehicle, setVehicle,
         addRecord, setAddRecord,
         addTransfer, setAddTransfer,
         vehicleData, setVehicleData,
         currentUserId, setCurrentUserId
+=======
+        vehicle,
+        setVehicle,
+        addRecord,
+        setAddRecord,
+        addTransfer,
+        setAddTransfer,
+        vehicleData,
+        setVehicleData,
+        addTerm,
+        setAddTerm,
+>>>>>>> 372a7c8 (issues)
       }}
     >
       {children}
