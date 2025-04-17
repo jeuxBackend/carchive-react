@@ -99,10 +99,11 @@ const Topbar = ({ setSide }) => {
 
   const handleShare = () => {
     let currentUrl = window.location.href;
-  
+
     const publicUrl = currentUrl.replace("/Vehicles/", "/PublicPage/");
-  
-    navigator.clipboard.writeText(publicUrl)
+
+    navigator.clipboard
+      .writeText(publicUrl)
       .then(() => {
         toast.success("Public link copied to clipboard!");
         setOpen(false);
@@ -111,7 +112,7 @@ const Topbar = ({ setSide }) => {
         toast.error("Failed to copy link");
       });
   };
-  
+
   return (
     <motion.div
       className="h-[5rem] flex items-center justify-between"
@@ -322,9 +323,14 @@ const Topbar = ({ setSide }) => {
               />
               {open && (
                 <div className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg  rounded-tl-3xl">
-                  <p className="flex items-center gap-2 p-3">
-                    <BiSolidEditAlt /> Edit Vehicle
-                  </p>
+                    <p>
+                      <Link
+                        to="/Update-Vehicle"
+                        className="flex items-center gap-2 p-3"
+                      >
+                        <BiSolidEditAlt /> Edit Vehicle
+                      </Link>
+                    </p>
                   <p
                     onClick={() => handleDelete(vehicle?.id)}
                     className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"

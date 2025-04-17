@@ -33,6 +33,10 @@ import Garages from "./Pages/Garages/Garages";
 import SearchedVehicle from "./Pages/VehicleDetails/SearchedVehicle";
 import TermsCondition from "./AdminPages/TermsCondition/TermsCondition";
 import PublicPage from "./PublicPage/PublicPage";
+<<<<<<< HEAD
+=======
+import UpdateVehicle from "./Pages/UpdateVehicle/UpdateVehicle";
+>>>>>>> 1822e2c (....)
 
 function App() {
   return (
@@ -66,6 +70,10 @@ function App() {
           <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
           <Route path="/Update-Profile" element={<UpdateProfile />} />
           <Route path="/Add-Vehicle" element={<AddVehicle />} />
+<<<<<<< HEAD
+=======
+          <Route path="/Update-Vehicle" element={<UpdateVehicle />} />
+>>>>>>> 1822e2c (....)
         </Route>
         <Route path="/Admin/Login" element={<AdminLogin />} />
         <Route path="/Admin" element={<AdminLayout />}>
@@ -81,6 +89,10 @@ function App() {
           <Route path="TermsCondition" element={<TermsCondition />} />
         </Route>
       </Routes>
+<<<<<<< HEAD
+=======
+      
+>>>>>>> 1822e2c (....)
     </>
   );
 }
