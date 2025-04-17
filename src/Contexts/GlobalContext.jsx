@@ -67,15 +67,11 @@ export const GlobalContextProvider = ({ children }) => {
         setSelectedDriverId,
         selectedGarageId,
         setSelectedGarageId,
-<<<<<<< HEAD
         vehicle, setVehicle,
         addRecord, setAddRecord,
         addTransfer, setAddTransfer,
         vehicleData, setVehicleData,
-        currentUserId, setCurrentUserId
-=======
-        vehicle,
-        setVehicle,
+        currentUserId, setCurrentUserId,
         addRecord,
         setAddRecord,
         addTransfer,
@@ -84,7 +80,6 @@ export const GlobalContextProvider = ({ children }) => {
         setVehicleData,
         addTerm,
         setAddTerm,
->>>>>>> 372a7c8 (issues)
       }}
     >
       {children}
