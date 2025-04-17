@@ -11,6 +11,7 @@ import OTP from "./ForgotPassword/OTP";
 import ConfirmPassword from "./ForgotPassword/ConfirmPassword";
 import { portalLogin } from "../../API/portalServices";
 import { toast, ToastContainer } from "react-toastify";
+import { useGlobalContext } from "../../Contexts/GlobalContext";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -22,6 +23,7 @@ const Login = () => {
     const navigate = useNavigate();
     const adminToken = localStorage.getItem("CarchiveAdminToken");
     const portalToken = localStorage.getItem("CarchivePortalToken");
+    const {currentUserId, setCurrentUserId} = useGlobalContext()
 
     if (portalToken) {
         return <Navigate to="/Dashboard" />; 
@@ -51,8 +53,10 @@ const Login = () => {
 
                     }else{
                     localStorage.setItem("CarchivePortalToken", response?.data?.data?.token);
+                    setCurrentUserId(response?.data?.user?.id)
                     navigate('/Dashboard')
                     }
+
                 }
                 
             }catch(error){

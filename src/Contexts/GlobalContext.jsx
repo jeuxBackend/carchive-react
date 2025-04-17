@@ -40,6 +40,16 @@ export const GlobalContextProvider = ({ children }) => {
       localStorage.setItem("vehicleData", JSON.stringify(vehicleData));
     }
   }, [vehicleData]);
+  const [currentUserId, setCurrentUserId] = useState(() => {
+    const savedcurrentUserId = localStorage.getItem("currentUserId");
+    return savedcurrentUserId ? JSON.parse(savedcurrentUserId) : {};
+  });
+
+  useEffect(() => {
+    if (currentUserId !== null) {
+      localStorage.setItem("currentUserId", JSON.stringify(currentUserId));
+    }
+  }, [currentUserId]);
   const [addRecord, setAddRecord] = useState(false);
   return (
     <GlobalContext.Provider
@@ -59,7 +69,8 @@ export const GlobalContextProvider = ({ children }) => {
         vehicle, setVehicle,
         addRecord, setAddRecord,
         addTransfer, setAddTransfer,
-        vehicleData, setVehicleData
+        vehicleData, setVehicleData,
+        currentUserId, setCurrentUserId
       }}
     >
       {children}

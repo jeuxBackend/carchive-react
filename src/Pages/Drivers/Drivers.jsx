@@ -10,6 +10,9 @@ import { delDriver, getDrivers } from "../../API/portalServices";
 import { BeatLoader } from "react-spinners";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 import { toast } from "react-toastify";
+import { useGlobalContext } from "../../Contexts/GlobalContext";
+import { useNavigate } from "react-router-dom";
+import { initializeChat } from "../../utils/ChatUtils";
 
 
 const cardVariants = {
@@ -33,6 +36,8 @@ const Drivers = () => {
     const [openMenu, setOpenMenu] = useState(null);
     const dropdownRef = useRef(null);
     const [search, setSearch] = useState('');
+    const {currentUserId, setCurrentUserId} = useGlobalContext()
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -83,7 +88,7 @@ const Drivers = () => {
     const filteredDrivers = driverData.filter(driver => {
         const searchTerm = search.toLowerCase();
         return (
-            driver?.name?.toLowerCase().includes(searchTerm) ||  
+            driver?.name?.toLowerCase().includes(searchTerm) ||
             driver?.email?.toLowerCase().includes(searchTerm)
         );
     });
@@ -99,72 +104,74 @@ const Drivers = () => {
         >
             <Search value={search} setValue={setSearch} />
             {loading ? <div className="h-[80vh] flex items-center justify-center">
-            <BeatLoader color="#2d9bff" />
-        </div> : (filteredDrivers.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-                {filteredDrivers.map((user, i) => (
-                    <motion.div
-                        key={user.id}
-                        ref={dropdownRef}
-                        className={`relative flex items-center space-x-4 p-4 rounded-lg shadow-lg transition-all  
+                <BeatLoader color="#2d9bff" />
+            </div> : (filteredDrivers.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                    {filteredDrivers.map((user, i) => (
+                        <motion.div
+                            key={user.id}
+                            ref={dropdownRef}
+                            className={`relative flex items-center space-x-4 p-4 rounded-lg shadow-lg transition-all  
                             ${theme === "dark" ? "bg-[#323335] text-white" : "bg-[#FFFFFF] text-black border-2 border-[#ECECEC]"}`}
-                        variants={cardVariants}
-                        custom={i}
-                        whileHover={{ scale: 1.05, boxShadow: "0px 8px 20px rgba(0,0,0,0.1)" }}
-                    >
+                            variants={cardVariants}
+                            custom={i}
+                            whileHover={{ scale: 1.05, boxShadow: "0px 8px 20px rgba(0,0,0,0.1)" }}
+                        >
 
-                        <motion.img
-                            src={user.image}
-                            alt={user.name}
-                            className="w-16 h-16 lg:w-32 lg:h-32 rounded-lg object-cover"
-                            animate={{ y: [0, -3, 0] }}
-                            transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                            whileHover={{ scale: 1.1 }}
-                        />
+                            <motion.img
+                                src={user.image}
+                                alt={user.name}
+                                className="w-16 h-16 lg:w-32 lg:h-32 rounded-lg object-cover"
+                                animate={{ y: [0, -3, 0] }}
+                                transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                                whileHover={{ scale: 1.1 }}
+                            />
 
-                        <div>
-                            <div className="flex-1">
-                                <h3 className="text-lg font-semibold capitalize">{user.name}</h3>
-                                <p className="text-sm text-gray-400">{user.email}</p>
-                            </div>
+                            <div>
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-semibold capitalize">{user.name}</h3>
+                                    <p className="text-sm text-gray-400">{user.email}</p>
+                                </div>
 
-                            <motion.button
-                                className={`flex items-center lg:px-4 lg:py-2 px-3 py-1 rounded-lg font-semibold transition-all mt-5 gap-3 cursor-pointer 
-                                    ${theme === "dark" ? "bg-[#319BF9]  text-white" : "bg-black hover:bg-gray-800 text-white"}`}
-                                whileHover={{ scale: 1.05, rotate: [0, 2, -2, 0] }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <img className="w-5 h-5" src={msg} alt="message icon" />
-                                Message
-                            </motion.button>
-                        </div>
-                        <motion.img
-                            src={theme === "dark" ? ham : hamLight}
-                            onClick={() => setOpenMenu(openMenu === i ? null : i)}
-                            className="absolute top-3 right-3 text-black cursor-pointer transition w-[1.6rem]"
-                            whileHover={{ rotate: 180, scale: 1.2 }}
-                            layout="position"
-                        />
-                        <AnimatePresence>
-                            {openMenu === i && (
-                                <motion.div
-                                    className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[150px] right-10 top-7 rounded-b-3xl flex flex-col rounded-tr-sm rounded-tl-3xl p-3"
-                                    variants={menuVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    exit="exit"
+                                <motion.button
+                                    className={`flex items-center lg:px-4 lg:py-2 px-3 py-1 rounded-lg font-semibold transition-all mt-5 gap-3 cursor-pointer 
+        ${theme === "dark" ? "bg-[#319BF9]  text-white" : "bg-black hover:bg-gray-800 text-white"}`}
+                                    whileHover={{ scale: 1.05, rotate: [0, 2, -2, 0] }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {navigate(`/Chat`) ,initializeChat(currentUserId.toString(), user?.driverId?.toString(), "Hey there!")}}
                                 >
-                                    <p onClick={() =>{ setOpenMenu(null), removeDriver(user?.driverCompanyId)}} className="flex items-center gap-2 cursor-pointer justify-center">
-                                        <RiDeleteBin4Fill /> Delete 
-                                    </p>
-                                </motion.div>
+                                    <img className="w-5 h-5" src={msg} alt="message icon" />
+                                    Message
+                                </motion.button>
+
+                            </div>
+                            <motion.img
+                                src={theme === "dark" ? ham : hamLight}
+                                onClick={() => setOpenMenu(openMenu === i ? null : i)}
+                                className="absolute top-3 right-3 text-black cursor-pointer transition w-[1.6rem]"
+                                whileHover={{ rotate: 180, scale: 1.2 }}
+                                layout="position"
+                            />
+                            <AnimatePresence>
+                                {openMenu === i && (
+                                    <motion.div
+                                        className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[150px] right-10 top-7 rounded-b-3xl flex flex-col rounded-tr-sm rounded-tl-3xl p-3"
+                                        variants={menuVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        exit="exit"
+                                    >
+                                        <p onClick={() => { setOpenMenu(null), removeDriver(user?.driverCompanyId) }} className="flex items-center gap-2 cursor-pointer justify-center">
+                                            <RiDeleteBin4Fill /> Delete
+                                        </p>
+                                    </motion.div>
 
 
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
-                ))}
-            </div>) : <div className="h-[80vh] flex items-center justify-center"><NoDataFound /></div>)}
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
+                    ))}
+                </div>) : <div className="h-[80vh] flex items-center justify-center"><NoDataFound /></div>)}
         </motion.div>
     );
 };

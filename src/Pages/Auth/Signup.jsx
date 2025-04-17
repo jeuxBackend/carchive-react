@@ -11,6 +11,7 @@ import CountryCode from '../../Components/DropDown/CountryCode';
 import ImageUploader from '../../Components/ImageUploaders/ImageUploader';
 import { toast, ToastContainer } from 'react-toastify';
 import { portalRegistration } from '../../API/portalServices';
+import { addUser } from '../../utils/ChatUtils';
 
 function Signup() {
     const navigate = useNavigate();
@@ -63,13 +64,10 @@ function Signup() {
     const handleSignUp = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-
-
+    
         const fullContactNumber = `${countryCode}${formData.contactNumber}`;
-
-
         const { contactNumber, ...dataToUpload } = formData;
-
+    
         setLoading(true);
         try {
             const response = await portalRegistration({
@@ -77,10 +75,23 @@ function Signup() {
                 contactNumber: fullContactNumber,
                 image: imageFile
             });
-
-            if (response.data) {
+    
+            if (response.data && response.data.user) {
+                const user = response.data.user;
+    
+              
+                await addUser({
+                    fireId: Date.now().toString(), 
+                    userAppId: user.id.toString(),
+                    userEmail: user.email,
+                    userName: user.name,
+                    userPhone: user.phNumber,
+                    profileImage: `https://carchive.jeuxtesting.com/Profile_Images/${user.image}`,
+                    status: user.status.toString(),
+              
+                });
+    
                 toast.success("Registration successful!");
-                // navigate("/dashboard");
                 setFormData({
                     name: "",
                     lastName: "",
@@ -97,12 +108,13 @@ function Signup() {
                     street: "",
                     zip: "",
                     vatNum: "",
-                })
-                setImage(null)
-                setImageFile(null)
+                });
+                setImage(null);
+                setImageFile(null);
+    
                 setTimeout(() => {
-                    navigate('/')
-                }, 2000)
+                    navigate('/');
+                }, 2000);
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "Registration failed!");
@@ -110,7 +122,7 @@ function Signup() {
             setLoading(false);
         }
     };
-
+    
 
 
     return (

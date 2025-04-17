@@ -9,10 +9,15 @@ import { FaUserSlash } from 'react-icons/fa'
 import { CiCirclePlus } from 'react-icons/ci'
 import { unassignDriver } from '../../../API/portalServices'
 import { toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+import { initializeChat } from '../../../utils/ChatUtils'
+import { useGlobalContext } from '../../../Contexts/GlobalContext'
 
 function DriversCard({ data, setOpen, fetchVehicleData }) {
     const { theme } = useTheme()
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const {currentUserId} = useGlobalContext()
 
     const handleUnassign = async (driverId) => {
         setLoading(true);
@@ -105,6 +110,7 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
                                     whileHover={{ scale: 1.1 }}
                                     transition={{ delay: 0.6 * index, duration: 0.5 }}
                                     className='bg-[#2D9BFF] p-2 rounded-xl w-[3rem] h-[3rem] flex items-center justify-center'
+                                    onClick={() => {navigate(`/Chat`) ,initializeChat(currentUserId.toString(), data?.driver?.id?.toString(), "Hey there!")}}
                                 >
                                     <img src={chat} alt="" />
                                 </motion.div>
