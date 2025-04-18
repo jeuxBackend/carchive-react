@@ -10,15 +10,22 @@ import { updateVehicle, getMakes } from "../../API/portalServices";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import MakesDropdown from "../../Components/DropDown/MakesDropDown";
+import { useGlobalContext } from "../../Contexts/GlobalContext";
 
 function UpdateVehicle() {
   const { theme } = useTheme();
+  const { vehicle } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [vehicleImages, setVehicleImages] = useState([]);
+  const [vehicleImagePreviews, setVehicleImagePreviews] = useState([]);
   const [regDocs, setRegDocs] = useState([]);
+  const [regDocPreviews, setRegDocPreviews] = useState([]);
   const [insuranceDocs, setInsuranceDocs] = useState([]);
+  const [insuranceDocPreviews, setInsuranceDocPreviews] = useState([]);
   const [inspectionDocs, setInspectionDocs] = useState([]);
+  const [inspectionDocPreviews, setInspectionDocPreviews] = useState([]);
   const [additionalDocs, setAdditionalDocs] = useState([]);
+  const [additionalDocPreviews, setAdditionalDocPreviews] = useState([]);
   const navigate = useNavigate();
   const [vehicleData, setVehicleData] = useState({
     vinNumber: "",
@@ -41,61 +48,174 @@ function UpdateVehicle() {
     additionalTitles: "",
   });
 
-  const handleUpdateVehicle = async () => {
+  // Initialize form with existing vehicle data when component mounts
+  useEffect(() => {
+    if (vehicle) {
+      setVehicleData({
+        id: vehicle.id,
+        vinNumber: vehicle.vinNumber || "",
+        make: vehicle.make || "",
+        model: vehicle.model || "",
+        insuranceExpiry: vehicle.insuranceExpiry || "",
+        inspectionExpiry: vehicle.inspectionExpiry || "",
+        registrationNumber: vehicle.registrationNumber || "",
+        mileage: vehicle.mileage || "",
+        chassis: vehicle.chassis || "",
+        numberPlate: vehicle.numberPlate || "",
+        additionalExpiry: vehicle.additionalExpiry || "",
+        registrationExpiry: vehicle.registrationExpiry || "",
+        manufacturingYear: vehicle.manufacturingYear || "",
+        insuranceStatus: vehicle.insuranceStatus?.toString() || "0",
+        registrationStatus: vehicle.registrationStatus?.toString() || "0",
+        inspectionStatus: vehicle.inspectionStatus?.toString() || "0",
+        additionalStatus: vehicle.additionalStatus?.toString() || "0",
+        status: vehicle.status || "0",
+        additionalTitles: vehicle.additionalTitles || "",
+      });
+
+      // Initialize document arrays with existing data
+      if (vehicle.image && Array.isArray(vehicle.image)) {
+        // setVehicleImages(vehicle.image);
+        setVehicleImagePreviews(vehicle.image);
+      }
+      
+      if (vehicle.registrationDocument && Array.isArray(vehicle.registrationDocument)) {
+        // setRegDocs(vehicle.registrationDocument);
+        setRegDocPreviews(vehicle.registrationDocument);
+      }
+      
+      if (vehicle.insuranceDocument && Array.isArray(vehicle.insuranceDocument)) {
+        // setInsuranceDocs(vehicle.insuranceDocument);
+        setInsuranceDocPreviews(vehicle.insuranceDocument);
+      }
+      
+      // Handle inspectionDocument which could be an array of objects
+      if (vehicle.inspectionDocument) {
+        if (Array.isArray(vehicle.inspectionDocument)) {
+          const formattedDocs = vehicle.inspectionDocument.map(doc => 
+            typeof doc === 'object' && doc.image ? doc.image : doc
+          );
+          // setInspectionDocs(formattedDocs);
+          setInspectionDocPreviews(formattedDocs);
+        }
+      }
+      
+      if (vehicle.additionalDocuments && Array.isArray(vehicle.additionalDocuments)) {
+        setAdditionalDocs(vehicle.additionalDocuments);
+        setAdditionalDocPreviews(vehicle.additionalDocuments);
+      }
+    }
+  }, [vehicle]);
+
+  // Validate form data
+  const validateForm = () => {
+    // Basic required fields validation
     if (
       !vehicleData?.make ||
       !vehicleData?.model ||
       !vehicleData?.vinNumber ||
       !vehicleData?.numberPlate ||
       !vehicleData?.manufacturingYear ||
-      !vehicleData?.registrationExpiry ||
-      !vehicleData?.additionalExpiry
+      !vehicleData?.registrationExpiry
     ) {
-      toast.error("All fields are required");
-    } else if (
-      regDocs.length === 0 ||
-      insuranceDocs.length === 0 ||
-      inspectionDocs.length === 0 ||
-      vehicleImages.length === 0 ||
-      additionalDocs.length === 0
-    ) {
-      toast.error("All documents are required");
-    } else if (vehicleData.vinNumber.length !== 17) {
-      toast.error("Vin Number must be 17 characters");
-    } else {
-      setLoading(true);
-      try {
-        const response = await updateVehicle({
-          ...vehicleData,
-          image: vehicleImages,
-          registrationDocument: regDocs,
-          insuranceDocument: insuranceDocs,
-          inspectionDocument: inspectionDocs,
-          additionalDocuments: additionalDocs,
-        });
-        if (response.data) {
-          toast.success("Vehicle Updated Successfully");
-          console.log(response.data);
-          navigate("/Vehicles");
-        }
-      } catch (error) {
-        console.log(error);
-        if (error.response?.data?.error) {
-          const errorData = error?.response?.data?.error;
+      toast.error("Please fill in all required fields");
+      return false;
+    }
+    
+    // VIN Number validation
+    if (vehicleData.vinNumber.length !== 17) {
+      toast.error("VIN Number must be 17 characters");
+      return false;
+    }
+    
+    // Document validation - checking if we have at least one document of each type
+    // if (
+    //   regDocs.length === 0 ||
+    //   insuranceDocs.length === 0 ||
+    //   inspectionDocs.length === 0 ||
+    //   vehicleImages.length === 0 ||
+    //   additionalDocs.length === 0
+    // ) {
+    //   toast.error("All document types are required");
+    //   return false;
+    // }
+    
+    return true;
+  };
 
-          if (errorData.vinNumber && Array.isArray(errorData.vinNumber)) {
-            toast.error(errorData.vinNumber[0]);
-          } else if (Array.isArray(errorData) && errorData.length > 0) {
-            toast.error(errorData[0]);
-          } else {
-            toast.error("Something went wrong");
-          }
-        } else {
-          toast.error("Something went wrong");
-        }
-      } finally {
-        setLoading(false);
+  const handleUpdateVehicle = async () => {
+    if (!validateForm()) return;
+    
+    setLoading(true);
+    try {
+      // Prepare data for the API call
+      const updateData = {
+        ...vehicleData,
+        id: vehicle?.id, // Ensure the ID is included for update operations
+        image: vehicleImages,
+        registrationDocument: regDocs,
+        insuranceDocument: insuranceDocs,
+        inspectionDocument: inspectionDocs,
+        additionalDocuments: additionalDocs,
+      };
+      
+      const response = await updateVehicle(updateData);
+      
+      if (response.data) {
+        toast.success("Vehicle updated successfully");
+        navigate("/Vehicles");
       }
+    } catch (error) {
+      console.error("Update vehicle error:", error);
+      
+      // Handle specific API error responses
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        
+        if (errorData.error) {
+          // Handle structured error object
+          if (typeof errorData.error === 'object') {
+            // Handle field-specific errors
+            if (errorData.error.vinNumber && Array.isArray(errorData.error.vinNumber)) {
+              toast.error(errorData.error.vinNumber[0]);
+            } else if (errorData.error.message) {
+              toast.error(errorData.error.message);
+            } else {
+              // Handle the first error from any field
+              const firstErrorField = Object.keys(errorData.error)[0];
+              if (firstErrorField && Array.isArray(errorData.error[firstErrorField])) {
+                toast.error(errorData.error[firstErrorField][0]);
+              } else {
+                toast.error("Validation error. Please check your inputs.");
+              }
+            }
+          } else if (Array.isArray(errorData.error)) {
+            // Handle array of error messages
+            if (errorData.error.length > 0) {
+              toast.error(errorData.error[0]);
+            } else {
+              toast.error("An error occurred during the update.");
+            }
+          } else if (typeof errorData.error === 'string') {
+            // Handle string error message
+            toast.error(errorData.error);
+          } else {
+            toast.error("An unexpected error occurred.");
+          }
+        } else if (errorData.message) {
+          // Handle top-level message error
+          toast.error(errorData.message);
+        } else {
+          toast.error("Failed to update vehicle. Please try again.");
+        }
+      } else if (error.message) {
+        // Handle network errors or other non-response errors
+        toast.error(`Error: ${error.message}`);
+      } else {
+        toast.error("An unexpected error occurred. Please try again later.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -108,6 +228,7 @@ function UpdateVehicle() {
       setMakesData(response?.data?.data || {});
     } catch (error) {
       console.error("Error fetching makes data:", error);
+      toast.error("Failed to load vehicle makes. Please refresh the page.");
     } finally {
       setLoading(false);
     }
@@ -221,6 +342,8 @@ function UpdateVehicle() {
               <ImageUploader
                 value={vehicleImages}
                 setValue={setVehicleImages}
+                imageView={vehicleImagePreviews}
+                setImageView={setVehicleImagePreviews}
               />
             </div>
           </div>
@@ -246,7 +369,12 @@ function UpdateVehicle() {
                 />
               </p>
               <div className="">
-                <DocumentUploader value={regDocs} setValue={setRegDocs} />
+                <DocumentUploader 
+                  value={regDocs} 
+                  setValue={setRegDocs} 
+                  documentView={regDocPreviews}
+                  setDocumentView={setRegDocPreviews}
+                />
               </div>
             </div>
 
@@ -267,6 +395,8 @@ function UpdateVehicle() {
                 <DocumentUploader
                   value={insuranceDocs}
                   setValue={setInsuranceDocs}
+                  documentView={insuranceDocPreviews}
+                  setDocumentView={setInsuranceDocPreviews}
                 />
               </div>
             </div>
@@ -288,6 +418,8 @@ function UpdateVehicle() {
                 <DocumentUploader
                   value={inspectionDocs}
                   setValue={setInspectionDocs}
+                  documentView={inspectionDocPreviews}
+                  setDocumentView={setInspectionDocPreviews}
                 />
               </div>
             </div>
@@ -320,6 +452,8 @@ function UpdateVehicle() {
               <DocumentUploader
                 value={additionalDocs}
                 setValue={setAdditionalDocs}
+                documentView={additionalDocPreviews}
+                setDocumentView={setAdditionalDocPreviews}
               />
             </div>
           </div>
@@ -341,4 +475,5 @@ function UpdateVehicle() {
     </div>
   );
 }
-export default UpdateVehicle
+
+export default UpdateVehicle;

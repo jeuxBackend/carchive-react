@@ -1,23 +1,26 @@
-import { useId, useState } from "react";
+import { useId } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../Contexts/ThemeContext";
 import add from "./assets/add.png";
 import addLight from "./assets/addLight.png";
 import { X } from "lucide-react";
 
-const ImageUploader = ({ value = [], setValue }) => {
+const ImageUploader = ({ value = [], setValue, imageView = [], setImageView }) => {
   const { theme } = useTheme();
   const inputId = useId();
-  const [imageView, setImageView] = useState([]);
 
   const handleImageChange = (event) => {
     const files = Array.from(event.target.files).slice(0, 3 - value.length);
     if (files.length > 0) {
+      // For new files, create object URLs for preview
+      const newImagePreviews = files.map(file => URL.createObjectURL(file));
+      
+      // Merge existing images with new ones
       const newImages = [...value, ...files].slice(0, 3);
-      const imagePreviews = [...imageView, ...files.map((file) => URL.createObjectURL(file))].slice(0, 3);
+      const newPreviews = [...imageView, ...newImagePreviews].slice(0, 3);
       
       setValue(newImages);
-      setImageView(imagePreviews);
+      setImageView(newPreviews);
     }
   };
 
@@ -30,15 +33,15 @@ const ImageUploader = ({ value = [], setValue }) => {
 
   return (
     <div className="flex flex-col items-center py-4 w-full">
-      <div className=" grid sm:grid-cols-3 gap-2 w-full">
+      <div className="grid sm:grid-cols-3 gap-2 w-full">
         {[...Array(3)].map((_, index) => (
           <div key={index} className="relative w-full h-40 flex-shrink-0">
-            {imageView[index] ? (
+            {index < imageView.length ? (
               <>
                 <motion.img
                   src={imageView[index]}
                   alt="Uploaded"
-                  className=" h-40 w-full object-cover rounded-lg border border-gray-300"
+                  className="h-40 w-full object-cover rounded-lg border border-gray-300"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}

@@ -1,25 +1,28 @@
-import { useId, useState } from "react";
+import { useId } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../Contexts/ThemeContext";
 import add from "./assets/add.png";
 import addLight from "./assets/addLight.png";
 import { X } from "lucide-react";
 
-const DocumentUploader = ({ value = [], setValue }) => {
+const DocumentUploader = ({ value = [], setValue, documentView = [], setDocumentView }) => {
   const { theme } = useTheme();
   const inputId = useId();
-  const [documentView, setDocumentView] = useState([]);
 
   const handleDocumentChange = (event) => {
     const files = Array.from(event.target.files);
     if (files.length > 0) {
-      const newDocuments = files.map((file) => file);
-      const documentPreviews = files.map((file) => 
+      // For files, keep the actual file object for upload
+      const newDocuments = files.map(file => file);
+      
+      // For preview, create object URLs for new files
+      const newDocPreviews = files.map(file => 
         file.type.startsWith("image") ? URL.createObjectURL(file) : file.name
       );
-
+      
+      // Update both the actual files and their previews
       setValue([...value, ...newDocuments]);
-      setDocumentView([...documentView, ...documentPreviews]);
+      setDocumentView([...documentView, ...newDocPreviews]);
     }
   };
 
@@ -29,12 +32,12 @@ const DocumentUploader = ({ value = [], setValue }) => {
   };
 
   return (
-    <div className="flex flex-col items-center  w-full">
+    <div className="flex flex-col items-center w-full">
       <div className="w-full overflow-x-auto whitespace-nowrap scrollbar-thin">
         <div className="flex gap-3 p-2 w-max">
           {documentView.map((doc, index) => (
             <div key={index} className="relative w-36 flex-shrink-0 rounded-lg flex items-center justify-between">
-             
+              {typeof doc === 'string' && (doc.startsWith('http') || doc.startsWith('blob')) ? (
                 <motion.img
                   src={doc}
                   alt="Uploaded"
@@ -43,8 +46,19 @@ const DocumentUploader = ({ value = [], setValue }) => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
                 />
-            
-            <button
+              ) : (
+                <motion.div
+                  className={`w-36 h-28 flex items-center justify-center rounded-lg border border-gray-300 ${
+                    theme === "dark" ? "bg-[#282929] text-white" : "bg-[#f7f7f7] text-black"
+                  }`}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <p className="text-sm text-center px-2 truncate">{doc}</p>
+                </motion.div>
+              )}
+              <button
                 onClick={() => removeDocument(index)}
                 className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full cursor-pointer"
               >
@@ -73,7 +87,6 @@ const DocumentUploader = ({ value = [], setValue }) => {
 
       <input
         type="file"
-        // accept="image/*,.pdf,.doc,.docx,.txt"
         multiple
         onChange={handleDocumentChange}
         className="hidden"
