@@ -10,10 +10,7 @@ export const getDashboard = () => API.get("/portal/portal-dashboard");
 
 // Vehicles API's
 export const addVehicle = (data) => API.post("/portal/storeCar", data);
-<<<<<<< HEAD
-=======
 export const updateVehicle = (data) => API.post("/portal/updateCar", data);
->>>>>>> 1822e2c (....)
 export const getVehicles = () => API.get("/portal/vehicles");
 export const getVehicleById = (id) => API.get(`/public-vehicle-details/${id}`);
 export const archiveVehicle = (id) => API.get(`/portal/makeArchive/${id}`);

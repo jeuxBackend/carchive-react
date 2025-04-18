@@ -163,6 +163,19 @@ const Topbar = ({ setSide }) => {
                 </p>
               </div>
             )}
+            {active.startsWith("/Update-Vehicle") && (
+              <div className="flex items-center gap-2">
+                <img
+                  src={theme === "dark" ? back : backLight}
+                  alt=""
+                  className="w-[1.6rem] cursor-pointer"
+                  onClick={() => navigate(-1)}
+                />
+                <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
+                  Update Vehicle
+                </p>
+              </div>
+            )}
             {active.startsWith("/VehicleMaintenence/") && (
               <div className="flex items-center gap-2">
                 <img
@@ -322,7 +335,7 @@ const Topbar = ({ setSide }) => {
                 onClick={() => setOpen(!open)}
               />
               {open && (
-                <div className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg  rounded-tl-3xl">
+                <div onClick={() => setOpen(false)} className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg  rounded-tl-3xl">
                     <p>
                       <Link
                         to="/Update-Vehicle"
