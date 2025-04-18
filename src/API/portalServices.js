@@ -25,6 +25,7 @@ export const releaseVehicle= (id) => API.get(`/portal/soldCar/${id}`);
 export const getGarages= (id) => API.get(`/portal/getCarGarages/${id}`);
 export const searchVehicle= (data) => API.post(`/portal/getCarWithVin`, data);
 export const buyCarApi= (data) => API.post(`/portal/buyCar`, data);
+export const deleteCarDocument = (data) => API.post(`/portal/deleteCarDocument`, data);
 
 // Drivers API's
 export const getDrivers = () => API.get("/portal/getCompanyDrivers");

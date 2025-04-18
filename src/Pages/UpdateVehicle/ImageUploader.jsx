@@ -5,7 +5,7 @@ import add from "./assets/add.png";
 import addLight from "./assets/addLight.png";
 import { X } from "lucide-react";
 
-const ImageUploader = ({ value = [], setValue, imageView = [], setImageView }) => {
+const ImageUploader = ({ value = [], setValue, imageView = [], setImageView, onDelete }) => {
   const { theme } = useTheme();
   const inputId = useId();
 
@@ -25,6 +25,16 @@ const ImageUploader = ({ value = [], setValue, imageView = [], setImageView }) =
   };
 
   const removeImage = (index) => {
+    // Check if the image is an existing URL (not a new file)
+    const isExistingImage = typeof imageView[index] === 'string' && 
+                            imageView[index].startsWith('http');
+    
+    // If it's an existing image, call the delete function
+    if (isExistingImage && onDelete) {
+      onDelete(index, 'image');
+    }
+    
+    // Remove from local state
     const updatedImages = value.filter((_, i) => i !== index);
     const updatedPreviews = imageView.filter((_, i) => i !== index);
     setValue(updatedImages);

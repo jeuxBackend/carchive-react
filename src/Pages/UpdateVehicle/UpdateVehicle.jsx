@@ -6,7 +6,7 @@ import Switch from "./Switch";
 import DocumentUploader from "./DocumentUploader";
 import BasicDatePicker from "../../Components/Buttons/BasicDatePicker";
 import { toast } from "react-toastify";
-import { updateVehicle, getMakes } from "../../API/portalServices";
+import { updateVehicle, getMakes, deleteCarDocument } from "../../API/portalServices"; // Added deleteCarDocument
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import MakesDropdown from "../../Components/DropDown/MakesDropDown";
@@ -75,17 +75,14 @@ function UpdateVehicle() {
 
       // Initialize document arrays with existing data
       if (vehicle.image && Array.isArray(vehicle.image)) {
-        // setVehicleImages(vehicle.image);
         setVehicleImagePreviews(vehicle.image);
       }
       
       if (vehicle.registrationDocument && Array.isArray(vehicle.registrationDocument)) {
-        // setRegDocs(vehicle.registrationDocument);
         setRegDocPreviews(vehicle.registrationDocument);
       }
       
       if (vehicle.insuranceDocument && Array.isArray(vehicle.insuranceDocument)) {
-        // setInsuranceDocs(vehicle.insuranceDocument);
         setInsuranceDocPreviews(vehicle.insuranceDocument);
       }
       
@@ -95,21 +92,61 @@ function UpdateVehicle() {
           const formattedDocs = vehicle.inspectionDocument.map(doc => 
             typeof doc === 'object' && doc.image ? doc.image : doc
           );
-          // setInspectionDocs(formattedDocs);
           setInspectionDocPreviews(formattedDocs);
         }
       }
       
       if (vehicle.additionalDocuments && Array.isArray(vehicle.additionalDocuments)) {
-        setAdditionalDocs(vehicle.additionalDocuments);
         setAdditionalDocPreviews(vehicle.additionalDocuments);
       }
     }
   }, [vehicle]);
 
-  // Validate form data
+  // Function to handle document deletion
+  const handleDocumentDelete = async (index, type) => {
+    if (!vehicle?.id) {
+      console.error("Vehicle ID is missing");
+      return;
+    }
+
+    // Map the document type to the API expected format
+    const docTypeMap = {
+      'image': 'image',
+      'registration': 'register',
+      'insurance': 'insurance',
+      'inspection': 'inspection',
+      'additional': 'additional'
+    };
+
+    const apiType = docTypeMap[type];
+    if (!apiType) {
+      console.error("Invalid document type:", type);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await deleteCarDocument({
+        carId: vehicle.id,
+        index: index,
+        type: apiType
+      });
+
+      if (response.data) {
+        toast.success(`${type} document deleted successfully`);
+      } else {
+        toast.error("Failed to delete document");
+      }
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      toast.error("An error occurred while deleting the document");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const validateForm = () => {
-    // Basic required fields validation
+ 
     if (
       !vehicleData?.make ||
       !vehicleData?.model ||
@@ -122,23 +159,40 @@ function UpdateVehicle() {
       return false;
     }
     
-    // VIN Number validation
+   
     if (vehicleData.vinNumber.length !== 17) {
       toast.error("VIN Number must be 17 characters");
       return false;
     }
+
+    if (vehicleImages.length === 0 && vehicleImagePreviews.length === 0) {
+      toast.error("Please add at least one vehicle image");
+      return false;
+    }
+
+    if (regDocs.length === 0 && regDocPreviews.length === 0) {
+      toast.error("Please add at least one registration document");
+      return false;
+    }
+
+    if (insuranceDocs.length === 0 && insuranceDocPreviews.length === 0) {
+      toast.error("Please add at least one insurance document");
+      return false;
+    }
+
+    if (inspectionDocs.length === 0 && inspectionDocPreviews.length === 0) {
+      toast.error("Please add at least one inspection document");
+      return false;
+    }
+
+    if (additionalDocs.length === 0 && additionalDocPreviews.length === 0) {
+      toast.error("Please add at least one additional document");
+      return false;
+    }
     
-    // Document validation - checking if we have at least one document of each type
-    // if (
-    //   regDocs.length === 0 ||
-    //   insuranceDocs.length === 0 ||
-    //   inspectionDocs.length === 0 ||
-    //   vehicleImages.length === 0 ||
-    //   additionalDocs.length === 0
-    // ) {
-    //   toast.error("All document types are required");
-    //   return false;
-    // }
+    
+    
+
     
     return true;
   };
@@ -148,15 +202,22 @@ function UpdateVehicle() {
     
     setLoading(true);
     try {
-      // Prepare data for the API call
+     
+      const newVehicleImages = vehicleImages.filter(img => !(typeof img === 'string' && img.startsWith('http')));
+      const newRegDocs = regDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
+      const newInsuranceDocs = insuranceDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
+      const newInspectionDocs = inspectionDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
+      const newAdditionalDocs = additionalDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
+      
+
       const updateData = {
         ...vehicleData,
-        id: vehicle?.id, // Ensure the ID is included for update operations
-        image: vehicleImages,
-        registrationDocument: regDocs,
-        insuranceDocument: insuranceDocs,
-        inspectionDocument: inspectionDocs,
-        additionalDocuments: additionalDocs,
+        id: vehicle?.id, 
+        image: newVehicleImages,
+        registrationDocument: newRegDocs,
+        insuranceDocument: newInsuranceDocs,
+        inspectionDocument: newInspectionDocs,
+        additionalDocuments: newAdditionalDocs,
       };
       
       const response = await updateVehicle(updateData);
@@ -168,20 +229,20 @@ function UpdateVehicle() {
     } catch (error) {
       console.error("Update vehicle error:", error);
       
-      // Handle specific API error responses
+
       if (error.response?.data) {
         const errorData = error.response.data;
         
         if (errorData.error) {
-          // Handle structured error object
+      
           if (typeof errorData.error === 'object') {
-            // Handle field-specific errors
+        
             if (errorData.error.vinNumber && Array.isArray(errorData.error.vinNumber)) {
               toast.error(errorData.error.vinNumber[0]);
             } else if (errorData.error.message) {
               toast.error(errorData.error.message);
             } else {
-              // Handle the first error from any field
+         
               const firstErrorField = Object.keys(errorData.error)[0];
               if (firstErrorField && Array.isArray(errorData.error[firstErrorField])) {
                 toast.error(errorData.error[firstErrorField][0]);
@@ -190,26 +251,26 @@ function UpdateVehicle() {
               }
             }
           } else if (Array.isArray(errorData.error)) {
-            // Handle array of error messages
+    
             if (errorData.error.length > 0) {
               toast.error(errorData.error[0]);
             } else {
               toast.error("An error occurred during the update.");
             }
           } else if (typeof errorData.error === 'string') {
-            // Handle string error message
+    
             toast.error(errorData.error);
           } else {
             toast.error("An unexpected error occurred.");
           }
         } else if (errorData.message) {
-          // Handle top-level message error
+   
           toast.error(errorData.message);
         } else {
           toast.error("Failed to update vehicle. Please try again.");
         }
       } else if (error.message) {
-        // Handle network errors or other non-response errors
+ 
         toast.error(`Error: ${error.message}`);
       } else {
         toast.error("An unexpected error occurred. Please try again later.");
@@ -344,6 +405,7 @@ function UpdateVehicle() {
                 setValue={setVehicleImages}
                 imageView={vehicleImagePreviews}
                 setImageView={setVehicleImagePreviews}
+                onDelete={handleDocumentDelete}
               />
             </div>
           </div>
@@ -374,6 +436,8 @@ function UpdateVehicle() {
                   setValue={setRegDocs} 
                   documentView={regDocPreviews}
                   setDocumentView={setRegDocPreviews}
+                  onDelete={handleDocumentDelete}
+                  type="registration"
                 />
               </div>
             </div>
@@ -397,6 +461,8 @@ function UpdateVehicle() {
                   setValue={setInsuranceDocs}
                   documentView={insuranceDocPreviews}
                   setDocumentView={setInsuranceDocPreviews}
+                  onDelete={handleDocumentDelete}
+                  type="insurance"
                 />
               </div>
             </div>
@@ -420,6 +486,8 @@ function UpdateVehicle() {
                   setValue={setInspectionDocs}
                   documentView={inspectionDocPreviews}
                   setDocumentView={setInspectionDocPreviews}
+                  onDelete={handleDocumentDelete}
+                  type="inspection"
                 />
               </div>
             </div>
@@ -454,6 +522,8 @@ function UpdateVehicle() {
                 setValue={setAdditionalDocs}
                 documentView={additionalDocPreviews}
                 setDocumentView={setAdditionalDocPreviews}
+                onDelete={handleDocumentDelete}
+                type="additional"
               />
             </div>
           </div>

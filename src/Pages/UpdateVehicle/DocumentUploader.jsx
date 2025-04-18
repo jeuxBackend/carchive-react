@@ -1,11 +1,11 @@
-import { useId } from "react";
+import { useId, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../Contexts/ThemeContext";
 import add from "./assets/add.png";
 import addLight from "./assets/addLight.png";
 import { X } from "lucide-react";
 
-const DocumentUploader = ({ value = [], setValue, documentView = [], setDocumentView }) => {
+const DocumentUploader = ({ value = [], setValue, documentView = [], setDocumentView, onDelete, type }) => {
   const { theme } = useTheme();
   const inputId = useId();
 
@@ -27,6 +27,16 @@ const DocumentUploader = ({ value = [], setValue, documentView = [], setDocument
   };
 
   const removeDocument = (index) => {
+    // Check if the document is an existing URL (not a new file)
+    const isExistingDoc = typeof documentView[index] === 'string' && 
+                           documentView[index].startsWith('http');
+    
+    // If it's an existing document, call the delete function
+    if (isExistingDoc && onDelete) {
+      onDelete(index, type);
+    }
+    
+    // Remove from local state
     setValue(value.filter((_, i) => i !== index));
     setDocumentView(documentView.filter((_, i) => i !== index));
   };

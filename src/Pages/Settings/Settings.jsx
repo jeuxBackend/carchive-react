@@ -108,7 +108,7 @@ const Settings = () => {
             ></span>
           </button>
         </motion.div>
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+        {/* <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
           className={`p-6 rounded-xl shadow-lg transition-all flex items-center justify-between ${theme === "dark" ? "bg-[#323335] border-2 border-[#323335]" : "bg-white border-2 border-[#ECECEC]"}`}
         >
           <div className="flex items-center gap-3">
@@ -116,7 +116,7 @@ const Settings = () => {
             <p className={`lg:text-[1.3rem] xl:text-[1.1rem] 2xl:text-[1.5rem] ${theme === "dark" ? "text-white" : "text-black"}`}>Push Notifications</p>
           </div>
           <Switch />
-        </motion.div>
+        </motion.div> */}
       </div>
     </motion.div>
   );
