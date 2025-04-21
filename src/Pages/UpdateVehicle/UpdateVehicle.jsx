@@ -11,6 +11,11 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import MakesDropdown from "../../Components/DropDown/MakesDropDown";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import { IoClose } from "react-icons/io5";
 
 function UpdateVehicle() {
   const { theme } = useTheme();
@@ -26,6 +31,7 @@ function UpdateVehicle() {
   const [inspectionDocPreviews, setInspectionDocPreviews] = useState([]);
   const [additionalDocs, setAdditionalDocs] = useState([]);
   const [additionalDocPreviews, setAdditionalDocPreviews] = useState([]);
+  const [additionalDates, setAdditionalDates] = useState([null]); // Initialize with one null date
   const navigate = useNavigate();
   const [vehicleData, setVehicleData] = useState({
     vinNumber: "",
@@ -37,7 +43,7 @@ function UpdateVehicle() {
     mileage: "",
     chassis: "",
     numberPlate: "",
-    additionalExpiry: "",
+    additionalExpiry: "",  // Keep for backward compatibility
     registrationExpiry: "",
     manufacturingYear: "",
     insuranceStatus: "0",
@@ -47,6 +53,29 @@ function UpdateVehicle() {
     status: "",
     additionalTitles: "",
   });
+
+  // Function to add a new date field
+  const addDateField = () => {
+    setAdditionalDates([...additionalDates, null]);
+  };
+
+  // Function to remove a date field
+  const removeDateField = (index) => {
+    if (additionalDates.length > 1) {
+      const newDates = [...additionalDates];
+      newDates.splice(index, 1);
+      setAdditionalDates(newDates);
+    } else {
+      toast.error("At least one additional date is required");
+    }
+  };
+
+  // Function to update a specific date
+  const updateDate = (index, newDate) => {
+    const updatedDates = [...additionalDates];
+    updatedDates[index] = newDate;
+    setAdditionalDates(updatedDates);
+  };
 
   // Initialize form with existing vehicle data when component mounts
   useEffect(() => {
@@ -72,6 +101,22 @@ function UpdateVehicle() {
         status: vehicle.status || "0",
         additionalTitles: vehicle.additionalTitles || "",
       });
+
+      // Initialize additionalDates from vehicle data
+      if (vehicle.additionalExpiry) {
+        // Check if additionalExpiry is an array (for new format)
+        if (Array.isArray(vehicle.additionalExpiry)) {
+          setAdditionalDates(vehicle.additionalExpiry.map(date => date ? dayjs(date).toDate() : null));
+        } 
+        // For backward compatibility - single date string
+        else if (typeof vehicle.additionalExpiry === 'string' && vehicle.additionalExpiry) {
+          setAdditionalDates([dayjs(vehicle.additionalExpiry).toDate()]);
+        } 
+        // Fallback
+        else {
+          setAdditionalDates([null]);
+        }
+      }
 
       // Initialize document arrays with existing data
       if (vehicle.image && Array.isArray(vehicle.image)) {
@@ -146,7 +191,6 @@ function UpdateVehicle() {
   };
 
   const validateForm = () => {
- 
     if (
       !vehicleData?.make ||
       !vehicleData?.model ||
@@ -159,7 +203,6 @@ function UpdateVehicle() {
       return false;
     }
     
-   
     if (vehicleData.vinNumber.length !== 17) {
       toast.error("VIN Number must be 17 characters");
       return false;
@@ -190,9 +233,10 @@ function UpdateVehicle() {
       return false;
     }
     
-    
-    
-
+    if (additionalDates.length === 0 || additionalDates.some(date => date === null)) {
+      toast.error("All additional dates must be valid");
+      return false;
+    }
     
     return true;
   };
@@ -202,13 +246,17 @@ function UpdateVehicle() {
     
     setLoading(true);
     try {
-     
+      // Filter out existing URLs (which are already on the server)
       const newVehicleImages = vehicleImages.filter(img => !(typeof img === 'string' && img.startsWith('http')));
       const newRegDocs = regDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
       const newInsuranceDocs = insuranceDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
       const newInspectionDocs = inspectionDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
       const newAdditionalDocs = additionalDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
       
+      // Format dates properly before sending to API
+      const formattedDates = additionalDates.map(date => 
+        date ? dayjs(date).format('YYYY-MM-DD') : ''
+      );
 
       const updateData = {
         ...vehicleData,
@@ -218,6 +266,7 @@ function UpdateVehicle() {
         insuranceDocument: newInsuranceDocs,
         inspectionDocument: newInspectionDocs,
         additionalDocuments: newAdditionalDocs,
+        additionalExpiry: formattedDates // Send array of formatted dates
       };
       
       const response = await updateVehicle(updateData);
@@ -228,21 +277,17 @@ function UpdateVehicle() {
       }
     } catch (error) {
       console.error("Update vehicle error:", error);
-      
 
       if (error.response?.data) {
         const errorData = error.response.data;
         
         if (errorData.error) {
-      
           if (typeof errorData.error === 'object') {
-        
             if (errorData.error.vinNumber && Array.isArray(errorData.error.vinNumber)) {
               toast.error(errorData.error.vinNumber[0]);
             } else if (errorData.error.message) {
               toast.error(errorData.error.message);
             } else {
-         
               const firstErrorField = Object.keys(errorData.error)[0];
               if (firstErrorField && Array.isArray(errorData.error[firstErrorField])) {
                 toast.error(errorData.error[firstErrorField][0]);
@@ -251,26 +296,22 @@ function UpdateVehicle() {
               }
             }
           } else if (Array.isArray(errorData.error)) {
-    
             if (errorData.error.length > 0) {
               toast.error(errorData.error[0]);
             } else {
               toast.error("An error occurred during the update.");
             }
           } else if (typeof errorData.error === 'string') {
-    
             toast.error(errorData.error);
           } else {
             toast.error("An unexpected error occurred.");
           }
         } else if (errorData.message) {
-   
           toast.error(errorData.message);
         } else {
           toast.error("Failed to update vehicle. Please try again.");
         }
       } else if (error.message) {
- 
         toast.error(`Error: ${error.message}`);
       } else {
         toast.error("An unexpected error occurred. Please try again later.");
@@ -376,12 +417,7 @@ function UpdateVehicle() {
                 fieldKey="inspectionExpiry"
               />
             </div>
-            <BasicDatePicker
-              label="Additional Documents Expiry"
-              value={vehicleData}
-              setValue={setVehicleData}
-              fieldKey="additionalExpiry"
-            />
+            {/* Removed the single Additional Documents Expiry field */}
           </div>
         </div>
         <div className="w-full lg:w-[50%] flex flex-col gap-3">
@@ -493,6 +529,82 @@ function UpdateVehicle() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Multiple Additional Dates Section - New Section */}
+      <div 
+        className={`${
+          theme === "dark" 
+            ? "bg-[#323335]" 
+            : "bg-white border border-[#ececec]"
+        } p-4 rounded-xl mt-3`}
+      >
+        <div className="flex justify-between items-center mb-4">
+          <div 
+            className={`${
+              theme === "dark" ? "text-white" : "text-black"
+            } text-[1.5rem] font-medium`}
+          >
+            Additional Document Dates
+          </div>
+          <button
+            onClick={addDateField}
+            className="bg-[#479cff] py-2 px-4 rounded-lg text-white text-sm font-medium"
+          >
+            Add Date
+          </button>
+        </div>
+
+        {additionalDates.map((date, index) => (
+          <div key={index} className="flex items-center gap-2 mb-4">
+            <div className="flex-1">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker
+                  label={`Date ${index + 1}`}
+                  value={date ? dayjs(date) : null}
+                  onChange={(newValue) => updateDate(index, newValue)}
+                  sx={{
+                    width: "100%",
+                    fontWeight: 500,
+                    borderRadius: "0.75rem",
+                    backgroundColor: theme === "dark" ? "#1b1c1e" : "#f7f7f7",
+                    "& .MuiOutlinedInput-root": {
+                      backgroundColor: "transparent",
+                      color: theme === "dark" ? "white" : "black",
+                      borderRadius: "0.75rem",
+                      border: theme === "dark" ? "none" : "1px solid #e8e8e8",
+                      "& fieldset": {
+                        borderRadius: "0.75rem",
+                        border: theme === "dark" ? "none" : "1px solid #e8e8e8",
+                      },
+                    },
+                    "& .MuiInputBase-input": {
+                      color: theme === "dark" ? "white" : "black",
+                    },
+                    "& .MuiFormLabel-root": {
+                      color: theme === "dark" ? "white" : "black",
+                    },
+                    "& .MuiIconButton-root": {
+                      color: theme === "dark" ? "white" : "black",
+                    },
+                  }}
+                />
+              </LocalizationProvider>
+            </div>
+            <div
+              onClick={() => removeDateField(index)}
+              className="bg-red-500 py-3.5 px-3 rounded-lg text-white text-sm font-medium cursor-pointer"
+              disabled={additionalDates.length === 1}
+            >
+              <IoClose />
+            </div>
+          </div>
+        ))}
+        {additionalDates.length === 0 && (
+          <p className={`${theme === "dark" ? "text-red-400" : "text-red-500"} text-sm`}>
+            At least one additional date is required
+          </p>
+        )}
       </div>
 
       <div className="w-full pt-3 flex flex-col gap-3">
