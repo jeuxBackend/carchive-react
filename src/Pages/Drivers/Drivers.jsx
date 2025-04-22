@@ -138,7 +138,7 @@ const Drivers = () => {
         ${theme === "dark" ? "bg-[#319BF9]  text-white" : "bg-black hover:bg-gray-800 text-white"}`}
                                     whileHover={{ scale: 1.05, rotate: [0, 2, -2, 0] }}
                                     whileTap={{ scale: 0.95 }}
-                                    onClick={() => {navigate(`/Chat`) ,initializeChat(currentUserId.toString(), user?.driverId?.toString(), "Hey there!")}}
+                                    onClick={() => {navigate(`/Chat`)}}
                                 >
                                     <img className="w-5 h-5" src={msg} alt="message icon" />
                                     Message

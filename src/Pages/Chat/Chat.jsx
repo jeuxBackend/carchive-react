@@ -2,77 +2,85 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTheme } from "../../Contexts/ThemeContext";
 import { CiSearch } from "react-icons/ci";
 import { LuSend } from "react-icons/lu";
+import { MessageCircle, Car } from 'lucide-react';
 
 import ham from "../../assets/hamburger.png";
 import hamLight from "../../assets/hamLight.png";
 import { FiX } from 'react-icons/fi';
 import {
   convertTimestampToReadableTime,
-  fetchChatBoxes,
   sendMessage,
   fetchMessages,
-  markMessagesAsRead
+  markMessagesAsRead,
+  initializeChat,
+  getChatId
 } from '../../utils/ChatUtils';
 import { useGlobalContext } from '../../Contexts/GlobalContext';
+import { getDrivers } from '../../API/portalServices';
+import CarsModal from './CarsModal';
 
 const Chat = () => {
   const { theme } = useTheme();
   const { currentUserId } = useGlobalContext();
 
-  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedChat, setSelectedChat] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [chatBoxes, setChatBoxes] = useState([]);
+  const [users, setUsers] = useState([]);
   const [messageInput, setMessageInput] = useState("");
   const [activeChatId, setActiveChatId] = useState("");
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [sendingMessage, setSendingMessage] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Function to refresh chat boxes without affecting the message view
-  const refreshChatBoxes = useCallback(() => {
-    fetchChatBoxes(currentUserId, (data) => {
-      // Update chat boxes but maintain the current selection
-      setChatBoxes(data);
-      setIsLoading(false);
-    }, (error) => {
-      setError("Failed to load chats: " + error.message);
-      setIsLoading(false);
-    });
-  }, [currentUserId]);
-
-  // Fetch chat boxes
-  useEffect(() => {
+  const fetchDriverData = useCallback(async () => {
     setIsLoading(true);
-    setError(null);
-
-    const unsubscribe = fetchChatBoxes(currentUserId, (data) => {
-      setChatBoxes(data);
+    try {
+      const response = await getDrivers();
+      setUsers(response?.data?.data || []);
+    } catch (error) {
+      setError("Failed to load users: " + error.message);
+      console.error("Error fetching drivers data:", error);
+    } finally {
       setIsLoading(false);
-    }, (error) => {
-      setError("Failed to load chats: " + error.message);
-      setIsLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [currentUserId]);
-
-  // Find chat ID when a user is selected
-  useEffect(() => {
-    if (selectedUser?.userAppId) {
-      const chatBox = chatBoxes.find(box => box.user.userAppId === selectedUser.userAppId);
-      if (chatBox) {
-        setActiveChatId(chatBox.id || `${currentUserId}_${selectedUser.userAppId}`);
-      } else {
-        // Handle case when chat box is not found
-        setActiveChatId(`${currentUserId}_${selectedUser.userAppId}`);
-      }
     }
-  }, [selectedUser, chatBoxes, currentUserId]);
+  }, []);
+  
+  useEffect(() => {
+    fetchDriverData();
+  }, [fetchDriverData]);
 
-  // Fetch messages when active chat changes
+  useEffect(() => {
+    if (selectedChat?.id) {
+      const setupChatId = async () => {
+        try {
+          // Check if a chat already exists between these users
+          const existingChatId = await getChatId(
+            currentUserId.toString(), 
+            selectedChat.id.toString()
+          );
+          
+          if (existingChatId) {
+            setActiveChatId(existingChatId);
+          } else {
+            // Default to expected format if no chat exists yet
+            setActiveChatId(`${currentUserId}_${selectedChat.id}`);
+          }
+        } catch (err) {
+          console.error("Error setting up chat ID:", err);
+          // Fallback to expected format
+          setActiveChatId(`${currentUserId}_${selectedChat.id}`);
+        }
+      };
+      
+      setupChatId();
+    }
+  }, [selectedChat, currentUserId]);
+
   useEffect(() => {
     let unsubscribe = () => { };
 
@@ -80,70 +88,68 @@ const Chat = () => {
       setIsLoading(true);
       setError(null);
 
-      // Mark messages as read when opening a chat
-      markMessagesAsRead(activeChatId, () => {
-        // Only update unread count in the chat boxes, not the entire chat boxes
-        setChatBoxes(prevChatBoxes => {
-          return prevChatBoxes.map(box => {
-            if (box.id === activeChatId ||
-              (box.user.userAppId === selectedUser.userAppId &&
-                `${currentUserId}_${selectedUser.userAppId}` === activeChatId)) {
-              return { ...box, unreadCount: 0 };
-            }
-            return box;
-          });
-        });
-      });
+      markMessagesAsRead(activeChatId);
 
-      // Fetch messages for the active chat
-      unsubscribe = fetchMessages(activeChatId, (fetchedMessages) => {
-        setMessages(fetchedMessages);
-        setIsLoading(false);
-      }, (error) => {
-        setError("Failed to load messages: " + error.message);
-        setIsLoading(false);
-      });
+      unsubscribe = fetchMessages(
+        activeChatId,
+        (fetchedMessages) => {
+          setMessages(fetchedMessages);
+          setIsLoading(false);
+        },
+        (error) => {
+          setError("Failed to load messages: " + error.message);
+          setIsLoading(false);
+        }
+      );
     } else {
       setMessages([]);
     }
 
     return () => unsubscribe();
-  }, [activeChatId, currentUserId, selectedUser.userAppId]);
+  }, [activeChatId]);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (!messageInput.trim() || !activeChatId || !selectedUser?.userAppId) return;
+  const handleSendMessage = async () => {
+    if (!messageInput.trim() || !selectedChat?.id || sendingMessage) return;
 
     try {
-      sendMessage(
-        activeChatId.toString(),
-        selectedUser?.userAppId?.toString(),
-        currentUserId.toString(),
-        messageInput
-      );
-
-      // Add optimistic message to UI immediately
+      setSendingMessage(true);
+      
       const optimisticMessage = {
         id: Date.now().toString(),
         messageBody: messageInput,
         senderId: currentUserId.toString(),
-        receiverId: selectedUser?.userAppId?.toString(),
+        receiverId: selectedChat.id.toString(),
         serverTime: new Date().toISOString(),
-        isOptimistic: true // flag to identify optimistic messages
+        isOptimistic: true 
       };
-
+      
       setMessages(prev => [...prev, optimisticMessage]);
-
-      // Clear input field after sending
+      const inputCopy = messageInput;
       setMessageInput("");
+      
+      const success = await sendMessage(
+        activeChatId,
+        selectedChat.id.toString(),
+        currentUserId.toString(),
+        inputCopy
+      );
+      
+      if (!success) {
+        // Remove the optimistic message if sending failed
+        setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
+        setError("Failed to send message. Please try again.");
+        setMessageInput(inputCopy);
+      }
     } catch (error) {
       setError("Failed to send message: " + error.message);
+    } finally {
+      setSendingMessage(false);
     }
   };
 
@@ -159,43 +165,99 @@ const Chat = () => {
     return convertTimestampToReadableTime(serverTime);
   };
 
-  // Function to handle selecting a user from the chat list
-  const handleSelectUser = (user) => {
-    setSelectedUser(user);
-    setIsSidebarOpen(false);
-    setError(null);
-
-    // Find the chat to check unread messages
-    const chatBox = chatBoxes.find(box => box.user.userAppId === user.userAppId);
-    if (chatBox && chatBox.unreadCount > 0) {
-      // Update only the unread count locally
-      setChatBoxes(prevChatBoxes => {
-        return prevChatBoxes.map(box => {
-          if (box.user.userAppId === user.userAppId) {
-            return { ...box, unreadCount: 0 };
-          }
-          return box;
-        });
+  const handleSelectUser = async (user) => {
+    // try {
+      setSelectedUserId(user.driverId);
+      setIsSidebarOpen(false);
+      setError(null);
+      setIsModalOpen(true);
+      // setIsLoading(true);
+      
+      // Initialize chat and get the correct chatId
+    //   const actualChatId = await initializeChat(
+    //     currentUserId.toString(), 
+    //     user.driverId.toString(), 
+    //     "Hello, let's chat!"
+    //   );
+      
+    //   setSelectedChat({
+    //     id: user.driverId,
+    //     name: user.name,
+    //     lastName: user.lastName,
+    //     email: user.email,
+    //     image: user.image,
+    //     isDriver: true
+    //   });
+      
+    //   // If we have a valid chatId returned, use it directly
+    //   if (actualChatId) {
+    //     setActiveChatId(actualChatId);
+    //   }
+      
+    //   setIsSidebarOpen(false);
+    //   setError(null);
+    //   setIsModalOpen(true);
+    // } catch (error) {
+    //   console.error("Error selecting user:", error);
+    //   setError("Failed to initialize chat");
+    // } finally {
+    //   setIsLoading(false);
+    // }
+  };
+  
+  const handleSelectCar = async (car) => {
+    try {
+      setIsLoading(true);
+      
+      // Initialize chat and get the correct chatId
+      const actualChatId = await initializeChat(
+        currentUserId.toString(), 
+        car.id.toString(), 
+        "Hello, I'd like to chat about this car."
+      );
+      
+      setSelectedChat({
+        id: car.id,
+        name: car.name,
+        image: car.image,
+        model: car.model,
+        make: car.make,
+        isCar: true
       });
-
-      // Mark messages as read in the backend
-      const chatId = chatBox.id || `${currentUserId}_${user.userAppId}`;
-      markMessagesAsRead(chatId);
+      
+      // If we have a valid chatId returned, use it directly
+      if (actualChatId) {
+        setActiveChatId(actualChatId);
+      }
+      
+      setIsSidebarOpen(false);
+      setError(null);
+    } catch (error) {
+      console.error("Error selecting car:", error);
+      setError("Failed to initialize chat");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Filter chat boxes by search query
-  const filteredChatBoxes = chatBoxes.filter(data =>
-    data?.user?.userName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    data?.user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = users.filter(user =>
+    user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
+    <>
+    <CarsModal 
+      open={isModalOpen} 
+      setOpen={setIsModalOpen} 
+      id={selectedUserId} 
+      onSelectCar={handleSelectCar}
+    />
     <div className={`${theme === "dark" ? "bg-[#1B1C1E] text-white" : "bg-white text-black"} transition-all `}>
 
       <div className="flex h-[86vh] w-full relative gap-6">
 
-        {/* Sidebar */}
+        {/* Dark overlay for mobile when sidebar is open */}
         {isSidebarOpen && (
           <div
             className="fixed inset-0 bg-black opacity-50 z-20 lg:hidden"
@@ -203,6 +265,7 @@ const Chat = () => {
           ></div>
         )}
 
+        {/* Users Sidebar */}
         <div className={`absolute lg:relative z-30 flex-col lg:w-[40%] h-[82vh] sm:h-[88vh] lg:h-full ${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#dfdfdf]"} rounded-xl p-3 transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-[150%]"}`}>
 
           <button
@@ -224,45 +287,53 @@ const Chat = () => {
           </div>
 
           <div className="space-y-2 overflow-y-auto max-h-[calc(100%-80px)]">
-            {isLoading && chatBoxes.length === 0 ? (
+            {isLoading && users.length === 0 ? (
               <div className="flex justify-center items-center h-32">
-                <p className="text-gray-500">Loading chats...</p>
+                <p className="text-gray-500">Loading users...</p>
               </div>
-            ) : error && chatBoxes.length === 0 ? (
+            ) : error && users.length === 0 ? (
               <div className="flex justify-center items-center h-32">
                 <p className="text-red-500">{error}</p>
               </div>
-            ) : filteredChatBoxes.length === 0 ? (
+            ) : filteredUsers.length === 0 ? (
               <div className="flex justify-center items-center h-32">
-                <p className="text-gray-500">No chats found</p>
+                <p className="text-gray-500">No users found</p>
               </div>
             ) : (
-              filteredChatBoxes.map((data) => (
-                <div key={data?.user?.userAppId || data?.id}>
+              filteredUsers.map((user) => (
+                <div key={user.id}>
                   <div
-                    className={`flex items-center rounded-t p-3 cursor-pointer border-b border-dashed ${theme === "dark" ? "border-[#464749]" : "border-[#e8e8e8]"} ${selectedUser.userAppId === data?.user?.userAppId ? (theme === "dark" ? "bg-gray-700 " : "bg-gray-300 ") : ""}`}
-                    onClick={() => handleSelectUser(data?.user)}
+                    className={`flex items-center p-3 cursor-pointer border-b border-dashed 
+                      ${theme === "dark" ? "border-[#464749]" : "border-[#e8e8e8]"} 
+                      ${selectedChat.id === user.driverId && selectedChat.isDriver ? 
+                        (theme === "dark" ? "bg-gray-700 " : "bg-gray-300 ") : ""}`}
                   >
-                    <img src={data?.user?.profileImage} alt={data?.user?.userName} className="w-10 h-10 rounded-full" />
-                    <div className="ml-3 w-full">
+                    <img 
+                      src={user.image} 
+                      alt={user.name} 
+                      className="w-10 h-10 rounded-full object-cover"
+                      onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
+                    />
+                    <div className="ml-3 flex-grow">
                       <div className='flex items-center justify-between w-full'>
-                        <h3 className="font-semibold">{data?.user?.userName}</h3>
-                        <p className={`text-[0.8rem] ${theme === "dark" ? "text-[#adadae]" : "text-[#767778]"}`}>{convertTimestampToReadableTime(data?.lastMessageTime)}</p>
+                        <h3 className="font-semibold">{user.name} {user.lastName}</h3>
                       </div>
                       <div className="flex justify-between items-center">
                         <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate max-w-[70%]`}>
-                          {data?.lastMessage?.length > 30
-                            ? `${data.lastMessage.slice(0, 50)}...`
-                            : data?.lastMessage}
-
+                          {user.email}
                         </p>
-
-                        {data?.unreadCount > 0 && (
-                          <span className="bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center ml-2">
-                            {data.unreadCount}
-                          </span>
-                        )}
                       </div>
+                    </div>
+                    
+                    {/* Chat with user button */}
+                    <div
+                      onClick={() => handleSelectUser(user)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
+                        ${theme === "dark" ? "bg-[#479cff] text-white" 
+                        : "bg-[#479cff] text-white"} transition-colors`}
+                    >
+                      <MessageCircle size={18} />
+                      <span>Chat</span>
                     </div>
                   </div>
                 </div>
@@ -271,9 +342,9 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Chat Window */}
+        {/* Chat Content Area */}
         <div className={`flex flex-col flex-1 h-[82vh] sm:h-[86vh] rounded-xl ${theme === "dark" ? "bg-[#1B1C1E] text-white border border-white/30" : "bg-white text-black border border-[#ECECEC]"}`}>
-          {/* Header */}
+          {/* Chat Header */}
           <div className={`flex items-center rounded-t-xl p-4 ${theme === "dark" ? "bg-[#323335]" : "bg-gray-100"} shadow-md relative`}>
             <button
               className="lg:hidden rounded-full mr-3"
@@ -282,22 +353,42 @@ const Chat = () => {
               <img src={theme === "dark" ? ham : hamLight} alt="" className='w-[24px]' />
             </button>
 
-            {selectedUser?.profileImage ? (
-              <img src={selectedUser.profileImage} alt={selectedUser.userName} className="w-10 h-10 rounded-full" />
+            {selectedChat?.image ? (
+              <img 
+                src={selectedChat.image} 
+                alt={selectedChat.name} 
+                className="w-10 h-10 rounded-full object-cover"
+                onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
+              />
             ) : (
               <div className={`w-10 h-10 rounded-full flex items-center justify-center ${theme === "dark" ? "bg-gray-600" : "bg-gray-300"}`}>
-                {selectedUser?.userName?.charAt(0) || "?"}
+                {selectedChat?.name?.charAt(0) || "?"}
               </div>
             )}
-            <div className="ml-3">
-              <h3 className="font-semibold">{selectedUser?.userName || "Select a chat"}</h3>
-              <p className="text-sm">{selectedUser?.email || ""}</p>
+            <div className="ml-3 flex-grow">
+              <div className="flex items-center">
+                <h3 className="font-semibold">
+                  {selectedChat?.make ? selectedChat.make : "Select a chat"}
+                  {selectedChat?.lastName ? ` ${selectedChat.lastName}` : ''}
+                </h3>
+                {selectedChat?.isCar && (
+                  <Car size={16} className="ml-2 text-blue-500" />
+                )}
+              </div>
+              {selectedChat?.isCar ? (
+                <p className="text-sm">
+                  {selectedChat?.make ? `${selectedChat.make} · ` : ''}
+                  {selectedChat?.model || ""}
+                </p>
+              ) : (
+                <p className="text-sm">{selectedChat?.email || ""}</p>
+              )}
             </div>
           </div>
 
-          {/* Messages */}
+          {/* Messages Area */}
           <div className="flex-1 p-4 overflow-y-auto">
-            {!selectedUser?.userAppId ? (
+            {!selectedChat?.id ? (
               <div className="h-full flex items-center justify-center">
                 <p className="text-gray-500">Select a conversation to start chatting</p>
               </div>
@@ -334,30 +425,31 @@ const Chat = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Field */}
+          {/* Message Input */}
           <div className="p-4 relative w-full">
             <input
               type="text"
-              placeholder={selectedUser?.userAppId ? "Type Message" : "Select a chat to start messaging"}
+              placeholder={selectedChat?.id ? "Type Message" : "Select a chat to start messaging"}
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              disabled={!selectedUser?.userAppId}
-              className={`w-full p-3 pl-4 pr-10 rounded-3xl border ${theme === "dark" ? "bg-[#1B1C1E] text-white border-gray-500" : "bg-gray-100 text-black border-gray-300"} focus:outline-none ${!selectedUser?.userAppId ? 'cursor-not-allowed' : ''}`}
+              disabled={!selectedChat?.id}
+              className={`w-full p-3 pl-4 pr-10 rounded-3xl border ${theme === "dark" ? "bg-[#1B1C1E] text-white border-gray-500" : "bg-gray-100 text-black border-gray-300"} focus:outline-none ${!selectedChat?.id ? 'cursor-not-allowed' : ''}`}
             />
             <button
               onClick={handleSendMessage}
-              disabled={!messageInput.trim() || !selectedUser?.userAppId}
+              disabled={!messageInput.trim() || !selectedChat?.id}
               className="absolute right-10 top-1/2 transform -translate-y-1/2 text-xl cursor-pointer"
             >
               <LuSend
-                className={`${!messageInput.trim() || !selectedUser?.userAppId ? 'opacity-50' : 'opacity-100'}`}
+                className={`${!messageInput.trim() || !selectedChat?.id ? 'opacity-50' : 'opacity-100'}`}
               />
             </button>
           </div>
         </div>
       </div>
     </div>
+    </>
   );
 };
 

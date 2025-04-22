@@ -30,6 +30,7 @@ export const deleteCarDocument = (data) => API.post(`/portal/deleteCarDocument`,
 // Drivers API's
 export const getDrivers = () => API.get("/portal/getCompanyDrivers");
 export const delDriver = (companyId) => API.get(`/portal/deleteDriver/${companyId}`);
+export const getCarsbyDriver = (id) => API.get(`portal/getDriverCarsById/${id}`);
 
 // Invoices API's
 export const getInvoices = () => API.get("/portal/get-invoices");
