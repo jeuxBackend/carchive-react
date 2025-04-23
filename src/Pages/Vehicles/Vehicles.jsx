@@ -33,19 +33,19 @@ function Vehicles() {
     }, []);
 
  
-    const filteredVehicles = vehiclesData.filter(vehicle => {
-        const searchTerm = search.toLowerCase();
+    const filteredVehicles = vehiclesData?.filter(vehicle => {
+        const searchTerm = search?.toLowerCase();
         const matchesSearch = 
-            vehicle?.make?.toLowerCase().includes(searchTerm) ||  
-            vehicle?.vinNumber?.toLowerCase().includes(searchTerm) || 
-            vehicle?.plateNumber?.toLowerCase().includes(searchTerm);
+            vehicle?.make?.toLowerCase()?.includes(searchTerm) ||  
+            vehicle?.vinNumber?.toLowerCase()?.includes(searchTerm) || 
+            vehicle?.plateNumber?.toLowerCase()?.includes(searchTerm);
     
         if (selectedValue === "1") {
-            return matchesSearch && vehicle.isArchive === "1"; 
+            return matchesSearch && vehicle?.isArchive === "1"; 
         } 
         
         if (selectedValue === "0") {
-            return matchesSearch && vehicle.isArchive !== "1"; 
+            return matchesSearch && vehicle?.isArchive !== "1"; 
         }
     
         return matchesSearch;
@@ -69,14 +69,14 @@ function Vehicles() {
                     <BeatLoader color="#2d9bff" />
                 </div>
             ) : (
-                filteredVehicles.length > 0 ? (
+                filteredVehicles?.length > 0 ? (
                     <motion.div
                         className='grid lg:grid-cols-2 xl:grid-cols-3 gap-3 mt-5'
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5 }}
                     >
-                        {filteredVehicles.map((data, index) => (
+                        {filteredVehicles?.map((data, index) => (
                             <motion.div
                                 key={index}
                                 initial={{ opacity: 0, y: 20 }}
