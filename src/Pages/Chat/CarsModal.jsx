@@ -6,7 +6,7 @@ import backLight from "../../assets/backLight.png";
 import { getCarsbyDriver } from "../../API/portalServices";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { initializeChat } from "../../utils/ChatUtils";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Car } from 'lucide-react';
 
 function CarsModal({ open, setOpen, id, onSelectCar }) {
     if (!open) return null;
@@ -14,14 +14,17 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
     const { currentUserId } = useGlobalContext();
     const [cars, setCars] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const fetchDriverCars = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const response = await getCarsbyDriver(id);
             setCars(response?.data?.data || []);
         } catch (error) {
-            console.error("Error fetching drivers data:", error);
+            console.error("Error fetching driver's cars:", error);
+            setError("Failed to load cars: " + error.message);
         } finally {
             setIsLoading(false);
         }
@@ -35,23 +38,27 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
 
     const handleChatWithCar = async (car) => {
         try {
-         
-            await initializeChat(currentUserId.toString(), car.id.toString(), "Hello, I'd like to chat about this car.");
-
-     
+            // Attempt to initialize chat with proper IDs
+            const chatId = await initializeChat(
+                currentUserId?.toString(), 
+                id?.toString(), 
+                car?.id?.toString(), 
+                "Hello, I'd like to chat about this car."
+            );
+      
+            // Pass the car data to the parent component
             onSelectCar({
-                id: car.id.toString(),
+                carId: car?.id?.toString(),
                 name: car.name || "Unnamed Car",
                 image: car.image && car.image[0] ? car.image[0] : null,
                 model: car.model || "N/A",
-                make: car.make || "N/A",
-                isCar: true
+                make: car.make || "N/A"
             });
-
-         
+      
             setOpen(false);
         } catch (error) {
             console.error("Error starting chat with car:", error);
+            setError("Failed to initialize chat. Please try again.");
         }
     };
 
@@ -63,10 +70,10 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
         >
-            <div className="flex items-center justify-center py-10 w-full min-h-screen ">
+            <div className="flex items-center justify-center py-10 w-full min-h-screen">
                 <motion.div
                     className={`rounded-xl w-[90%] p-6 sm:w-[40rem] shadow flex flex-col items-center justify-center gap-4
-            ${theme === "dark"
+                        ${theme === "dark"
                             ? "bg-[#1b1c1e] border-2 border-[#323335]"
                             : "bg-white border-2 border-[#ECECEC]"
                         }`}
@@ -83,16 +90,21 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                             onClick={() => setOpen(false)}
                         />
                         <p
-                            className={`${theme === "dark" ? "text-white" : "text-black"
-                                } text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium`}
+                            className={`${theme === "dark" ? "text-white" : "text-black"} 
+                                text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium`}
                         >
-                            Cars
+                            Select a Car
                         </p>
-                       
-
                     </div>
 
-                    {/* Horizontal Cars listing */}
+                    {/* Error display */}
+                    {error && (
+                        <div className="w-full px-4 py-3 text-center text-red-500 bg-red-100 rounded-lg">
+                            {error}
+                        </div>
+                    )}
+
+                    {/* Cars listing */}
                     <div className="w-full">
                         {isLoading ? (
                             <div className={`text-center py-6 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
@@ -137,12 +149,20 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
 
                                             {/* Car details */}
                                             <div>
-                                                <h3 className={`font-medium text-lg ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
-                                                    {car.make || "Unnamed Car"}
-                                                </h3>
+                                                <div className="flex items-center">
+                                                    <h3 className={`font-medium text-lg ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                                                        {car.make || "Unnamed Car"}
+                                                    </h3>
+                                                    <Car size={16} className="ml-2 text-blue-500" />
+                                                </div>
                                                 <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
                                                     Model: {car.model || "N/A"}
                                                 </p>
+                                                {car.year && (
+                                                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                                                        Year: {car.year}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
 
@@ -150,8 +170,8 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                                         <button
                                             onClick={() => handleChatWithCar(car)}
                                             className={`flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg ${theme === "dark"
-                                                    ? "bg-[#479cff] text-white"
-                                                    : "bg-[#479cff] text-white"
+                                                ? "bg-[#479cff] text-white"
+                                                : "bg-[#479cff] text-white"
                                                 } transition-colors`}
                                         >
                                             <MessageCircle size={18} />
