@@ -45,7 +45,7 @@ const sendMessage = async (chatId, receiverId, senderId, messageBody) => {
   try {
     if (!chatId || !receiverId || !messageBody.trim()) {
       console.error("Missing chatId, senderId, receiverId, or messageBody");
-      return;
+      return false;
     }
 
     // First check if this chat exists
@@ -53,22 +53,12 @@ const sendMessage = async (chatId, receiverId, senderId, messageBody) => {
     const chatBoxSnap = await getDoc(chatBoxRef);
     
     if (!chatBoxSnap.exists()) {
-      // If the chat doesn't exist with this ID, check the reverse order
-      const reverseChatId = `${receiverId}_${senderId}`;
-      const reverseChatRef = doc(db, `UsersChatBox`, reverseChatId);
-      const reverseChatSnap = await getDoc(reverseChatRef);
-      
-      if (reverseChatSnap.exists()) {
-        // Use the reverse chat ID if it exists
-        chatId = reverseChatId;
+      // If the chat doesn't exist with this ID, we need to initialize it
+      const newChatId = await initializeChat(senderId, receiverId, null, messageBody);
+      if (newChatId) {
+        chatId = newChatId;
       } else {
-        // Initialize a new chat if neither exists
-        const newChatId = await initializeChat(senderId, receiverId, messageBody);
-        if (newChatId) {
-          chatId = newChatId;
-        } else {
-          throw new Error("Failed to initialize chat");
-        }
+        throw new Error("Failed to initialize chat");
       }
     }
 
@@ -154,132 +144,120 @@ const markMessagesAsRead = async (chatId, fetchChatBoxesCallback) => {
   }
 };
 
-const fetchChatBoxes = (userId, callback) => {
-  const chatBoxRef = collection(db, "UsersChatBox");
-
-  const senderQuery = query(chatBoxRef, where("senderId", "==", userId.toString()));
-  const receiverQuery = query(chatBoxRef, where("receiverId", "==", userId.toString()));
-
-  const processSnapshot = async (snapshot) => {
-    const chatBoxes = await Promise.all(
-      snapshot.docs.map(async (docSnap) => {
-        const chatId = docSnap.id;
-        const chatData = docSnap.data();
-
-        const messagesRef = collection(db, `UsersChatBox/${chatId}/chats`);
-        const unreadQuery = query(
-          messagesRef,
-          where("readStatus", "==", "unread"),
-          where("receiverId", "==", userId.toString())
-        );
-        const unreadSnapshot = await getDocs(unreadQuery);
-        const unreadCount = unreadSnapshot.size;
-
-        const otherUserId = chatData.senderId === userId.toString()
-          ? chatData.receiverId
-          : chatData.senderId;
-
-        const userRef = doc(db, "Users", otherUserId);
-        const userSnap = await getDoc(userRef);
-        const userInfo = userSnap.exists() ? userSnap.data() : null;
-
-        return {
-          id: chatId,
-          unreadCount,
-          user: userInfo,
-          ...chatData,
-        };
-      })
-    );
-    return chatBoxes;
-  };
-
-  let allChats = [];
-
-  const unsubscribeSender = onSnapshot(senderQuery, async (senderSnapshot) => {
-    const senderChats = await processSnapshot(senderSnapshot);
-    allChats = [...senderChats];
-
-    callback(allChats);
-  });
-
-  const unsubscribeReceiver = onSnapshot(receiverQuery, async (receiverSnapshot) => {
-    const receiverChats = await processSnapshot(receiverSnapshot);
-
-    const combined = [...allChats, ...receiverChats];
-    const unique = Array.from(new Map(combined.map(chat => [chat.id, chat])).values());
-
-    callback(unique);
-  });
-
-  return () => {
-    unsubscribeSender();
-    unsubscribeReceiver();
-  };
-};
-
-const fetchUsersRealtime = (callback) => {
-  const usersRef = collection(db, "Users");
-
-  return onSnapshot(usersRef, (snapshot) => {
-    const users = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    callback(users);
-  });
-};
-
-const fetchUserById = async (userId, callback) => {
-  const userRef = doc(db, "Users", userId);
-
+// Function to initialize a new chat
+const initializeChat = async (senderId, receiverId, carId, initialMessage = "") => {
   try {
-    const snapshot = await getDoc(userRef);
-    if (snapshot.exists()) {
-      const userData = snapshot.data();
-      console.log(userData);
-
-      if (callback) callback(userData);
-      return userData;
-    } else {
-      console.log("User not found");
-      if (callback) callback(null);
-      return null;
+    senderId = senderId?.toString() || "";
+    receiverId = receiverId?.toString() || "";
+    carId = carId?.toString() || `default_${Date.now()}`;
+    
+    // Check if a chat with these users already exists (in any combination)
+    const existingChatId = await findExistingChat(senderId, receiverId, carId);
+    
+    if (existingChatId) {
+      console.log(`Chat already exists with ID: ${existingChatId}`);
+      return existingChatId;
     }
+    
+    // If no existing chat, create a new one with standard format: senderId_receiverId_carId
+    const chatId = `${senderId}_${receiverId}_${carId}`;
+    
+    // Create new chat document
+    await setDoc(doc(db, "UsersChatBox", chatId), {
+      senderId,
+      receiverId,
+      carId,
+      lastMessage: initialMessage || "Chat started",
+      lastMessageTime: serverTimestamp(),
+      carName: "null"
+    });
+    
+    console.log(`Chat initialized with ID: ${chatId}`);
+
+    // If there's an initial message, add it to the chat
+    if (initialMessage && initialMessage.trim() !== "") {
+      const timestamp = Date.now().toString();
+      const extraDigits = Math.floor(Math.random() * 900) + 100;
+      const messageId = timestamp + extraDigits.toString();
+      
+      const messageRef = doc(db, `UsersChatBox/${chatId}/chats`, messageId);
+      await setDoc(messageRef, {
+        messageBody: initialMessage,
+        senderId,
+        receiverId,
+        massageFileUrl: '',
+        messageFileExtension: '',
+        messageId,
+        readStatus: "unread",
+        serverTime: serverTimestamp(),
+      });
+    }
+    
+    return chatId;
   } catch (error) {
-    console.error("Error fetching user:", error);
-    if (callback) callback(null);
+    console.error("Error initializing chat:", error);
+    return null;
   }
+};
+
+// Function to find an existing chat between two users for a specific car
+const findExistingChat = async (userId1, userId2, carId) => {
+  // Check all possible combinations
+  const possibleCombinations = [
+    `${userId1}_${userId2}_${carId}`,
+    `${userId2}_${userId1}_${carId}`,
+    `${userId1}_${carId}_${userId2}`,
+    `${userId2}_${carId}_${userId1}`,
+    `${carId}_${userId1}_${userId2}`,
+    `${carId}_${userId2}_${userId1}`
+  ];
+  
+  for (const chatId of possibleCombinations) {
+    const chatRef = doc(db, "UsersChatBox", chatId);
+    const chatSnap = await getDoc(chatRef);
+    
+    if (chatSnap.exists()) {
+      return chatId;
+    }
+  }
+  
+  return null; // No existing chat found
+};
+
+// Function to get the correct chat ID (simplified version of findExistingChat)
+const getChatId = async (userId1, userId2, carId) => {
+  return await findExistingChat(userId1, userId2, carId);
 };
 
 const convertTimestampToReadableTime = (timestamp) => {
-  if (!timestamp || typeof timestamp.seconds !== "number") {
-    console.error("Invalid timestamp:", timestamp);
-    return "Invalid time";
+  if (!timestamp) return "";
+  
+  // Handle string ISO dates from optimistic messages
+  if (typeof timestamp === 'string') {
+    const date = new Date(timestamp);
+    return formatTimeFromDate(date);
   }
+  
+  // Handle Firestore timestamps
+  if (timestamp.seconds) {
+    const date = new Date(timestamp.seconds * 1000);
+    return formatTimeFromDate(date);
+  }
+  
+  return "Invalid time";
+};
 
-  const date = new Date(timestamp.seconds * 1000);
-  const now = new Date();
-
+// Helper function for formatting time (referenced in convertTimestampToReadableTime)
+const formatTimeFromDate = (date) => {
+  if (!date || isNaN(date.getTime())) return "Invalid date";
+  
   const hours = date.getHours();
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-
-  const ampm = hours >= 12 ? "PM" : "AM";
-  const formattedHours = (((hours + 11) % 12) + 1).toString().padStart(2, "0");
-
-  const messageDate = date.toDateString();
-  const todayDate = now.toDateString();
-  const yesterday = new Date();
-  yesterday.setDate(now.getDate() - 1);
-
-  if (messageDate === todayDate) {
-    return `${formattedHours}:${minutes} ${ampm}`;
-  } else if (messageDate === yesterday.toDateString()) {
-    return "Yesterday";
-  } else {
-    return date.toLocaleDateString("en-GB");
-  }
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = hours % 12 || 12;
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+  
+  return `${formattedHours}:${formattedMinutes} ${ampm}`;
 };
 
 const addUser = async ({
@@ -315,97 +293,11 @@ const addUser = async ({
   }
 };
 
-const initializeChat = async (senderId, receiverId, initialMessage = "") => {
-  try {
-    // Check both possible chat ID formats
-    const chatId1 = `${senderId}_${receiverId}`;
-    const chatId2 = `${receiverId}_${senderId}`;
-    
-    // Check if either chat exists
-    const chatRef1 = doc(db, "UsersChatBox", chatId1);
-    const chatRef2 = doc(db, "UsersChatBox", chatId2);
-    
-    const chatSnap1 = await getDoc(chatRef1);
-    const chatSnap2 = await getDoc(chatRef2);
-    
-    // If either chat exists, return the existing chatId
-    if (chatSnap1.exists()) {
-      console.log(`Chat already exists with ID: ${chatId1}`);
-      return chatId1;
-    } else if (chatSnap2.exists()) {
-      console.log(`Chat already exists with ID: ${chatId2}`);
-      return chatId2;
-    }
-    
-    // Create new chat with consistent ID format (always senderId_receiverId)
-    const newChatId = chatId1;
-    const chatRef = doc(db, "UsersChatBox", newChatId);
-    
-    await setDoc(chatRef, {
-      senderId,
-      receiverId,
-      lastMessage: initialMessage || "Chat started",
-      lastMessageTime: serverTimestamp()
-    });
-    
-    console.log(`Chat initialized between ${senderId} and ${receiverId} with ID: ${newChatId}`);
-    
-    // Update sender's inbox
-    const senderRef = doc(db, "Users", senderId.toString());
-    const senderSnap = await getDoc(senderRef);
-    
-    if (senderSnap.exists()) {
-      const data = senderSnap.data();
-      
-      if (Array.isArray(data.inboxIds)) {
-        await updateDoc(senderRef, {
-          inboxIds: arrayUnion(newChatId)
-        });
-      } else {
-        await updateDoc(senderRef, {
-          inboxIds: [newChatId]
-        });
-      }
-    } else {
-      await setDoc(senderRef, {
-        inboxIds: [newChatId]
-      }, { merge: true });
-    }
-    
-    return newChatId;
-  } catch (error) {
-    console.error("Error initializing chat:", error);
-    return null;
-  }
-};
-
-// Function to get the correct chat ID
-const getChatId = async (userId1, userId2) => {
-  const chatId1 = `${userId1}_${userId2}`;
-  const chatId2 = `${userId2}_${userId1}`;
-  
-  const chatRef1 = doc(db, "UsersChatBox", chatId1);
-  const chatRef2 = doc(db, "UsersChatBox", chatId2);
-  
-  const chatSnap1 = await getDoc(chatRef1);
-  const chatSnap2 = await getDoc(chatRef2);
-  
-  if (chatSnap1.exists()) {
-    return chatId1;
-  } else if (chatSnap2.exists()) {
-    return chatId2;
-  }
-  
-  return null;
-};
-
 export {
   fetchMessages,
   sendMessage,
   markMessagesAsRead,
-  fetchChatBoxes,  
-  fetchUsersRealtime,
-  fetchUserById,
+
   convertTimestampToReadableTime,
   addUser,
   initializeChat,

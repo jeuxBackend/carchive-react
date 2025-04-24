@@ -58,22 +58,27 @@ const Chat = () => {
     if (selectedChat?.id) {
       const setupChatId = async () => {
         try {
-          // Check if a chat already exists between these users
+          // Format for chat ID is senderId_carId_receiverId
+          const carId = selectedChat.carId || selectedChat.id;
+          
+          // Check if a chat already exists with this combination
           const existingChatId = await getChatId(
             currentUserId.toString(), 
-            selectedChat.id.toString()
+            selectedChat.id.toString(),
+            carId.toString()
           );
           
           if (existingChatId) {
             setActiveChatId(existingChatId);
           } else {
-            // Default to expected format if no chat exists yet
-            setActiveChatId(`${currentUserId}_${selectedChat.id}`);
+            // If no existing chat, format according to the expected pattern
+            setActiveChatId(`${currentUserId}_${carId}_${selectedChat.id}`);
           }
         } catch (err) {
           console.error("Error setting up chat ID:", err);
-          // Fallback to expected format
-          setActiveChatId(`${currentUserId}_${selectedChat.id}`);
+          // Fallback format
+          const carId = selectedChat.carId || selectedChat.id;
+          setActiveChatId(`${currentUserId}_${carId}_${selectedChat.id}`);
         }
       };
       
@@ -88,8 +93,10 @@ const Chat = () => {
       setIsLoading(true);
       setError(null);
 
+      // Mark any unread messages as read when opening the chat
       markMessagesAsRead(activeChatId);
 
+      // Subscribe to real-time message updates
       unsubscribe = fetchMessages(
         activeChatId,
         (fetchedMessages) => {
@@ -116,23 +123,27 @@ const Chat = () => {
 
   const handleSendMessage = async () => {
     if (!messageInput.trim() || !selectedChat?.id || sendingMessage) return;
-
+  
     try {
       setSendingMessage(true);
       
+      // Create an optimistic message for immediate UI update
       const optimisticMessage = {
         id: Date.now().toString(),
         messageBody: messageInput,
         senderId: currentUserId.toString(),
         receiverId: selectedChat.id.toString(),
+        carId: selectedChat.carId || selectedChat.id,
         serverTime: new Date().toISOString(),
         isOptimistic: true 
       };
       
+      // Add optimistic message to UI
       setMessages(prev => [...prev, optimisticMessage]);
       const inputCopy = messageInput;
       setMessageInput("");
       
+      // Actually send the message
       const success = await sendMessage(
         activeChatId,
         selectedChat.id.toString(),
@@ -166,58 +177,27 @@ const Chat = () => {
   };
 
   const handleSelectUser = async (user) => {
-    // try {
-      setSelectedUserId(user.driverId);
-      setIsSidebarOpen(false);
-      setError(null);
-      setIsModalOpen(true);
-      // setIsLoading(true);
-      
-      // Initialize chat and get the correct chatId
-    //   const actualChatId = await initializeChat(
-    //     currentUserId.toString(), 
-    //     user.driverId.toString(), 
-    //     "Hello, let's chat!"
-    //   );
-      
-    //   setSelectedChat({
-    //     id: user.driverId,
-    //     name: user.name,
-    //     lastName: user.lastName,
-    //     email: user.email,
-    //     image: user.image,
-    //     isDriver: true
-    //   });
-      
-    //   // If we have a valid chatId returned, use it directly
-    //   if (actualChatId) {
-    //     setActiveChatId(actualChatId);
-    //   }
-      
-    //   setIsSidebarOpen(false);
-    //   setError(null);
-    //   setIsModalOpen(true);
-    // } catch (error) {
-    //   console.error("Error selecting user:", error);
-    //   setError("Failed to initialize chat");
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    setSelectedUserId(user.driverId);
+    setIsSidebarOpen(false);
+    setError(null);
+    setIsModalOpen(true);
   };
   
   const handleSelectCar = async (car) => {
     try {
       setIsLoading(true);
       
-      // Initialize chat and get the correct chatId
+      // Initialize chat with proper IDs
       const actualChatId = await initializeChat(
-        currentUserId.toString(), 
-        car.id.toString(), 
+        currentUserId?.toString(), 
+        selectedUserId.toString(),
+        car?.carId?.toString(), 
         "Hello, I'd like to chat about this car."
       );
       
       setSelectedChat({
-        id: car.id,
+        id: selectedUserId,  // Set the user ID as the primary ID
+        carId: car.carId,    // Store car ID separately
         name: car.name,
         image: car.image,
         model: car.model,
@@ -231,6 +211,7 @@ const Chat = () => {
       }
       
       setIsSidebarOpen(false);
+      setIsModalOpen(false);
       setError(null);
     } catch (error) {
       console.error("Error selecting car:", error);
@@ -301,7 +282,7 @@ const Chat = () => {
               </div>
             ) : (
               filteredUsers.map((user) => (
-                <div key={user.id}>
+                <div key={user.id || user.driverId}>
                   <div
                     className={`flex items-center p-3 cursor-pointer border-b border-dashed 
                       ${theme === "dark" ? "border-[#464749]" : "border-[#e8e8e8]"} 
@@ -438,11 +419,11 @@ const Chat = () => {
             />
             <button
               onClick={handleSendMessage}
-              disabled={!messageInput.trim() || !selectedChat?.id}
+              disabled={!messageInput.trim() || !selectedChat?.id || sendingMessage}
               className="absolute right-10 top-1/2 transform -translate-y-1/2 text-xl cursor-pointer"
             >
               <LuSend
-                className={`${!messageInput.trim() || !selectedChat?.id ? 'opacity-50' : 'opacity-100'}`}
+                className={`${!messageInput.trim() || !selectedChat?.id || sendingMessage ? 'opacity-50' : 'opacity-100'}`}
               />
             </button>
           </div>
