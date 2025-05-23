@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useTheme } from "../../Contexts/ThemeContext";
-import { CiSearch } from "react-icons/ci";
+import { CiClock2, CiSearch } from "react-icons/ci";
 import { LuSend } from "react-icons/lu";
-import { MessageCircle, Car } from 'lucide-react';
+import { MessageCircle, Car, Home } from 'lucide-react';
 
 import ham from "../../assets/hamburger.png";
 import hamLight from "../../assets/hamLight.png";
@@ -16,7 +16,7 @@ import {
   getChatId
 } from '../../utils/ChatUtils';
 import { useGlobalContext } from '../../Contexts/GlobalContext';
-import { getDrivers } from '../../API/portalServices';
+import { getDrivers, getGaragesList } from '../../API/portalServices';
 import CarsModal from './CarsModal';
 
 const Chat = () => {
@@ -26,6 +26,7 @@ const Chat = () => {
   const [selectedChat, setSelectedChat] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [users, setUsers] = useState([]);
+  const [garages, setGarages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
   const [activeChatId, setActiveChatId] = useState("");
   const [messages, setMessages] = useState([]);
@@ -35,50 +36,77 @@ const Chat = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [sendingMessage, setSendingMessage] = useState(false);
+  const [activeTab, setActiveTab] = useState("drivers");
   const messagesEndRef = useRef(null);
 
-  const fetchDriverData = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await getDrivers();
-      setUsers(response?.data?.data || []);
+      const [driversResponse, garagesResponse] = await Promise.all([
+        getDrivers(),
+        getGaragesList()
+      ]);
+      
+      setUsers(driversResponse?.data?.data || []);
+      setGarages(garagesResponse?.data?.data || []);
+      console.log("Garages:", garagesResponse?.data?.data);
     } catch (error) {
-      setError("Failed to load users: " + error.message);
-      console.error("Error fetching drivers data:", error);
+      setError("Failed to load data: " + error.message);
+      console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
     }
   }, []);
   
   useEffect(() => {
-    fetchDriverData();
-  }, [fetchDriverData]);
+    fetchData();
+  }, [fetchData]);
 
   useEffect(() => {
     if (selectedChat?.id) {
       const setupChatId = async () => {
         try {
-          // Format for chat ID is senderId_carId_receiverId
-          const carId = selectedChat.carId || selectedChat.id;
+         
+          if (selectedChat.isGarage) {
+      
+            const existingChatId = await getChatId(
+              currentUserId.toString(), 
+              selectedChat.id.toString(),
+              null, 
+              true 
+            );
+            
+            if (existingChatId) {
+              setActiveChatId(existingChatId);
+            } else {
           
-          // Check if a chat already exists with this combination
-          const existingChatId = await getChatId(
-            currentUserId.toString(), 
-            selectedChat.id.toString(),
-            carId.toString()
-          );
-          
-          if (existingChatId) {
-            setActiveChatId(existingChatId);
+              setActiveChatId(`${currentUserId}_${selectedChat.id}`);
+            }
           } else {
-            // If no existing chat, format according to the expected pattern
-            setActiveChatId(`${currentUserId}_${carId}_${selectedChat.id}`);
+     
+            const carId = selectedChat.carId || selectedChat.id;
+            
+            const existingChatId = await getChatId(
+              currentUserId.toString(), 
+              selectedChat.id.toString(),
+              carId.toString()
+            );
+            
+            if (existingChatId) {
+              setActiveChatId(existingChatId);
+            } else {
+              setActiveChatId(`${currentUserId}_${carId}_${selectedChat.id}`);
+            }
           }
         } catch (err) {
           console.error("Error setting up chat ID:", err);
-          // Fallback format
-          const carId = selectedChat.carId || selectedChat.id;
-          setActiveChatId(`${currentUserId}_${carId}_${selectedChat.id}`);
+
+          if (selectedChat.isGarage) {
+            setActiveChatId(`${currentUserId}_${selectedChat.id}`);
+          } else {
+            const carId = selectedChat.carId || selectedChat.id;
+            setActiveChatId(`${currentUserId}_${carId}_${selectedChat.id}`);
+          }
         }
       };
       
@@ -93,10 +121,10 @@ const Chat = () => {
       setIsLoading(true);
       setError(null);
 
-      // Mark any unread messages as read when opening the chat
+
       markMessagesAsRead(activeChatId);
 
-      // Subscribe to real-time message updates
+
       unsubscribe = fetchMessages(
         activeChatId,
         (fetchedMessages) => {
@@ -127,32 +155,33 @@ const Chat = () => {
     try {
       setSendingMessage(true);
       
-      // Create an optimistic message for immediate UI update
+ 
       const optimisticMessage = {
         id: Date.now().toString(),
         messageBody: messageInput,
         senderId: currentUserId.toString(),
         receiverId: selectedChat.id.toString(),
-        carId: selectedChat.carId || selectedChat.id,
+        carId: selectedChat.isGarage ? null : (selectedChat.carId || selectedChat.id),
         serverTime: new Date().toISOString(),
         isOptimistic: true 
       };
       
-      // Add optimistic message to UI
+   
       setMessages(prev => [...prev, optimisticMessage]);
       const inputCopy = messageInput;
       setMessageInput("");
       
-      // Actually send the message
+
       const success = await sendMessage(
         activeChatId,
         selectedChat.id.toString(),
         currentUserId.toString(),
-        inputCopy
+        inputCopy,
+        selectedChat.isGarage
       );
       
       if (!success) {
-        // Remove the optimistic message if sending failed
+    
         setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
         setError("Failed to send message. Please try again.");
         setMessageInput(inputCopy);
@@ -187,7 +216,7 @@ const Chat = () => {
     try {
       setIsLoading(true);
       
-      // Initialize chat with proper IDs
+  
       const actualChatId = await initializeChat(
         currentUserId?.toString(), 
         selectedUserId.toString(),
@@ -196,16 +225,15 @@ const Chat = () => {
       );
       
       setSelectedChat({
-        id: selectedUserId,  // Set the user ID as the primary ID
-        carId: car.carId,    // Store car ID separately
-        name: car.name,
+        id: selectedUserId,  
+        carId: car.carId,    
+        name: car.make,
         image: car.image,
         model: car.model,
         make: car.make,
         isCar: true
       });
-      
-      // If we have a valid chatId returned, use it directly
+ 
       if (actualChatId) {
         setActiveChatId(actualChatId);
       }
@@ -221,9 +249,46 @@ const Chat = () => {
     }
   };
 
+  const handleSelectGarage = async (garage) => {
+    try {
+      setIsLoading(true);
+
+      const actualChatId = await initializeChat(
+        currentUserId?.toString(), 
+        garage.garageUserId.toString(),
+        null,
+        "Hello, I'd like to chat with your garage.",
+        true 
+      );
+      
+      setSelectedChat({
+        id: garage.garageUserId,
+        name: garage.garageName,
+        image: garage.image,
+        isGarage: true
+      });
+
+      if (actualChatId) {
+        setActiveChatId(actualChatId);
+      }
+      
+      setIsSidebarOpen(false);
+      setError(null);
+    } catch (error) {
+      console.error("Error selecting garage:", error);
+      setError("Failed to initialize chat");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const filteredUsers = users.filter(user =>
     user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredGarages = garages.filter(garage =>
+    garage?.garageName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -256,10 +321,30 @@ const Chat = () => {
             <FiX size={24} />
           </button>
 
+          {/* Tab Selector */}
+          <div className="flex mb-4 border-b">
+            <button 
+              onClick={() => setActiveTab("drivers")}
+              className={`flex-1 py-2 ${activeTab === "drivers" ? 
+                theme === "dark" ? "border-b-2 border-blue-400 text-blue-400" : "border-b-2 border-blue-500 text-blue-500" : 
+                ""}`}
+            >
+              Drivers
+            </button>
+            <button 
+              onClick={() => setActiveTab("garages")}
+              className={`flex-1 py-2 ${activeTab === "garages" ? 
+                theme === "dark" ? "border-b-2 border-blue-400 text-blue-400" : "border-b-2 border-blue-500 text-blue-500" : 
+                ""}`}
+            >
+              Garages
+            </button>
+          </div>
+
           <div className="relative w-full my-3">
             <input
               type="text"
-              placeholder="Search for a user..."
+              placeholder={`Search for ${activeTab === "drivers" ? "a user" : "a garage"}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={`w-full p-3 pl-4 pr-10 rounded-3xl ${theme === "dark" ? "bg-[#292A2C] text-white border border-white/30 " : "bg-white text-black border-gray-300"} focus:outline-none shadow`}
@@ -268,57 +353,105 @@ const Chat = () => {
           </div>
 
           <div className="space-y-2 overflow-y-auto max-h-[calc(100%-80px)]">
-            {isLoading && users.length === 0 ? (
+            {isLoading && (activeTab === "drivers" ? users.length === 0 : garages.length === 0) ? (
               <div className="flex justify-center items-center h-32">
-                <p className="text-gray-500">Loading users...</p>
+                <p className="text-gray-500">Loading {activeTab}...</p>
               </div>
-            ) : error && users.length === 0 ? (
+            ) : error && (activeTab === "drivers" ? users.length === 0 : garages.length === 0) ? (
               <div className="flex justify-center items-center h-32">
                 <p className="text-red-500">{error}</p>
               </div>
-            ) : filteredUsers.length === 0 ? (
-              <div className="flex justify-center items-center h-32">
-                <p className="text-gray-500">No users found</p>
-              </div>
-            ) : (
-              filteredUsers.map((user) => (
-                <div key={user.id || user.driverId}>
-                  <div
-                    className={`flex items-center p-3 cursor-pointer border-b border-dashed 
-                      ${theme === "dark" ? "border-[#464749]" : "border-[#e8e8e8]"} 
-                      ${selectedChat.id === user.driverId && selectedChat.isDriver ? 
-                        (theme === "dark" ? "bg-gray-700 " : "bg-gray-300 ") : ""}`}
-                  >
-                    <img 
-                      src={user.image} 
-                      alt={user.name} 
-                      className="w-10 h-10 rounded-full object-cover"
-                      onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
-                    />
-                    <div className="ml-3 flex-grow">
-                      <div className='flex items-center justify-between w-full'>
-                        <h3 className="font-semibold">{user.name} {user.lastName}</h3>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate max-w-[70%]`}>
-                          {user.email}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Chat with user button */}
+            ) : activeTab === "drivers" ? (
+              filteredUsers.length === 0 ? (
+                <div className="flex justify-center items-center h-32">
+                  <p className="text-gray-500">No drivers found</p>
+                </div>
+              ) : (
+                filteredUsers.map((user) => (
+                  <div key={user.id || user.driverId}>
                     <div
-                      onClick={() => handleSelectUser(user)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
-                        ${theme === "dark" ? "bg-[#479cff] text-white" 
-                        : "bg-[#479cff] text-white"} transition-colors`}
+                      className={`flex items-center p-3 cursor-pointer border-b border-dashed 
+                        ${theme === "dark" ? "border-[#464749]" : "border-[#e8e8e8]"} 
+                        ${selectedChat.id === user.driverId && selectedChat.isDriver ? 
+                          (theme === "dark" ? "bg-gray-700 " : "bg-gray-300 ") : ""}`}
                     >
-                      <MessageCircle size={18} />
-                      <span>Chat</span>
+                      <img 
+                        src={user.image} 
+                        alt={user.name} 
+                        className="w-10 h-10 rounded-full object-cover"
+                        onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
+                      />
+                      <div className="ml-3 flex-grow">
+                        <div className='flex items-center justify-between w-full'>
+                          <h3 className="font-semibold">{user.name} {user.lastName}</h3>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate max-w-[70%]`}>
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Chat with user button */}
+                      <div
+                        onClick={() => handleSelectUser(user)}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
+                          ${theme === "dark" ? "bg-[#479cff] text-white" 
+                          : "bg-[#479cff] text-white"} transition-colors`}
+                      >
+                        <MessageCircle size={18} />
+                        <span>Chat</span>
+                      </div>
                     </div>
                   </div>
+                ))
+              )
+            ) : (
+              // Garages Tab Content
+              filteredGarages.length === 0 ? (
+                <div className="flex justify-center items-center h-32">
+                  <p className="text-gray-500">No garages found</p>
                 </div>
-              ))
+              ) : (
+                filteredGarages.map((garage) => (
+                  <div key={garage.garageId}>
+                    <div
+                      className={`flex items-center p-3 cursor-pointer border-b border-dashed 
+                        ${theme === "dark" ? "border-[#464749]" : "border-[#e8e8e8]"} 
+                        ${selectedChat.id === garage.garageUserId && selectedChat.isGarage ? 
+                          (theme === "dark" ? "bg-gray-700 " : "bg-gray-300 ") : ""}`}
+                    >
+                      <img 
+                        src={garage.image} 
+                        alt={garage.garageName} 
+                        className="w-10 h-10 rounded-full object-cover"
+                        onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
+                      />
+                      <div className="ml-3 flex-grow">
+                        <div className='flex items-center justify-between w-full'>
+                          <h3 className="font-semibold">{garage.garageName}</h3>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate max-w-[70%]`}>
+                            {garage.carVin || "No VIN"}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Chat with garage button */}
+                      <div
+                        onClick={() => handleSelectGarage(garage)}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
+                          ${theme === "dark" ? "bg-[#479cff] text-white" 
+                          : "bg-[#479cff] text-white"} transition-colors`}
+                      >
+                        <MessageCircle size={18} />
+                        <span>Chat</span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )
             )}
           </div>
         </div>
@@ -349,11 +482,14 @@ const Chat = () => {
             <div className="ml-3 flex-grow">
               <div className="flex items-center">
                 <h3 className="font-semibold">
-                  {selectedChat?.make ? selectedChat.make : "Select a chat"}
+                  {selectedChat?.name || selectedChat?.make || "Select a chat"}
                   {selectedChat?.lastName ? ` ${selectedChat.lastName}` : ''}
                 </h3>
                 {selectedChat?.isCar && (
                   <Car size={16} className="ml-2 text-blue-500" />
+                )}
+                {selectedChat?.isGarage && (
+                  <Home size={16} className="ml-2 text-green-500" />
                 )}
               </div>
               {selectedChat?.isCar ? (
@@ -361,6 +497,8 @@ const Chat = () => {
                   {selectedChat?.make ? `${selectedChat.make} · ` : ''}
                   {selectedChat?.model || ""}
                 </p>
+              ) : selectedChat?.isGarage ? (
+                <p className="text-sm">Garage</p>
               ) : (
                 <p className="text-sm">{selectedChat?.email || ""}</p>
               )}
@@ -396,7 +534,8 @@ const Chat = () => {
                     <div className={`text-xs ${theme === "dark" ? "text-gray-400" : "text-gray-500"} flex justify-between items-center mt-1`}>
                       <span>{formatMessageTime(msg.serverTime)}</span>
                       {msg.isOptimistic && (
-                        <span className="ml-2">Sending...</span>
+                        <span className="ml-2"><CiClock2 />
+</span>
                       )}
                     </div>
                   </div>

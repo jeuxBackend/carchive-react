@@ -194,10 +194,7 @@ function UpdateVehicle() {
     if (
       !vehicleData?.make ||
       !vehicleData?.model ||
-      !vehicleData?.vinNumber ||
-      !vehicleData?.numberPlate ||
-      !vehicleData?.manufacturingYear ||
-      !vehicleData?.registrationExpiry
+      !vehicleData?.vinNumber 
     ) {
       toast.error("Please fill in all required fields");
       return false;
@@ -213,30 +210,6 @@ function UpdateVehicle() {
       return false;
     }
 
-    if (regDocs.length === 0 && regDocPreviews.length === 0) {
-      toast.error("Please add at least one registration document");
-      return false;
-    }
-
-    if (insuranceDocs.length === 0 && insuranceDocPreviews.length === 0) {
-      toast.error("Please add at least one insurance document");
-      return false;
-    }
-
-    if (inspectionDocs.length === 0 && inspectionDocPreviews.length === 0) {
-      toast.error("Please add at least one inspection document");
-      return false;
-    }
-
-    if (additionalDocs.length === 0 && additionalDocPreviews.length === 0) {
-      toast.error("Please add at least one additional document");
-      return false;
-    }
-    
-    if (additionalDates.length === 0 || additionalDates.some(date => date === null)) {
-      toast.error("All additional dates must be valid");
-      return false;
-    }
     
     return true;
   };
@@ -246,14 +219,13 @@ function UpdateVehicle() {
     
     setLoading(true);
     try {
-      // Filter out existing URLs (which are already on the server)
+  
       const newVehicleImages = vehicleImages.filter(img => !(typeof img === 'string' && img.startsWith('http')));
       const newRegDocs = regDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
       const newInsuranceDocs = insuranceDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
       const newInspectionDocs = inspectionDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
       const newAdditionalDocs = additionalDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
-      
-      // Format dates properly before sending to API
+
       const formattedDates = additionalDates.map(date => 
         date ? dayjs(date).format('YYYY-MM-DD') : ''
       );
@@ -266,7 +238,7 @@ function UpdateVehicle() {
         insuranceDocument: newInsuranceDocs,
         inspectionDocument: newInspectionDocs,
         additionalDocuments: newAdditionalDocs,
-        additionalExpiry: formattedDates // Send array of formatted dates
+        additionalExpiry: formattedDates 
       };
       
       const response = await updateVehicle(updateData);
@@ -357,7 +329,9 @@ function UpdateVehicle() {
           >
             Details
           </p>
-          <div className="pt-3 flex flex-col gap-8">
+          <div className="pt-3 flex flex-col gap-3">
+          <p className='text-[#fff]'>Make*</p>
+
             <MakesDropdown
               label="Vehicle Make"
               value={vehicleData}
@@ -365,31 +339,35 @@ function UpdateVehicle() {
               fieldKey="make"
               options={makesData}
             />
+            <p className='text-[#fff]'>Model*</p>
             <InputField
               label="Model"
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="model"
             />
+            <p className='text-[#fff]'>VIN Number*</p>
             <InputField
               label="Vin Number"
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="vinNumber"
             />
+            <p className='text-[#fff]'>Miles</p>
             <InputField
               label="Miles"
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="mileage"
             />
+            <p className='text-[#fff]'>Number Plate</p>
             <InputField
               label="Number Plate"
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="numberPlate"
             />
-            <div className="flex gap-6 sm:gap-3 sm:flex-row flex-col">
+            <div className="flex gap-6 sm:gap-3 sm:flex-row flex-col pt-4">
               <BasicDatePicker
                 label="Manufacturing Year"
                 value={vehicleData}
@@ -403,7 +381,7 @@ function UpdateVehicle() {
                 fieldKey="registrationExpiry"
               />
             </div>
-            <div className="flex gap-6 sm:gap-3 sm:flex-row flex-col">
+            <div className="flex gap-6 sm:gap-3 sm:flex-row flex-col pt-4">
               <BasicDatePicker
                 label="Insurance Expiry"
                 value={vehicleData}

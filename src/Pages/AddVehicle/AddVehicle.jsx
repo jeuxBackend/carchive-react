@@ -25,7 +25,7 @@ function AddVehicle() {
     const [insuranceDocs, setInsuranceDocs] = useState([])
     const [inspectionDocs, setInspectionDocs] = useState([])
     const [additionalDocs, setAdditionalDocs] = useState([])
-    const [additionalDates, setAdditionalDates] = useState([null]) // Initialize with one null date
+    const [additionalDates, setAdditionalDates] = useState([null]) 
     const navigate = useNavigate();
     const [vehicleData, setVehicleData] = useState({
         vinNumber: "",
@@ -37,7 +37,7 @@ function AddVehicle() {
         mileage: "",
         chassis: "",
         numberPlate: "",
-        additionalExpiry: "",  // Keep for backward compatibility
+        additionalExpiry: "",  
         registrationExpiry: "",
         manufacturingYear: "",
         insuranceStatus: "0",
@@ -48,12 +48,10 @@ function AddVehicle() {
         additionalTitles: ""
     });
 
-    // Function to add a new date field
     const addDateField = () => {
         setAdditionalDates([...additionalDates, null]);
     };
 
-    // Function to remove a date field
     const removeDateField = (index) => {
         if (additionalDates.length > 1) {
             const newDates = [...additionalDates];
@@ -64,7 +62,6 @@ function AddVehicle() {
         }
     };
 
-    // Function to update a specific date
     const updateDate = (index, newDate) => {
         const updatedDates = [...additionalDates];
         updatedDates[index] = newDate;
@@ -74,23 +71,20 @@ function AddVehicle() {
     console.log("additionalDates", additionalDates)
 
     const handleAddVehicle = async () => {
-        if (!vehicleData?.make || !vehicleData?.model || !vehicleData?.vinNumber || !vehicleData?.numberPlate || !vehicleData?.manufacturingYear || !vehicleData?.registrationExpiry) {
+        if (!vehicleData?.make || !vehicleData?.model || !vehicleData?.vinNumber) {
             toast.error("All fields are required")
-        } else if (regDocs.length === 0 || insuranceDocs.length === 0 || inspectionDocs.length === 0 || vehicleImages.length === 0 || additionalDocs.length === 0) {
-            toast.error("All documents are required")
+        } else if (vehicleImages.length === 0 ) {
+            toast.error("Vehicle images are required")
         } else if (vehicleData.vinNumber.length !== 17) {
             toast.error("Vin Number must be 17 characters")
-        } else if (additionalDates.length === 0 || additionalDates.some(date => date === null)) {
-            toast.error("All additional dates must be valid")
         } else {
             setLoading(true)
             try {
-                // Format dates properly before sending to API
+
                 const formattedDates = additionalDates.map(date => 
                     date ? dayjs(date).format('YYYY-MM-DD') : ''
                 );
-                
-                // Include the additional dates array in the submission
+
                 const response = await addVehicle({
                     ...vehicleData,
                     image: vehicleImages,
@@ -98,13 +92,13 @@ function AddVehicle() {
                     insuranceDocument: insuranceDocs,
                     inspectionDocument: inspectionDocs,
                     additionalDocuments: additionalDocs,
-                    additionalExpiry: formattedDates // Send array of formatted dates
+                    additionalExpiry: formattedDates
                 })
 
                 if (response.data) {
                     toast.success("Vehicle Added Successfully")
                     console.log(response.data);
-                    navigate("/vehicles") // Changed to lowercase to match route definition
+                    navigate("/Vehicles") 
                 }
             } catch (error) {
                 console.log(error);
@@ -152,7 +146,8 @@ function AddVehicle() {
             <div className='flex gap-5 lg:flex-row flex-col'>
                 <div className={`w-full lg:w-[50%] ${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
                     <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>Details</div>
-                    <div className='pt-3 flex flex-col gap-8'>
+                    <div className='pt-3 flex flex-col gap-3'>
+                        <p className='text-[#fff]'>Make*</p>
                         <MakesDropdown
                             label="Vehicle Make"
                             value={vehicleData}
@@ -160,15 +155,19 @@ function AddVehicle() {
                             fieldKey="make"
                             options={makesData}
                         />
+                        <p className='text-[#fff]'>Model*</p>
                         <InputField label='Model' value={vehicleData} setValue={setVehicleData} fieldKey="model" />
+                        <p className='text-[#fff]'>VIN Number*</p>
                         <InputField label='Vin Number' value={vehicleData} setValue={setVehicleData} fieldKey="vinNumber" />
+                        <p className='text-[#fff]'>Miles</p>
                         <InputField label='Miles' value={vehicleData} setValue={setVehicleData} fieldKey="mileage" />
+                        <p className='text-[#fff]'>Number Plate</p>
                         <InputField label='Number Plate' value={vehicleData} setValue={setVehicleData} fieldKey="numberPlate" />
-                        <div className='flex gap-6 sm:gap-3 sm:flex-row flex-col'>
+                        <div className='flex gap-6 sm:gap-3 sm:flex-row flex-col pt-3'>
                             <BasicDatePicker label="Manufacturing Year" value={vehicleData} setValue={setVehicleData} fieldKey="manufacturingYear" />
                             <BasicDatePicker label="Registration Expiry" value={vehicleData} setValue={setVehicleData} fieldKey="registrationExpiry" />
                         </div>
-                        <div className='flex gap-6 sm:gap-3 sm:flex-row flex-col'>
+                        <div className='flex gap-6 sm:gap-3 sm:flex-row flex-col pt-3'>
                             <BasicDatePicker label="Insurance Expiry" value={vehicleData} setValue={setVehicleData} fieldKey="insuranceExpiry" />
                             <BasicDatePicker label="Vehicle Inspection" value={vehicleData} setValue={setVehicleData} fieldKey="inspectionExpiry" />
                         </div>

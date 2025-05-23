@@ -41,20 +41,27 @@ const fetchMessages = (chatId, callback, errorCallback) => {
   });
 };
 
-const sendMessage = async (chatId, receiverId, senderId, messageBody) => {
+const sendMessage = async (chatId, receiverId, senderId, messageBody, isGarageChat = false) => {
   try {
     if (!chatId || !receiverId || !messageBody.trim()) {
       console.error("Missing chatId, senderId, receiverId, or messageBody");
       return false;
     }
 
-    // First check if this chat exists
+    
     const chatBoxRef = doc(db, `UsersChatBox`, chatId);
     const chatBoxSnap = await getDoc(chatBoxRef);
     
     if (!chatBoxSnap.exists()) {
-      // If the chat doesn't exist with this ID, we need to initialize it
-      const newChatId = await initializeChat(senderId, receiverId, null, messageBody);
+    
+      const newChatId = await initializeChat(
+        senderId, 
+        receiverId, 
+        isGarageChat ? null : 'default', 
+        messageBody,
+        isGarageChat
+      );
+      
       if (newChatId) {
         chatId = newChatId;
       } else {
@@ -78,7 +85,6 @@ const sendMessage = async (chatId, receiverId, senderId, messageBody) => {
       });
     });
 
-    // Create a unique message ID
     const timestamp = Date.now().toString();
     const extraDigits = Math.floor(Math.random() * 900) + 100;
     const messageId = timestamp + extraDigits.toString();
@@ -86,7 +92,7 @@ const sendMessage = async (chatId, receiverId, senderId, messageBody) => {
     const messageRef = doc(db, `UsersChatBox/${chatId}/chats`, messageId);
     const updatedChatBoxRef = doc(db, `UsersChatBox/${chatId}`);
 
-    await setDoc(messageRef, {
+    const messageData = {
       messageBody,
       senderId,
       receiverId,
@@ -95,7 +101,13 @@ const sendMessage = async (chatId, receiverId, senderId, messageBody) => {
       messageId,
       readStatus: "unread",
       serverTime: serverTimestamp(),
-    });
+    };
+ 
+    if (!isGarageChat && chatBoxSnap.exists() && chatBoxSnap.data().carId) {
+      messageData.carId = chatBoxSnap.data().carId;
+    }
+    
+    await setDoc(messageRef, messageData);
 
     await updateDoc(updatedChatBoxRef, {
       lastMessage: messageBody,
@@ -144,44 +156,88 @@ const markMessagesAsRead = async (chatId, fetchChatBoxesCallback) => {
   }
 };
 
-// Function to initialize a new chat
-const initializeChat = async (senderId, receiverId, carId, initialMessage = "") => {
+const updateUserInboxIds = async (userId, chatId) => {
+  try {
+    if (!userId || !chatId) {
+      console.error("Missing userId or chatId for updating inboxIds");
+      return false;
+    }
+    
+    const userRef = doc(db, "Users", userId);
+    const userDoc = await getDoc(userRef);
+    
+    if (!userDoc.exists()) {
+      console.error(`User document not found for ID: ${userId}`);
+      return false;
+    }
+    
+
+    await updateDoc(userRef, {
+      inboxIds: arrayUnion(chatId)
+    });
+    
+    console.log(`Added chatId ${chatId} to inboxIds for user ${userId}`);
+    return true;
+  } catch (error) {
+    console.error(`Error updating inboxIds for user ${userId}:`, error);
+    return false;
+  }
+};
+
+
+const initializeChat = async (senderId, receiverId, carId, initialMessage = "", isGarageChat = false) => {
   try {
     senderId = senderId?.toString() || "";
     receiverId = receiverId?.toString() || "";
-    carId = carId?.toString() || `default_${Date.now()}`;
     
-    // Check if a chat with these users already exists (in any combination)
-    const existingChatId = await findExistingChat(senderId, receiverId, carId);
+    let chatId;
     
-    if (existingChatId) {
-      console.log(`Chat already exists with ID: ${existingChatId}`);
-      return existingChatId;
+    if (isGarageChat) {
+
+      const existingChatId = await findExistingChat(senderId, receiverId, null, true);
+      
+      if (existingChatId) {
+        console.log(`Garage chat already exists with ID: ${existingChatId}`);
+        return existingChatId;
+      }
+   
+      chatId = `${receiverId}_${senderId}`;
+    } else {
+
+      carId = carId?.toString() || `default_${Date.now()}`;
+
+      const existingChatId = await findExistingChat(senderId, receiverId, carId);
+      
+      if (existingChatId) {
+        console.log(`Car chat already exists with ID: ${existingChatId}`);
+        return existingChatId;
+      }
+
+      chatId = `${receiverId}_${senderId}_${carId}`;
     }
-    
-    // If no existing chat, create a new one with standard format: senderId_receiverId_carId
-    const chatId = `${senderId}_${receiverId}_${carId}`;
-    
-    // Create new chat document
-    await setDoc(doc(db, "UsersChatBox", chatId), {
+
+    const chatData = {
       senderId,
       receiverId,
-      carId,
       lastMessage: initialMessage || "Chat started",
       lastMessageTime: serverTimestamp(),
-      carName: "null"
-    });
+    };
+
+    if (!isGarageChat && carId) {
+      chatData.carId = carId;
+      chatData.carName = "null";
+    }
+
+    await setDoc(doc(db, "UsersChatBox", chatId), chatData);
     
     console.log(`Chat initialized with ID: ${chatId}`);
 
-    // If there's an initial message, add it to the chat
     if (initialMessage && initialMessage.trim() !== "") {
       const timestamp = Date.now().toString();
       const extraDigits = Math.floor(Math.random() * 900) + 100;
       const messageId = timestamp + extraDigits.toString();
       
-      const messageRef = doc(db, `UsersChatBox/${chatId}/chats`, messageId);
-      await setDoc(messageRef, {
+      const messageData = {
         messageBody: initialMessage,
         senderId,
         receiverId,
@@ -190,8 +246,20 @@ const initializeChat = async (senderId, receiverId, carId, initialMessage = "") 
         messageId,
         readStatus: "unread",
         serverTime: serverTimestamp(),
-      });
+      };
+
+      if (!isGarageChat && carId) {
+        messageData.carId = carId;
+      }
+      
+      const messageRef = doc(db, `UsersChatBox/${chatId}/chats`, messageId);
+      await setDoc(messageRef, messageData);
     }
+
+    await Promise.all([
+      updateUserInboxIds(senderId, chatId),
+      updateUserInboxIds(receiverId, chatId)
+    ]);
     
     return chatId;
   } catch (error) {
@@ -200,45 +268,56 @@ const initializeChat = async (senderId, receiverId, carId, initialMessage = "") 
   }
 };
 
-// Function to find an existing chat between two users for a specific car
-const findExistingChat = async (userId1, userId2, carId) => {
-  // Check all possible combinations
-  const possibleCombinations = [
-    `${userId1}_${userId2}_${carId}`,
-    `${userId2}_${userId1}_${carId}`,
-    `${userId1}_${carId}_${userId2}`,
-    `${userId2}_${carId}_${userId1}`,
-    `${carId}_${userId1}_${userId2}`,
-    `${carId}_${userId2}_${userId1}`
-  ];
-  
-  for (const chatId of possibleCombinations) {
-    const chatRef = doc(db, "UsersChatBox", chatId);
-    const chatSnap = await getDoc(chatRef);
+const findExistingChat = async (userId1, userId2, carId, isGarageChat = false) => {
+  try {
+    let possibleCombinations = [];
     
-    if (chatSnap.exists()) {
-      return chatId;
-    }
-  }
+    if (isGarageChat) {
+
+      possibleCombinations = [
+        `${userId1}_${userId2}`,
+        `${userId2}_${userId1}`
+      ];
+    } else {
   
-  return null; // No existing chat found
+      possibleCombinations = [
+        `${userId1}_${userId2}_${carId}`,
+        `${userId2}_${userId1}_${carId}`,
+        `${userId1}_${carId}_${userId2}`,
+        `${userId2}_${carId}_${userId1}`,
+        `${carId}_${userId1}_${userId2}`,
+        `${carId}_${userId2}_${userId1}`
+      ];
+    }
+    
+    for (const chatId of possibleCombinations) {
+      const chatRef = doc(db, "UsersChatBox", chatId);
+      const chatSnap = await getDoc(chatRef);
+      
+      if (chatSnap.exists()) {
+        return chatId;
+      }
+    }
+    
+    return null; 
+  } catch (error) {
+    console.error("Error finding existing chat:", error);
+    return null;
+  }
 };
 
-// Function to get the correct chat ID (simplified version of findExistingChat)
-const getChatId = async (userId1, userId2, carId) => {
-  return await findExistingChat(userId1, userId2, carId);
+const getChatId = async (userId1, userId2, carId, isGarageChat = false) => {
+  return await findExistingChat(userId1, userId2, carId, isGarageChat);
 };
 
 const convertTimestampToReadableTime = (timestamp) => {
   if (!timestamp) return "";
-  
-  // Handle string ISO dates from optimistic messages
+
   if (typeof timestamp === 'string') {
     const date = new Date(timestamp);
     return formatTimeFromDate(date);
   }
-  
-  // Handle Firestore timestamps
+
   if (timestamp.seconds) {
     const date = new Date(timestamp.seconds * 1000);
     return formatTimeFromDate(date);
@@ -247,7 +326,7 @@ const convertTimestampToReadableTime = (timestamp) => {
   return "Invalid time";
 };
 
-// Helper function for formatting time (referenced in convertTimestampToReadableTime)
+
 const formatTimeFromDate = (date) => {
   if (!date || isNaN(date.getTime())) return "Invalid date";
   
@@ -297,9 +376,9 @@ export {
   fetchMessages,
   sendMessage,
   markMessagesAsRead,
-
   convertTimestampToReadableTime,
   addUser,
   initializeChat,
-  getChatId
+  getChatId,
+  updateUserInboxIds
 };

@@ -10,8 +10,6 @@ import { toast } from "react-toastify";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 
 
-
-
 function TransferVehicle({ open, setOpen }) {
     if (!open) return null;
     const { theme } = useTheme()

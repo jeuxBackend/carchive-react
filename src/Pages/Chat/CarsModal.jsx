@@ -38,7 +38,7 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
 
     const handleChatWithCar = async (car) => {
         try {
-            // Attempt to initialize chat with proper IDs
+       
             const chatId = await initializeChat(
                 currentUserId?.toString(), 
                 id?.toString(), 
@@ -46,7 +46,7 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                 "Hello, I'd like to chat about this car."
             );
       
-            // Pass the car data to the parent component
+      
             onSelectCar({
                 carId: car?.id?.toString(),
                 name: car.name || "Unnamed Car",

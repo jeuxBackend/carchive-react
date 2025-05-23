@@ -32,6 +32,9 @@ export const getDrivers = () => API.get("/portal/getCompanyDrivers");
 export const delDriver = (companyId) => API.get(`/portal/deleteDriver/${companyId}`);
 export const getCarsbyDriver = (id) => API.get(`portal/getDriverCarsById/${id}`);
 
+// Garages API's
+export const getGaragesList = () => API.get("/portal/getCompanyCarGarages");
+
 // Invoices API's
 export const getInvoices = () => API.get("/portal/get-invoices");
 
