@@ -19,7 +19,7 @@ function VehicleCard({ data }) {
     };
 
     const getTextColor = () => {
-        if (data?.expired === '1' || data?.month_expired === '1') {
+        if (data?.expired === '1' || data?.month_expiry === '1') {
             return 'text-black'; 
         } else {
             return theme === 'dark' ? "text-white" : "text-black";

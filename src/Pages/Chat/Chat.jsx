@@ -282,14 +282,15 @@ const Chat = () => {
     }
   };
 
-  const filteredUsers = users.filter(user =>
+  const filteredUsers = users?.filter(user =>
     user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user?.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredGarages = garages.filter(garage =>
-    garage?.garageName?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredGarages = Object.values(garages || {})?.filter(garage =>
+  garage?.garageName?.toLowerCase().includes(searchQuery.toLowerCase())
+);
+
 
   return (
     <>
