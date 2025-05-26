@@ -70,7 +70,7 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
                         >
                             <div className='flex items-center gap-3'>
                                 <motion.img
-                                    src={data?.image}
+                                    src={data?.user?.image}
                                     alt=""
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -84,7 +84,7 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
                                         transition={{ delay: 0.3 * index, duration: 0.5 }}
                                         className={`${theme === "dark" ? 'text-white' : "text-black"} font-medium lg:text-[0.9rem] 2xl:text-[1.1rem] capitalize`}
                                     >
-                                        {data?.driverName}
+                                        {data?.user?.name}
                                     </motion.p>
                                     <motion.p
                                         initial={{ opacity: 0, x: -20 }}
@@ -92,7 +92,7 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
                                         transition={{ delay: 0.4 * index, duration: 0.5 }}
                                         className={`${theme === "dark" ? 'text-white' : "text-black"} font-medium text-[0.6rem] lg:text-[0.5rem] 2xl:text-[0.9rem]`}
                                     >
-                                        {data?.email}
+                                        {data?.user?.email}
                                     </motion.p>
                                 </div>
                             </div>
@@ -102,7 +102,7 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.5 * index, duration: 0.5 }}
                                 >
-                                    <GradientButton name="Un-Assign Vehicle" handleClick={()=>handleUnassign(data?.driverId)} loading={loading}/>
+                                    <GradientButton name="Un-Assign Vehicle" handleClick={()=>handleUnassign(data?.driver?.id)} loading={loading}/>
                                 </motion.div>
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.8 }}

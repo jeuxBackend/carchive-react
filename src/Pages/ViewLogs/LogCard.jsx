@@ -1,9 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
-import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-fullscreen';
+import { GoogleMap, useLoadScript, Marker, Polyline } from '@react-google-maps/api';
 
 const mapContainerStyle = {
   width: '100%',
@@ -13,34 +11,66 @@ const mapContainerStyle = {
 const LogCard = ({ data }) => {
   const { theme } = useTheme();
 
-  // Updated function to handle time strings instead of timestamps
+  // Load Google Maps API
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: 'AIzaSyAXD1Odr8R1DL8py6W29ZeImPO-kQdIAdg',
+    version: "3.55",
+    preventGoogleFontsLoading: true,
+  });
+
   function formatTime(timeString) {
-    // If it's already in the expected format (HH:MM), just return it
     if (typeof timeString === 'string' && timeString.includes(':')) {
       return timeString;
     }
     
-    // If it's a timestamp number, convert it
     if (!isNaN(Number(timeString))) {
       const date = new Date(Number(timeString));
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} `;
     }
     
-    // Fallback
     return timeString || 'N/A';
   }
 
   const startCoords = data?.lat_long_start?.split(',').map(Number);
   const endCoords = data?.lat_long_end?.split(',').map(Number);
 
-  // Only create path if both start and end coordinates exist
-  const path = startCoords && endCoords ? [
-    [startCoords[0], startCoords[1]],
-    [endCoords[0], endCoords[1]],
+  const startPosition = startCoords && startCoords.length === 2 ? {
+    lat: startCoords[0],
+    lng: startCoords[1]
+  } : null;
+
+  const endPosition = endCoords && endCoords.length === 2 && !isNaN(endCoords[0]) && !isNaN(endCoords[1]) ? {
+    lat: endCoords[0],
+    lng: endCoords[1]
+  } : null;
+
+  const path = startPosition && endPosition ? [
+    startPosition,
+    endPosition
   ] : null;
 
-  // Check if we have valid coordinates to display the map
   const hasValidCoordinates = startCoords && startCoords.length === 2 && !isNaN(startCoords[0]) && !isNaN(startCoords[1]);
+
+  if (loadError) {
+    console.error('Error loading Google Maps:', loadError);
+  }
+
+  const mapOptions = {
+    zoom: 15,
+    center: startPosition,
+    mapTypeControl: true,
+    streetViewControl: true,
+    fullscreenControl: true,
+    zoomControl: true,
+    mapId: 'DEMO_MAP_ID', 
+  };
+
+  // Polyline options
+  const polylineOptions = {
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 3,
+  };
 
   return (
     <motion.div
@@ -83,24 +113,32 @@ const LogCard = ({ data }) => {
         <p className={theme === "dark" ? "text-white" : "text-black"}>{data?.total_distance}</p>
       </div>
 
-      {hasValidCoordinates && (
+      {hasValidCoordinates && isLoaded && (
         <div className="mt-2">
           <p className="text-[#777e90] font-medium mb-2">Map:</p>
-          <MapContainer
-            center={startCoords}
-            zoom={15}
-            style={mapContainerStyle}
-            whenCreated={(map) => map.addControl(new L.Control.Fullscreen())}
+          <GoogleMap
+            mapContainerStyle={mapContainerStyle}
+            options={mapOptions}
           >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <Marker position={startCoords} />
-            {endCoords && !isNaN(endCoords[0]) && !isNaN(endCoords[1]) && (
-              <Marker position={endCoords} />
+            {startPosition && (
+              <Marker position={startPosition} />
+            )}
+            {endPosition && (
+              <Marker position={endPosition} />
             )}
             {path && (
-              <Polyline positions={path} color="red" />
+              <Polyline 
+                path={path} 
+                options={polylineOptions}
+              />
             )}
-          </MapContainer>
+          </GoogleMap>
+        </div>
+      )}
+
+      {hasValidCoordinates && !isLoaded && (
+        <div className="mt-2">
+          <p className="text-[#777e90] font-medium mb-2">Loading map...</p>
         </div>
       )}
     </motion.div>

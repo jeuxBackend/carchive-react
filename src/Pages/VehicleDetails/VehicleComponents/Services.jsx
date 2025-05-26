@@ -24,38 +24,37 @@ function Services({ data, setLoading }) {
     additionalStatus: data?.additionalStatus || 0,
   });
 
-  const updateStatusInBackground = async (id, type, newStatus, originalStatus) => {
+  const updateStatusInBackground = async (id, statusField, newStatus, originalStatus) => {
     try {
       const response = await updateVehicle({
         id,
-        type,
-        status: newStatus
+        [statusField]: newStatus
       });
       if (response.data) {
-        toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} Status Updated Successfully`);
+        toast.success(`${statusField.replace('Status', '').charAt(0).toUpperCase() + statusField.replace('Status', '').slice(1)} Status Updated Successfully`);
       }
     } catch (error) {
       console.error(error.response);
-      toast.error(error.response?.data?.message || `Failed to update ${type} status`);
+      toast.error(error.response?.data?.message || `Failed to update ${statusField.replace('Status', '')} status`);
 
       // Revert the local state if API call fails
       setLocalSwitchStates(prev => ({
         ...prev,
-        [`${type}Status`]: originalStatus
+        [statusField]: originalStatus
       }));
     }
   };
 
-  const handleSwitchToggle = (type) => {
-    const currentStatus = localSwitchStates[`${type}Status`];
+  const handleSwitchToggle = (statusField) => {
+    const currentStatus = localSwitchStates[statusField];
     const newStatus = currentStatus === 1 ? 0 : 1;
 
     setLocalSwitchStates(prev => ({
       ...prev,
-      [`${type}Status`]: newStatus
+      [statusField]: newStatus
     }));
 
-    updateStatusInBackground(data?.id, type, newStatus, currentStatus);
+    updateStatusInBackground(data?.id, statusField, newStatus, currentStatus);
   };
 
   const releaseCar = async (id) => {
@@ -90,7 +89,7 @@ function Services({ data, setLoading }) {
       expired: isInsuranceExpired ? "Expired" : "",
       showSwitch: true,
       switchChecked: localSwitchStates.insuranceStatus === 1,
-      onToggle: () => handleSwitchToggle('insurance'),
+      onToggle: () => handleSwitchToggle('insuranceStatus'),
     },
     {
       title: "Inspection Documents",
@@ -98,7 +97,7 @@ function Services({ data, setLoading }) {
       expired: isInspectionExpired ? "Expired" : "",
       showSwitch: true,
       switchChecked: localSwitchStates.inspectionStatus === 1,
-      onToggle: () => handleSwitchToggle('inspection'),
+      onToggle: () => handleSwitchToggle('inspectionStatus'),
     },
     {
       title: "Additional Documents",
@@ -108,7 +107,7 @@ function Services({ data, setLoading }) {
       expired: isAdditionalExpired ? "Expired" : "",
       showSwitch: true,
       switchChecked: localSwitchStates.additionalStatus === 1,
-      onToggle: () => handleSwitchToggle('additional'),
+      onToggle: () => handleSwitchToggle('additionalStatus'),
     },
     {
       title: "Maintenance Records",
@@ -135,9 +134,8 @@ function Services({ data, setLoading }) {
           className={`w-full rounded-xl p-4 2xl:p-5 ${theme === "dark"
             ? "bg-[#323335]"
             : "bg-white border border-[#ececec]"
-            } shadow-md flex items-center justify-between ${
-            item.func || item.route ? 'cursor-pointer' : ''
-          }`}
+            } shadow-md flex items-center justify-between ${item.func || item.route ? 'cursor-pointer' : ''
+            }`}
           variants={itemVariants}
           onClick={(e) => {
             // Only handle card click for non-switch items

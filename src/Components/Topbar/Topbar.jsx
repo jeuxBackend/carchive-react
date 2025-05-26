@@ -189,6 +189,19 @@ const Topbar = ({ setSide }) => {
                 </p>
               </div>
             )}
+            {active.startsWith("/VehicleRequests/") && (
+              <div className="flex items-center gap-2">
+                <img
+                  src={theme === "dark" ? back : backLight}
+                  alt=""
+                  className="w-[1.6rem] cursor-pointer"
+                  onClick={() => navigate(-1)}
+                />
+                <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
+                  Vehicle Requests
+                </p>
+              </div>
+            )}
             {active === "/Update-Profile" && (
               <div className="flex items-center gap-2">
                 <img
@@ -225,6 +238,19 @@ const Topbar = ({ setSide }) => {
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
                   About Us
+                </p>
+              </div>
+            )}
+            {active === "/TermsConditions" && (
+              <div className="flex items-center gap-2">
+                <img
+                  src={theme === "dark" ? back : backLight}
+                  alt=""
+                  className="w-[1.6rem] cursor-pointer"
+                  onClick={() => navigate(-1)}
+                />
+                <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
+                  Terms & Conditions
                 </p>
               </div>
             )}

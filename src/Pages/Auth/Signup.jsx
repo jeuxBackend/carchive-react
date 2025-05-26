@@ -176,7 +176,7 @@ function Signup() {
                     <div className='flex lg:flex-row flex-col-reverse'>
                         <div className='w-full lg:w-[70%]'>
                             <div className='flex items-center gap-3 py-2 sm:flex-row flex-col'>
-                                <div className='w-full sm:w-[20%]'>
+                                <div className='w-full sm:w-[25%]'>
                                     <CountryCode setCountryCode={setCountryCode} />
                                 </div>
                                 <InputField value={formData} setValue={setFormData} fieldKey="contactNumber" label="Contact Number" isNumber={true} />

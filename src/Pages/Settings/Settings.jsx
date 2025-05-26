@@ -77,6 +77,7 @@ const Settings = () => {
       <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {[{ to: "/Language", icon: lang, iconDark: langDark, label: "Language" },
         { to: "/About", icon: about, iconDark: aboutDark, label: "About Us" },
+        { to: "/TermsConditions", icon: about, iconDark: aboutDark, label: "Terms & Conditions" },
         { to: "/Privacy-Policy", icon: privacy, iconDark: privacyDark, label: "Privacy Policy", iconSize: "w-[1.7rem]" }].map((item, index) => (
           <motion.div
             key={index}

@@ -35,6 +35,7 @@ import TermsCondition from "./AdminPages/TermsCondition/TermsCondition";
 import PublicPage from "./PublicPage/PublicPage";
 import UpdateVehicle from "./Pages/UpdateVehicle/UpdateVehicle";
 import VehicleRequests from "./Pages/VehicleRequests/VehicleRequests";
+import TermsConditions from "./Pages/TermsAndConditions/TermsConditions";
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
           <Route path="/About" element={<About />} />
           <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
           <Route path="/Update-Profile" element={<UpdateProfile />} />
+          <Route path="/TermsConditions" element={<TermsConditions />} />
           <Route path="/Add-Vehicle" element={<AddVehicle />} />
           <Route path="/Update-Vehicle" element={<UpdateVehicle />} />
         </Route>
