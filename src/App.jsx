@@ -34,6 +34,7 @@ import SearchedVehicle from "./Pages/VehicleDetails/SearchedVehicle";
 import TermsCondition from "./AdminPages/TermsCondition/TermsCondition";
 import PublicPage from "./PublicPage/PublicPage";
 import UpdateVehicle from "./Pages/UpdateVehicle/UpdateVehicle";
+import VehicleRequests from "./Pages/VehicleRequests/VehicleRequests";
 
 function App() {
   return (
@@ -55,7 +56,8 @@ function App() {
             element={<MaintenanceRecord />}
           />
           <Route path="/ViewLogs/:id" element={<ViewLogs />} />
-          <Route path="/VehicleGarages/:id" element={<Garages />} />
+          <Route path="/VehicleRequests/:id" element={<VehicleRequests />} />
+          <Route path="/VehicleGarages/:id" element={<Garages />} /> 
           <Route path="/SearchedVehicle" element={<SearchedVehicle />} />
           <Route path="/Invoices" element={<Invoices />} />
           <Route path="/Drivers" element={<Drivers />} />
