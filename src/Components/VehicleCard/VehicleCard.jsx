@@ -21,7 +21,7 @@ function VehicleCard({ data }) {
             <p className='text-[#2d9bff] font-medium'>{data?.make}</p>
             <p className={`font-medium ${theme === 'dark' ? "text-white" : "text-black"}`}>{data?.vinNumber}</p>
             <p className={`font-medium ${theme === 'dark' ? "text-white" : "text-black"}`}>{data?.numberPlate}</p>
-            <img src={data?.image[0]} alt="" className='w-[17rem] lg:w-[18rem] xl:w-[17rem] absolute bottom-0 sm:bottom-2 right-0' />
+            <img src={data?.image?data?.image[0]:""} alt="" className='w-[17rem] lg:w-[18rem] xl:w-[17rem] absolute bottom-0 sm:bottom-2 right-0' />
         </motion.div>
         </Link>
     );

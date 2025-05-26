@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../Contexts/ThemeContext';
 
-const InsuranceSwitch = ({ checked = false, disabled = false }) => {
+const InsuranceSwitch = ({ checked = false, disabled = false, onChange }) => {
   const { theme } = useTheme();
 
   return (
@@ -10,7 +10,7 @@ const InsuranceSwitch = ({ checked = false, disabled = false }) => {
         <input
           type='checkbox'
           checked={checked}
-          onChange={() => {}}
+          onChange={onChange}
           className='sr-only'
           disabled={disabled}
         />
