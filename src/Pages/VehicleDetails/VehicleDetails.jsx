@@ -52,7 +52,7 @@ function VehicleDetails() {
               <div className='grid grid-cols-1 gap-5 my-4'>
 
                 <BlueButton name='View Logs' to={`/ViewLogs/${id}`} />
-                <BlueButton name='Requests' to={`/ViewLogs/${id}`} />
+                <BlueButton name='Requests' to={`/VehicleRequests/${id}`} />
               </div>
             </div>
             <div className='w-full  h-full'>
