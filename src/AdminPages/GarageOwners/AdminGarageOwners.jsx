@@ -107,7 +107,7 @@ function AdminGarageOwners() {
             >
               <thead>
                 <tr>
-                  {["Sr.No", "Company", "Address", "Action"].map(
+                  {["Sr.No", "Company", "VIN Number", "Address", "Action"].map(
                     (heading, index) => (
                       <th key={index} className="py-3 border-0 mb-3">
                         <p
@@ -118,7 +118,7 @@ function AdminGarageOwners() {
                           } text-center py-3 border-r border-[#4f4f4f] ${
                             index === 0 ? "rounded-tl-xl" : ""
                           } ${
-                            index === 3 ? "rounded-tr-xl border-r-none" : ""
+                            index === 4 ? "rounded-tr-xl border-r-none" : ""
                           }`}
                         >
                           {heading}
@@ -169,6 +169,22 @@ function AdminGarageOwners() {
                         />
                         {item?.name || "Name Not Found"}
                       </div>
+                    </td>
+                    <td
+                      className={`py-3 border w-[30%] ${
+                        theme === "dark"
+                          ? "border-[#323335]"
+                          : "border-[#b5b5b7]"
+                      }`}
+                    >
+                      {item?.vatNum ? (
+                        <>
+                          {item?.vatNum ? `${item.vatNum}` : ""}
+                       
+                        </>
+                      ) : (
+                        "VIN Number not found"
+                      )}
                     </td>
                     <td
                       className={`py-3 border w-[30%] ${
