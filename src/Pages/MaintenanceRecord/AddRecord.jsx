@@ -28,12 +28,10 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
 
     console.log(formData)
 
-
     const [itemName, setItemName] = useState("");
     const [remarks, setRemarks] = useState("");
     const [serviceLines, setServiceLines] = useState([]);
     const [loading, setLoading] = useState(false);
-
 
     const addServiceLine = () => {
         if (!itemName.trim() || !remarks.trim()) return;
@@ -51,7 +49,6 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
         setServiceLines(updatedLines);
     };
 
-
     const addRecord = async (e) => {
         e.preventDefault();
         if (!formData.millage || !formData.dealerName || !formData.date || !formData.serviceType || serviceLines.length === 0) {
@@ -61,7 +58,9 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
          else {
             setLoading(true);
             try {
-                const response = await createMaintenanceRecord({ ...formData, serviceLine: serviceLines });
+                // Convert serviceLines array to JSON string
+                const serviceLineString = JSON.stringify(serviceLines);
+                const response = await createMaintenanceRecord({ ...formData, serviceLine: serviceLineString });
                 if (response.data) {
                     toast.success("Record Added Successfully");
                     setOpen(false);
@@ -76,6 +75,13 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
         }
     };
     console.log(serviceLines)
+
+    // Field Title Component
+    const FieldTitle = ({ title }) => (
+        <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.1rem] font-medium mb-2`}>
+            {title}
+        </p>
+    );
 
     return (
         <motion.div
@@ -106,20 +112,31 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                         </p>
                     </div>
 
-
-                    <div className="w-full flex flex-col gap-3">
-                        <div className="w-full flex gap-2">
-                            <InputField label="Mileage" fieldKey="millage" value={formData} setValue={setFormData} isNumber={true}/>
-                            <InputField label="Dealer Name" fieldKey="dealerName" value={formData} setValue={setFormData} />
+                    <div className="w-full flex flex-col gap-4">
+                        <div className="w-full flex gap-4">
+                            <div className="flex-1">
+                                <FieldTitle title="Mileage" />
+                                <InputField label="Mileage" fieldKey="millage" value={formData} setValue={setFormData} isNumber={true}/>
+                            </div>
+                            <div className="flex-1">
+                                <FieldTitle title="Dealer Name" />
+                                <InputField label="Dealer Name" fieldKey="dealerName" value={formData} setValue={setFormData} />
+                            </div>
                         </div>
-                        <BasicDatePicker label="Date" fieldKey="date" value={formData} setValue={setFormData} />
-                        <CustomDropdown label="Service Type" fieldKey="serviceType" value={formData} setValue={setFormData} />
                         
+                        <div>
+                            <FieldTitle title="Service Date" />
+                            <BasicDatePicker label="Date" fieldKey="date" value={formData} setValue={setFormData} />
+                        </div>
+                        
+                        <div>
+                            <FieldTitle title="Service Type" />
+                            <CustomDropdown label="Service Type" fieldKey="serviceType" value={formData} setValue={setFormData} />
+                        </div>
                     </div>
 
-
-                    <div className="w-full pt-2">
-                        <div className="flex items-center justify-between">
+                    <div className="w-full pt-4">
+                        <div className="flex items-center justify-between mb-3">
                             <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.6rem] font-medium`}>
                                 Add Service Line
                             </p>
@@ -131,47 +148,52 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                             </div>
                         </div>
 
-
-                        <div className="flex items-center gap-2 pt-2">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                                className={`flex items-center gap-2 w-full p-4 rounded-xl font-medium 
-                                ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-[#f7f7f7] border border-[#e8e8e8]"}`}
-                            >
-                                <input
-                                    placeholder="Item Name"
-                                    className={`flex-1 outline-none border-none font-medium 
-                                    ${theme === "dark" ? "text-white" : "text-black"}`}
-                                    value={itemName}
-                                    onChange={(e) => setItemName(e.target.value)}
-                                />
-                            </motion.div>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5 }}
-                                className={`flex items-center gap-2 w-full p-4 rounded-xl font-medium 
-                                ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-[#f7f7f7] border border-[#e8e8e8]"}`}
-                            >
-                                <input
-                                    placeholder="Remarks"
-                                    className={`flex-1 outline-none border-none font-medium 
-                                    ${theme === "dark" ? "text-white" : "text-black"}`}
-                                    value={remarks}
-                                    onChange={(e) => setRemarks(e.target.value)}
-                                />
-                            </motion.div>
+                        <div className="flex flex-col gap-3 mb-3">
+                            <div>
+                                <FieldTitle title="Item Name" />
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                    className={`flex items-center gap-2 w-full p-4 rounded-xl font-medium 
+                                    ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-[#f7f7f7] border border-[#e8e8e8]"}`}
+                                >
+                                    <input
+                                        placeholder="Enter item name"
+                                        className={`flex-1 outline-none border-none font-medium bg-transparent
+                                        ${theme === "dark" ? "text-white" : "text-black"}`}
+                                        value={itemName}
+                                        onChange={(e) => setItemName(e.target.value)}
+                                    />
+                                </motion.div>
+                            </div>
+                            
+                            <div>
+                                <FieldTitle title="Remarks" />
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.5 }}
+                                    className={`flex items-center gap-2 w-full p-4 rounded-xl font-medium 
+                                    ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-[#f7f7f7] border border-[#e8e8e8]"}`}
+                                >
+                                    <input
+                                        placeholder="Enter remarks"
+                                        className={`flex-1 outline-none border-none font-medium bg-transparent
+                                        ${theme === "dark" ? "text-white" : "text-black"}`}
+                                        value={remarks}
+                                        onChange={(e) => setRemarks(e.target.value)}
+                                    />
+                                </motion.div>
+                            </div>
                         </div>
-
 
                         {serviceLines.length > 0 && (
                             <div className="w-full mt-4">
-                                <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.4rem] font-medium`}>
+                                <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.4rem] font-medium mb-3`}>
                                     Added Services
                                 </p>
-                                <div className="flex flex-col gap-2 pt-2">
+                                <div className="flex flex-col gap-2">
                                     {serviceLines.map((line, index) => (
                                         <div
                                             key={index}
@@ -191,9 +213,10 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                                 </div>
                             </div>
                         )}
+                        
                         <div className="flex items-center justify-center">
                             <button
-                                className=" p-3 rounded-lg bg-[#499cfe] text-white text-[1.2rem] font-medium w-[60%]  mt-4"
+                                className="p-3 rounded-lg bg-[#499cfe] text-white text-[1.2rem] font-medium w-[60%] mt-4"
                                 type="submit"
                             >
                                 {loading ? (
