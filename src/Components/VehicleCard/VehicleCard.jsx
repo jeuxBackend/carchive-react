@@ -26,6 +26,23 @@ function VehicleCard({ data }) {
         }
     };
 
+    const renderExpiryBadge = () => {
+        if (data?.expired === '1') {
+            return (
+                <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10">
+                    EXPIRED
+                </div>
+            );
+        } else if (data?.month_expiry === '1') {
+            return (
+                <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10">
+                    EXPIRES SOON
+                </div>
+            );
+        }
+        return null;
+    };
+
     return (
         <Link to={`/Vehicles/${data?.id}`}>
             <motion.div
@@ -34,12 +51,13 @@ function VehicleCard({ data }) {
                 transition={{ duration: 0.5 }}
                 onClick={() => setVehicle(data)}
                 whileHover={{ scale: 1.05, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
-                className={`${getCardBackgroundColor()} rounded-xl shadow-md p-3 h-[14rem] flex flex-col gap-1 relative transition-all duration-300`}
+                className={`${getCardBackgroundColor()} rounded-xl shadow-md p-3 h-[18rem] md:h-[14.5rem] flex flex-col gap-1 relative transition-all duration-300`}
             >
+                {renderExpiryBadge()}
                 <p className='text-[#2d9bff] font-medium'>{data?.make}</p>
                 <p className={`font-medium ${getTextColor()}`}>{data?.vinNumber}</p>
                 <p className={`font-medium ${getTextColor()}`}>{data?.numberPlate}</p>
-                <img src={data?.image ? data?.image[0] : ""} alt="" className='w-[17rem] lg:w-[18rem] xl:w-[17rem] absolute bottom-0 sm:bottom-2 right-0' />
+                <img src={data?.image ? data?.image[0] : ""} alt="" className='w-[17rem] lg:w-[18rem] xl:w-[17rem] h-[10.5rem] absolute bottom-0 sm:bottom-2 right-0 border-none' />
             </motion.div>
         </Link>
     );

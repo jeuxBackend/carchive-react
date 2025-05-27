@@ -37,9 +37,9 @@ const Drivers = () => {
     const [openMenu, setOpenMenu] = useState(null);
     const dropdownRef = useRef(null);
     const [search, setSearch] = useState('');
-    const {currentUserId, setCurrentUserId} = useGlobalContext()
+    const { currentUserId, setCurrentUserId } = useGlobalContext()
     const navigate = useNavigate();
-    
+
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDriver, setSelectedDriver] = useState(null);
@@ -55,7 +55,7 @@ const Drivers = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-    
+
     const [driverData, setDriversData] = useState([])
     const [loading, setLoading] = useState(false);
 
@@ -144,7 +144,7 @@ const Drivers = () => {
 
                             <div>
                                 <div className="flex-1">
-                                    <h3 
+                                    <h3
                                         className="text-lg font-semibold capitalize cursor-pointer hover:text-blue-500 transition-colors"
                                         onClick={() => handleDriverNameClick(user)}
                                     >
@@ -158,21 +158,20 @@ const Drivers = () => {
         ${theme === "dark" ? "bg-[#319BF9]  text-white" : "bg-black hover:bg-gray-800 text-white"}`}
                                     whileHover={{ scale: 1.05, rotate: [0, 2, -2, 0] }}
                                     whileTap={{ scale: 0.95 }}
-                                    onClick={() => {navigate(`/Chat`)}}
+                                    onClick={() => { navigate(`/Chat`) }}
                                 >
                                     <img className="w-5 h-5" src={msg} alt="message icon" />
                                     Message
                                 </motion.button>
 
                             </div>
-                            <motion.img
-                                src={theme === "dark" ? ham : hamLight}
-                                onClick={() => setOpenMenu(openMenu === i ? null : i)}
-                                className="absolute top-3 right-3 text-black cursor-pointer transition w-[1.6rem]"
-                                whileHover={{ rotate: 180, scale: 1.2 }}
-                                layout="position"
+                            <RiDeleteBin4Fill
+
+                                onClick={() => { setOpenMenu(null), removeDriver(user?.driverCompanyId) }}
+                                className="absolute top-3 right-3 text-red-500 cursor-pointer transition text-[2rem] p-1.5 rounded-full border border-red-500"
+
                             />
-                            <AnimatePresence>
+                            {/* <AnimatePresence>
                                 {openMenu === i && (
                                     <motion.div
                                         className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[150px] right-10 top-7 rounded-b-3xl flex flex-col rounded-tr-sm rounded-tl-3xl p-3"
@@ -186,13 +185,13 @@ const Drivers = () => {
                                         </p>
                                     </motion.div>
                                 )}
-                            </AnimatePresence>
+                            </AnimatePresence> */}
                         </motion.div>
                     ))}
                 </div>) : <div className="h-[80vh] flex items-center justify-center"><NoDataFound /></div>)}
-            
+
             {/* Driver Details Modal */}
-            <DriverDetailsModal 
+            <DriverDetailsModal
                 isOpen={isModalOpen}
                 onClose={handleModalClose}
                 driverData={selectedDriver}
