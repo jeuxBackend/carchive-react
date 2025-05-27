@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { initializeChat } from "../../utils/ChatUtils";
+import DriverDetailsModal from "./DriverDetailsModal"; // Import the modal component
 
 
 const cardVariants = {
@@ -38,6 +39,10 @@ const Drivers = () => {
     const [search, setSearch] = useState('');
     const {currentUserId, setCurrentUserId} = useGlobalContext()
     const navigate = useNavigate();
+    
+    // Modal state
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedDriver, setSelectedDriver] = useState(null);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -50,6 +55,7 @@ const Drivers = () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+    
     const [driverData, setDriversData] = useState([])
     const [loading, setLoading] = useState(false);
 
@@ -93,8 +99,17 @@ const Drivers = () => {
         );
     });
 
+    // Handle driver name click
+    const handleDriverNameClick = (driver) => {
+        setSelectedDriver(driver);
+        setIsModalOpen(true);
+    };
 
-
+    // Handle modal close
+    const handleModalClose = () => {
+        setIsModalOpen(false);
+        setSelectedDriver(null);
+    };
 
     return (
         <motion.div
@@ -129,7 +144,12 @@ const Drivers = () => {
 
                             <div>
                                 <div className="flex-1">
-                                    <h3 className="text-lg font-semibold capitalize">{user.name}</h3>
+                                    <h3 
+                                        className="text-lg font-semibold capitalize cursor-pointer hover:text-blue-500 transition-colors"
+                                        onClick={() => handleDriverNameClick(user)}
+                                    >
+                                        {user.name}
+                                    </h3>
                                     <p className="text-sm text-gray-400">{user.email}</p>
                                 </div>
 
@@ -165,13 +185,18 @@ const Drivers = () => {
                                             <RiDeleteBin4Fill /> Delete
                                         </p>
                                     </motion.div>
-
-
                                 )}
                             </AnimatePresence>
                         </motion.div>
                     ))}
                 </div>) : <div className="h-[80vh] flex items-center justify-center"><NoDataFound /></div>)}
+            
+            {/* Driver Details Modal */}
+            <DriverDetailsModal 
+                isOpen={isModalOpen}
+                onClose={handleModalClose}
+                driverData={selectedDriver}
+            />
         </motion.div>
     );
 };

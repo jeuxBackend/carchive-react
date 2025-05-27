@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useTheme } from "../../../Contexts/ThemeContext";
 import Switch from "../../../Components/Buttons/Switch";
 import { IoIosArrowForward } from "react-icons/io";
@@ -24,40 +24,93 @@ function Services({ data, setLoading }) {
     additionalStatus: data?.additionalStatus || 0,
   });
 
-  const updateStatusInBackground = async (id, statusField, newStatus, originalStatus) => {
+  // Loading states for individual switches
+  const [switchLoading, setSwitchLoading] = useState({
+    insuranceStatus: false,
+    inspectionStatus: false,
+    additionalStatus: false,
+  });
+
+  // Debounced API calls to prevent rapid toggles
+  const [debounceTimers, setDebounceTimers] = useState({});
+
+  const updateStatusInBackground = useCallback(async (id, statusField, newStatus, originalStatus) => {
     try {
-      const response = await updateVehicle({
+      setSwitchLoading(prev => ({ ...prev, [statusField]: true }));
+      
+      // Create the update payload with all status fields
+      // Send all statuses, with the changed one having the new value
+      const currentStates = { ...localSwitchStates };
+      currentStates[statusField] = newStatus;
+      
+      const updatePayload = {
         id,
-        [statusField]: newStatus
-      });
+        insuranceStatus: currentStates.insuranceStatus,
+        inspectionStatus: currentStates.inspectionStatus,
+        additionalStatus: currentStates.additionalStatus,
+      };
+      
+      const response = await updateVehicle(updatePayload);
+      
       if (response.data) {
-        toast.success(`${statusField.replace('Status', '').charAt(0).toUpperCase() + statusField.replace('Status', '').slice(1)} Status Updated Successfully`);
+        const fieldName = statusField.replace('Status', '').charAt(0).toUpperCase() + 
+                         statusField.replace('Status', '').slice(1);
+        toast.success(`The document status has been updated and is now available for viewing.`);
       }
     } catch (error) {
-      console.error(error.response);
-      toast.error(error.response?.data?.message || `Failed to update ${statusField.replace('Status', '')} status`);
+      console.error('API Error:', error);
+      const errorMessage = error.response?.data?.message || 
+                          `Failed to update ${statusField.replace('Status', '')} status`;
+      
+      toast.error(errorMessage);
 
       // Revert the local state if API call fails
       setLocalSwitchStates(prev => ({
         ...prev,
         [statusField]: originalStatus
       }));
+    } finally {
+      setSwitchLoading(prev => ({ ...prev, [statusField]: false }));
     }
-  };
+  }, [localSwitchStates]);
 
-  const handleSwitchToggle = (statusField) => {
+  const handleSwitchToggle = useCallback((statusField) => {
     const currentStatus = localSwitchStates[statusField];
     const newStatus = currentStatus === 1 ? 0 : 1;
 
+    // Clear existing debounce timer for this field
+    if (debounceTimers[statusField]) {
+      clearTimeout(debounceTimers[statusField]);
+    }
+
+    // Update UI immediately for better UX
     setLocalSwitchStates(prev => ({
       ...prev,
       [statusField]: newStatus
     }));
 
-    updateStatusInBackground(data?.id, statusField, newStatus, currentStatus);
-  };
+    // Debounce the API call (300ms delay)
+    const timer = setTimeout(() => {
+      updateStatusInBackground(data?.id, statusField, newStatus, currentStatus);
+    }, 300);
+
+    setDebounceTimers(prev => ({
+      ...prev,
+      [statusField]: timer
+    }));
+  }, [localSwitchStates, debounceTimers, updateStatusInBackground, data?.id]);
 
   const releaseCar = async (id) => {
+    if (!id) {
+      toast.error("Vehicle ID is required");
+      return;
+    }
+
+    // Confirm before releasing
+    if (!window.confirm("Are you sure you want to release this vehicle?")) {
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await releaseVehicle(id);
@@ -66,48 +119,72 @@ function Services({ data, setLoading }) {
         navigate("/Vehicles");
       }
     } catch (error) {
-      console.error(error.response);
-      toast.error(error.response?.data?.message || "Failed to release vehicle");
+      console.error('Release Error:', error);
+      const errorMessage = error.response?.data?.message || "Failed to release vehicle";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const isInsuranceExpired =
-    data?.insuranceExpiry && new Date(data.insuranceExpiry) < new Date();
-  const isInspectionExpired =
-    data?.inspectionExpiry && new Date(data.inspectionExpiry) < new Date();
-  const isAdditionalExpired =
-    Array.isArray(data?.additionalExpiry) &&
-    data.additionalExpiry[0] &&
-    new Date(data.additionalExpiry[0]) < new Date();
+  // Helper function to format date display
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch {
+      return dateString;
+    }
+  };
+
+  // Check expiration status
+  const isExpired = (dateString) => {
+    if (!dateString) return false;
+    try {
+      return new Date(dateString) < new Date();
+    } catch {
+      return false;
+    }
+  };
+
+  const isInsuranceExpired = isExpired(data?.insuranceExpiry);
+  const isInspectionExpired = isExpired(data?.inspectionExpiry);
+  const isAdditionalExpired = Array.isArray(data?.additionalExpiry) && 
+                              data.additionalExpiry[0] && 
+                              isExpired(data.additionalExpiry[0]);
 
   const serviceItems = [
     {
       title: "Insurance",
-      subtitle: data?.insuranceExpiry ? `(${data.insuranceExpiry})` : "",
+      subtitle: data?.insuranceExpiry ? `(${formatDate(data.insuranceExpiry)})` : "",
       expired: isInsuranceExpired ? "Expired" : "",
       showSwitch: true,
       switchChecked: localSwitchStates.insuranceStatus === 1,
+      switchLoading: switchLoading.insuranceStatus,
       onToggle: () => handleSwitchToggle('insuranceStatus'),
+      statusField: 'insuranceStatus',
     },
     {
       title: "Inspection Documents",
-      subtitle: data?.inspectionExpiry ? `(${data.inspectionExpiry})` : "",
+      subtitle: data?.inspectionExpiry ? `(${formatDate(data.inspectionExpiry)})` : "",
       expired: isInspectionExpired ? "Expired" : "",
       showSwitch: true,
       switchChecked: localSwitchStates.inspectionStatus === 1,
+      switchLoading: switchLoading.inspectionStatus,
       onToggle: () => handleSwitchToggle('inspectionStatus'),
+      statusField: 'inspectionStatus',
     },
     {
       title: "Additional Documents",
       subtitle: Array.isArray(data?.additionalExpiry) && data.additionalExpiry[0]
-        ? `(${data.additionalExpiry[0]})`
+        ? `(${formatDate(data.additionalExpiry[0])})`
         : "",
       expired: isAdditionalExpired ? "Expired" : "",
       showSwitch: true,
       switchChecked: localSwitchStates.additionalStatus === 1,
+      switchLoading: switchLoading.additionalStatus,
       onToggle: () => handleSwitchToggle('additionalStatus'),
+      statusField: 'additionalStatus',
     },
     {
       title: "Maintenance Records",
@@ -118,8 +195,18 @@ function Services({ data, setLoading }) {
       title: "Release Vehicle",
       showArrow: false,
       func: () => releaseCar(data?.id),
+      dangerous: true,
     },
   ];
+
+  // Cleanup debounce timers on unmount
+  React.useEffect(() => {
+    return () => {
+      Object.values(debounceTimers).forEach(timer => {
+        if (timer) clearTimeout(timer);
+      });
+    };
+  }, [debounceTimers]);
 
   return (
     <motion.div
@@ -131,11 +218,13 @@ function Services({ data, setLoading }) {
       {serviceItems.map((item, index) => (
         <motion.div
           key={index}
-          className={`w-full rounded-xl p-4 2xl:p-5 ${theme === "dark"
-            ? "bg-[#323335]"
-            : "bg-white border border-[#ececec]"
-            } shadow-md flex items-center justify-between ${item.func || item.route ? 'cursor-pointer' : ''
-            }`}
+          className={`w-full rounded-xl p-4 2xl:p-5 ${
+            theme === "dark"
+              ? "bg-[#323335]"
+              : "bg-white border border-[#ececec]"
+          } shadow-md flex items-center justify-between ${
+            item.func || item.route ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
+          } ${item.dangerous ? 'hover:border-red-300' : ''}`}
           variants={itemVariants}
           onClick={(e) => {
             // Only handle card click for non-switch items
@@ -150,34 +239,50 @@ function Services({ data, setLoading }) {
         >
           <div className="flex items-center gap-2">
             <p
-              className={`${theme === "dark" ? "text-white" : "text-black"
-                } text-[1.4rem] font-medium`}
+              className={`${
+                theme === "dark" ? "text-white" : "text-black"
+              } text-[1.4rem] font-medium ${
+                item.dangerous ? 'text-red-600' : ''
+              }`}
             >
               {item.title}
             </p>
             {item.subtitle && (
               <p className="text-[#2D9BFF] text-[0.8rem] font-medium">
                 {item.subtitle}{" "}
-                <span className="text-red-500">{item.expired}</span>
+                <span className="text-red-500 font-semibold">{item.expired}</span>
               </p>
             )}
           </div>
+          
           {item.showSwitch && (
-            <div onClick={(e) => e.stopPropagation()}>
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className="relative"
+            >
               <InsuranceSwitch
                 checked={item.switchChecked}
-                disabled={false}
+                disabled={item.switchLoading}
                 onChange={(e) => {
                   e.stopPropagation();
-                  item.onToggle();
+                  if (!item.switchLoading) {
+                    item.onToggle();
+                  }
                 }}
               />
+              {item.switchLoading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
             </div>
           )}
+          
           {item.showArrow && (
             <IoIosArrowForward
-              className={`text-[1.4rem] ${theme === "dark" ? "text-white" : "text-black"
-                }`}
+              className={`text-[1.4rem] ${
+                theme === "dark" ? "text-white" : "text-black"
+              }`}
             />
           )}
         </motion.div>

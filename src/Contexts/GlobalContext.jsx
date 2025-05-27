@@ -31,7 +31,7 @@ export const GlobalContextProvider = ({ children }) => {
       localStorage.setItem("vehicle", JSON.stringify(vehicle));
     }
   }, [vehicle]);
-  const [vehicleData, setVehicleData] = useState(() => {
+  const [vehicleData, setSearchVehicleData] = useState(() => {
     const savedvehicleData = localStorage.getItem("vehicleData");
     return savedvehicleData ? JSON.parse(savedvehicleData) : {};
   });
@@ -70,14 +70,14 @@ export const GlobalContextProvider = ({ children }) => {
         vehicle, setVehicle,
         addRecord, setAddRecord,
         addTransfer, setAddTransfer,
-        vehicleData, setVehicleData,
+        vehicleData, setSearchVehicleData,
         currentUserId, setCurrentUserId,
         addRecord,
         setAddRecord,
         addTransfer,
         setAddTransfer,
         vehicleData,
-        setVehicleData,
+        setSearchVehicleData,
         addTerm,
         setAddTerm,
       }}

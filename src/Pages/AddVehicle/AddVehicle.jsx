@@ -6,7 +6,7 @@ import Switch from './Switch'
 import DocumentUploader from './DocumentUploader'
 import BasicDatePicker from '../../Components/Buttons/BasicDatePicker'
 import { toast } from 'react-toastify'
-import { addVehicle, getMakes } from '../../API/portalServices'
+import { addVehicle, getMakes, searchVehicle } from '../../API/portalServices'
 import { motion } from "framer-motion";
 import { useNavigate } from 'react-router-dom'
 import MakesDropdown from '../../Components/DropDown/MakesDropDown'
@@ -15,11 +15,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { IoClose } from "react-icons/io5";
+import { useGlobalContext } from '../../Contexts/GlobalContext'
+import { CiSearch } from 'react-icons/ci'
 
 
 function AddVehicle() {
     const { theme } = useTheme()
     const [loading, setLoading] = useState(false)
+    const { setSearchVehicleData } = useGlobalContext()
     const [vehicleImages, setVehicleImages] = useState([])
     const [regDocs, setRegDocs] = useState([])
     const [insuranceDocs, setInsuranceDocs] = useState([])
@@ -27,6 +30,7 @@ function AddVehicle() {
     const [additionalDocs, setAdditionalDocs] = useState([])
     const [additionalDates, setAdditionalDates] = useState([""]) 
     const [additionalTitles, setAdditionalTitles] = useState([""])
+    const [loadingVin, setLoadingVin] = useState(false)
     const navigate = useNavigate();
     const [vehicleData, setVehicleData] = useState({
         vinNumber: "",
@@ -142,6 +146,45 @@ function AddVehicle() {
         fetchMakesData();
     }, [fetchMakesData]);
 
+  const vinSearch = async () => {
+    const vin = vehicleData.vinNumber;
+
+    if (!vin) {
+        toast.error("Please enter VIN number");
+    } else if (vin.length !== 17) {
+        toast.error("VIN number must be exactly 17 characters long");
+    } else {
+        setLoadingVin(true);
+        try {
+            const response = await searchVehicle({ vinNumber: vin });
+            setSearchVehicleData(response?.data?.data || {});
+            toast.success("Vehicle Found");
+            navigate("/SearchedVehicle");
+        } catch (error) {
+            console.error("Error fetching data:", error);
+
+            if (error.response?.data?.message?.vinNumber && Array.isArray(error.response.data.message.vinNumber)) {
+                toast.error(error.response.data.message.vinNumber[0]);
+            } else if (error.response?.data?.message) {
+                if (typeof error.response.data.message === 'string') {
+                    toast.error(error.response.data.message);
+                } else {
+                    toast.error("Invalid VIN number or vehicle not found");
+                }
+            } else if (error.response?.status === 403) {
+                toast.error("Access denied or invalid VIN number");
+            } else if (error.response?.status === 404) {
+                toast.error("Vehicle not found");
+            } else {
+                toast.error("Something went wrong while searching for the vehicle");
+            }
+        } finally {
+            setLoadingVin(false);
+        }
+    }
+};
+
+
     return (
         <div>
             <div className='flex gap-5 lg:flex-row flex-col'>
@@ -159,7 +202,14 @@ function AddVehicle() {
                         <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>Model*</p>
                         <InputField label='Model' value={vehicleData} setValue={setVehicleData} fieldKey="model" />
                         <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>VIN Number*</p>
+                        <div className='flex items-center gap-2'>
                         <InputField label='Vin Number' value={vehicleData} setValue={setVehicleData} fieldKey="vinNumber" />
+                        <div onClick={()=>vinSearch()} className=' bg-[#479cff] text-[1.8rem] text-white py-4 px-2.5 cursor-pointer rounded-xl'> {loadingVin ? (
+                        <motion.div
+                            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin"
+                        />
+                    ) : (<CiSearch />)}</div>
+                        </div>
                         <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>Miles</p>
                         <InputField label='Miles' value={vehicleData} setValue={setVehicleData} fieldKey="mileage" />
                         <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>Number Plate</p>

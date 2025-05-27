@@ -3,6 +3,7 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion } from "framer-motion";
 import { getDashboard } from "../../API/portalServices";
 import { BeatLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 50, rotate: -2, scale: 0.9 },
@@ -10,14 +11,15 @@ const cardVariants = {
   hover: { scale: 1.05, rotate: 2, transition: { duration: 0.3 } },
 };
 
-const StatCard = ({ title, value, theme, delay }) => (
+const StatCard = ({ title, value, theme, delay, onNavigate }) => (
   <motion.div
     variants={cardVariants}
     initial="hidden"
     animate="visible"
     whileHover="hover"
     transition={{ delay }}
-    className={`px-5 py-10 rounded-lg border border-black/50 shadow-md ${
+    onClick={() => onNavigate(title === "Number of Vehicles" ? "/Vehicles" : title === "Number of Drivers" ? "/Drivers" : "/Invoices")}
+    className={`px-5 py-10 rounded-lg border border-black/50 shadow-md cursor-pointer ${
       theme === "dark" ? "bg-[#323335] text-white" : "bg-white text-black"
     }`}
   >
@@ -40,12 +42,11 @@ const StatCard = ({ title, value, theme, delay }) => (
   </motion.div>
 );
 
-
-
 function Dashboard() {
   const { theme } = useTheme();
+  const navigate = useNavigate(); // Move this inside the component
   const [loading, setLoading] = useState(false);
-  const [dashboardData, setDashboardData] = useState({})
+  const [dashboardData, setDashboardData] = useState({});
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
@@ -61,7 +62,7 @@ function Dashboard() {
   
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [fetchDashboardData]);
 
   const stats = [
     { title: "Number of Vehicles", value: dashboardData?.cars, delay: 0 },
@@ -71,19 +72,22 @@ function Dashboard() {
 
   return (
     <>
-    {loading?<div className="h-[80vh] flex items-center justify-center">
-      <BeatLoader color="#2d9bff"/>
-    </div>:
-    <motion.div 
-      className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-5 "
-      initial="hidden"
-      animate="visible"
-      variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
-    >
-      {stats.map((stat, index) => (
-        <StatCard key={index} {...stat} theme={theme} />
-      ))}
-    </motion.div>}
+      {loading ? (
+        <div className="h-[80vh] flex items-center justify-center">
+          <BeatLoader color="#2d9bff"/>
+        </div>
+      ) : (
+        <motion.div 
+          className="mt-4 grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+          initial="hidden"
+          animate="visible"
+          variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
+        >
+          {stats.map((stat, index) => (
+            <StatCard key={index} {...stat} theme={theme} onNavigate={navigate} />
+          ))}
+        </motion.div>
+      )}
     </>
   );
 }

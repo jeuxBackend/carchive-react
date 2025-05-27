@@ -29,6 +29,7 @@ function TransferVehicle({ open, setOpen }) {
                 setVehicleData(response?.data?.data || {});
                 toast.success("Vehicle Found")
                 navigate("/SearchedVehicle")
+                setOpen(false)
             } catch (error) {
                 console.error("Error fetching data:", error);
                 toast.error("Vehicle not found")

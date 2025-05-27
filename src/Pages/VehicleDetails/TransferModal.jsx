@@ -59,7 +59,7 @@ function TransferModal({ open, setOpen }) {
                     exit={{ scale: 0.8 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <p className="text-2xl font-medium text-center">Transfer Vehicle</p>
+                    <p className="text-2xl font-medium text-center">Buy Car</p>
                  
                     <input 
                         type="file" 
