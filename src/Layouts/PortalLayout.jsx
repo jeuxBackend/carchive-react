@@ -17,7 +17,7 @@ function Layout() {
     const adminToken = localStorage.getItem("CarchiveAdminToken");
 
     if (adminToken) {
-        return <Navigate to="/Admin/Dashboard" />; 
+        return <Navigate to="/Admin" />; 
       }
 
     return (
