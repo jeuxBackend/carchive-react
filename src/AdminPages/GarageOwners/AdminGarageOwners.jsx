@@ -7,7 +7,7 @@ import DriverDetail from "../../AdminComponents/DriverDetail/DriverDetail";
 import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import Search from "../../AdminComponents/Search/Search";
 import GradientButton from "../../AdminComponents/Logout/GradientButton";
-import Pagination from "../../AdminComponents/Pagination/pagination";
+import Pagination from "../../AdminComponents/Pagination/Pagination";
 import { getAllAdminGarage } from "../../API/adminServices";
 import { getApproveAdminGarage } from "../../API/adminServices";
 import { getUnapproveAdminGarage } from "../../API/adminServices";
@@ -239,6 +239,7 @@ function AdminGarageOwners() {
           setTake={setTake}
           setSkip={setSkip}
           take={take}
+          totalCount={totalCount}
         />
       )}
     </div>

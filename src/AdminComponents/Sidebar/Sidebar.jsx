@@ -5,6 +5,7 @@ import dashboard from "./assets/dashboard.png"
 import drivers from "./assets/drivers.png"
 import company from "./assets/company.png"
 import garage from "./assets/garage.png"
+import vehicle from "./assets/vehicles.png"
 import about from "./assets/about.png"
 import privacy from "./assets/privacy.png"
 import setting from "./assets/settings.png"
@@ -50,6 +51,12 @@ function Sidebar({ side, setSide,setLogout }) {
             icon: garage,
             name: "Garage Owners",
             path: "/Admin/Garages",
+           
+        },
+        {
+            icon: vehicle,
+            name: "All Vehicles",
+            path: "/Admin/Vehicles",
            
         },
         {

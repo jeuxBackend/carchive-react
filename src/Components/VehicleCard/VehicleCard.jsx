@@ -1,23 +1,36 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useGlobalContext } from '../../Contexts/GlobalContext';
 
-function VehicleCard({ data }) {
+function VehicleCard({ data, navigable = true, onCardClick }) {
     const { theme } = useTheme();
-    const { vehicle, setVehicle } = useGlobalContext();
+    const { setVehicle } = useGlobalContext();
 
-   
+    const safeString = (value) => value && value !== null && value !== undefined ? String(value).trim() : '';
+    const hasValue = (value) => value !== null && value !== undefined && String(value).trim() !== '';
+
+    const vehicleId = safeString(data?.id) || '0';
+    const vehicleMake = safeString(data?.make) || 'Unknown Make';
+    const vehicleVin = safeString(data?.vinNumber) || 'No VIN Available';
+    const vehiclePlate = safeString(data?.numberPlate) || 'No Plate Number';
+
+    const getVehicleImage = () => {
+        if (data?.image && Array.isArray(data.image) && data.image.length > 0 && hasValue(data.image[0])) {
+            return data.image[0];
+        }
+        return '';
+    };
 
     const renderExpiryBadge = () => {
-        if (data?.expired === '1') {
+        if (hasValue(data?.expired) && data.expired === '1') {
             return (
                 <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10">
                     EXPIRED
                 </div>
             );
-        } else if (data?.month_expiry === '1') {
+        } else if (hasValue(data?.month_expiry) && data.month_expiry === '1') {
             return (
                 <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10">
                     EXPIRES SOON
@@ -27,24 +40,44 @@ function VehicleCard({ data }) {
         return null;
     };
 
-    return (
-        <Link to={`/Vehicles/${data?.id}`}>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                onClick={() => setVehicle(data)}
-                whileHover={{ scale: 1.05, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
-                className={`${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} rounded-xl shadow-md p-3 h-[18rem] md:h-[14.5rem] flex flex-col gap-1 relative transition-all duration-300`}
-            >
-                {renderExpiryBadge()}
-                <p className='text-[#2d9bff] font-medium'>{data?.make}</p>
-                <p className={`font-medium ${theme === 'dark' ? "text-white" : "text-black"}`}>{data?.vinNumber}</p>
-                <p className={`font-medium ${theme === 'dark' ? "text-white" : "text-black"} `}>{data?.numberPlate}</p>
-                <img src={data?.image ? data?.image[0] : ""} alt="" className='w-[17rem] lg:w-[18rem] xl:w-[17rem] h-[10.5rem] absolute bottom-0 sm:bottom-2 right-0 border-none' />
-            </motion.div>
-        </Link>
+    const handleCardClick = () => {
+        setVehicle(data);
+        if (!navigable && typeof onCardClick === 'function') {
+            onCardClick(data);
+        }
+    };
+
+    const cardContent = (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            onClick={handleCardClick}
+            whileHover={{ scale: 1.05, boxShadow: "0px 5px 15px rgba(0,0,0,0.2)" }}
+            className={`${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} rounded-xl shadow-md p-3 h-[18rem] md:h-[14.5rem] flex flex-col gap-1 relative transition-all duration-300 cursor-pointer`}
+        >
+            {renderExpiryBadge()}
+            <p className='text-[#2d9bff] font-medium'>{vehicleMake}</p>
+            <p className={`font-medium ${theme === 'dark' ? "text-white" : "text-black"}`}>{vehicleVin}</p>
+            <p className={`font-medium ${theme === 'dark' ? "text-white" : "text-black"}`}>{vehiclePlate}</p>
+            {getVehicleImage() && (
+                <img 
+                    src={getVehicleImage()} 
+                    alt={`${vehicleMake} vehicle`}
+                    className='w-[17rem] lg:w-[18rem] xl:w-[17rem] h-[10.5rem] absolute bottom-0 sm:bottom-2 right-0 border-none'
+                    onError={(e) => {
+                        e.target.style.display = 'none'; 
+                    }}
+                />
+            )}
+        </motion.div>
     );
+
+    return navigable ? (
+        <Link to={`/Vehicles/${vehicleId}`}>
+            {cardContent}
+        </Link>
+    ) : cardContent;
 }
 
 export default VehicleCard;

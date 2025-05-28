@@ -63,7 +63,7 @@ const ViewDetailsModal = ({ setOpen, userData }) => {
             <img
               src={userData?.request?.document}
               alt="Document"
-              className="w-full h-auto rounded-lg border border-gray-200 mt-2"
+              className="w-full h-[300px] rounded-lg border border-gray-200 mt-2 object-cover"
             />
           </div>
         </div>

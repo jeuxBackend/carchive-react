@@ -36,6 +36,7 @@ import PublicPage from "./PublicPage/PublicPage";
 import UpdateVehicle from "./Pages/UpdateVehicle/UpdateVehicle";
 import VehicleRequests from "./Pages/VehicleRequests/VehicleRequests";
 import TermsConditions from "./Pages/TermsAndConditions/TermsConditions";
+import AdminVehicles from "./AdminPages/Vehicles/AdminVehicles";
 
 function App() {
   return (
@@ -81,6 +82,7 @@ function App() {
           <Route path="Invoices" element={<AdminInvoices />} />
           <Route path="Drivers" element={<AdminDrivers />} />
           <Route path="Garages" element={<AdminGarageOwners />} />
+          <Route path="Vehicles" element={<AdminVehicles/>} />
           <Route path="Settings" element={<AdminSettings />} />
           <Route path="About" element={<AdminAbout />} />
           <Route path="Privacy-Policy" element={<AdminPrivacy />} />

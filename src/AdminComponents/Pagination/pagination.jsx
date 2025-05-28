@@ -1,96 +1,134 @@
-import React from "react";
-import { useTheme } from "../../Contexts/ThemeContext";
+import React from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+const Pagination = ({ 
+  currentPage, 
+  totalPages, 
+  onPageChange, 
+  setTake, 
+  setSkip, 
+  take, 
+  totalCount 
+}) => {
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const delta = 2; // Number of pages to show on each side of current page
+    const range = [];
+    const rangeWithDots = [];
 
-const Pagination = ({ currentPage, totalPages, onPageChange, setTake, take, setSkip }) => {
-  const {theme} = useTheme()
-  const getVisiblePages = () => {
-    const maxVisiblePages = 5;
-    const sideCount = 1;
-   
+    // Always include first page
+    range.push(1);
 
-    if (totalPages <= maxVisiblePages) {
-      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    // Add pages around current page
+    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+      range.push(i);
     }
 
-    const pages = [];
-    const startEllipsis = currentPage > sideCount + 2;
-    const endEllipsis = currentPage < totalPages - sideCount - 1;
-
-    pages.push(1);
-
-    if (startEllipsis) {
-      pages.push("...");
+    // Always include last page if more than 1 page
+    if (totalPages > 1) {
+      range.push(totalPages);
     }
 
-    const startPage = Math.max(2, currentPage - sideCount);
-    const endPage = Math.min(totalPages - 1, currentPage + sideCount);
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
+    // Remove duplicates and sort
+    const uniqueRange = [...new Set(range)].sort((a, b) => a - b);
 
-    if (endEllipsis) {
-      pages.push("...");
-    }
+    // Add dots where there are gaps
+    let prev = 0;
+    uniqueRange.forEach(page => {
+      if (page - prev > 1) {
+        rangeWithDots.push('...');
+      }
+      rangeWithDots.push(page);
+      prev = page;
+    });
 
-    pages.push(totalPages);
-
-    return pages;
+    return rangeWithDots;
   };
 
-  const visiblePages = getVisiblePages();
+  const pageNumbers = getPageNumbers();
+
+  const handlePageSizeChange = (newTake) => {
+    setTake(newTake);
+    setSkip(0); // Reset to first page
+    onPageChange(1);
+  };
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
+      onPageChange(page);
+    }
+  };
+
+  const startItem = Math.min((currentPage - 1) * take + 1, totalCount);
+  const endItem = Math.min(currentPage * take, totalCount);
+
+  if (totalPages <= 1) return null;
 
   return (
-    <div className="flex sm:flex-row flex-col-reverse gap-3 justify-between items-center mt-5 text-sm">
-      <div className={`${theme==="dark"?"text-white":"text-gray-500"} `}>
-        Showing {(currentPage - 1) * take + 1} to {Math.min(currentPage * take, totalPages * take)} of {totalPages * take}
+    <div className="mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3">
+      {/* Results info - Left side */}
+      <div className="flex items-center text-sm text-gray-600">
+        <span>Showing {startItem} to {endItem === totalCount ? 'NaN' : endItem} of {totalCount}</span>
       </div>
 
-      <div className="flex items-center space-x-2">
-        <button
-          className={`${theme==="dark"?"text-white":"text-gray-500 hover:bg-gray-200"} px-3 py-1 border-2 rounded-lg  disabled:opacity-50`}
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          &lt;
-        </button>
+      {/* Pagination controls - Center */}
+      <div className="flex items-center justify-center">
+        <div className="flex items-center gap-1">
+          {/* Previous button */}
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex items-center justify-center w-8 h-8 text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
 
-        {visiblePages.map((page, index) =>
-          page === "..." ? (
-            <span key={index} className="px-2">...</span>
-          ) : (
-            <button
-              key={page}
-              className={`px-3 py-1 rounded-lg ${
-                currentPage === page ? "bg-[#2d9bff] text-white" : (`${theme==="dark"?"text-white":"text-gray-500 hover:bg-gray-200"} border`)
-              }`}
-              onClick={() => onPageChange(Number(page))}
-            >
-              {page}
-            </button>
-          )
-        )}
+          {/* Page numbers */}
+          {pageNumbers.map((page, index) => (
+            page === '...' ? (
+              <span key={`dots-${index}`} className="px-2 py-1 text-gray-400">
+                ...
+              </span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => goToPage(page)}
+                className={`flex items-center justify-center w-8 h-8 text-sm font-medium rounded transition-colors ${
+                  currentPage === page
+                    ? 'bg-blue-500 text-white border border-blue-500'
+                    : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {page}
+              </button>
+            )
+          ))}
 
-        <button
-          className={`${theme==="dark"?"text-white":"text-gray-500 hover:bg-gray-200"} px-3 py-1 border rounded-lg disabled:opacity-50`}
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          &gt;
-        </button>
+          {/* Next button */}
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex items-center justify-center w-8 h-8 text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
-      <div>
-        <label className={`${theme==="dark"?"text-white":"text-gray-500"}  mr-2`}>Show</label>
+      {/* Page size selector - Right side */}
+      <div className="flex items-center gap-2 text-sm text-gray-600">
+        <span>Show</span>
         <select
-          onChange={(e) => {setTake(Number(e.target.value)), setSkip(0)}}
-          className={`${theme==="dark"?"text-white bg-[#1b1c1e]":"text-gray-500"} border rounded-lg px-3 py-1`}
-          defaultValue={take}
+          value={take}
+          onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+          className="border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
-          <option value={10}>10 entries</option>
-          <option value={20}>20 entries</option>
-          <option value={50}>50 entries</option>
+          <option value={5}>5</option>
+          <option value={10}>10</option>
+          <option value={20}>20</option>
+          <option value={50}>50</option>
         </select>
+        <span>entries</span>
       </div>
     </div>
   );

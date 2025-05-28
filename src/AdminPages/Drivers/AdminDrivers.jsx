@@ -9,7 +9,7 @@ import GradientButton from "../../AdminComponents/Logout/GradientButton";
 import { getAllAdminDrivers } from "../../API/adminServices";
 import { getApproveAdminDrivers } from "../../API/adminServices";
 import { getUnapproveAdminDrivers } from "../../API/adminServices";
-import Pagination from "../../AdminComponents/Pagination/pagination";
+import Pagination from "../../AdminComponents/Pagination/Pagination";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { BeatLoader } from "react-spinners";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
@@ -190,6 +190,7 @@ function AdminDrivers() {
           setTake={setTake}
           setSkip={setSkip}
           take={take}
+          totalCount={totalCount}
         />}
     </div>
   );

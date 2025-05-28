@@ -6,7 +6,7 @@ import { getAdminCompanies } from "../../API/adminServices";
 import { getApproveAdminCompanies } from "../../API/adminServices";
 import { getUnapproveAdminCompanies } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
-import Pagination from "../../AdminComponents/Pagination/pagination";
+import Pagination from "../../AdminComponents/Pagination/Pagination";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 
 function AdminCompany() {
@@ -101,6 +101,7 @@ function AdminCompany() {
         setTake={setTake}
         setSkip={setSkip}
         take={take}
+        totalCount={totalCount}
       />}
     </div>
   );

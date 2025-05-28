@@ -72,8 +72,6 @@ function AddVehicle() {
         setAdditionalDates(updatedDates);
     };
 
-  
-
     const handleAddVehicle = async () => {
         if (!vehicleData?.make || !vehicleData?.model || !vehicleData?.vinNumber) {
             toast.error("Vehicle Make, Model, VIN Number fields are required")
@@ -84,21 +82,36 @@ function AddVehicle() {
         } else {
             setLoading(true)
             try {
-
-                const formattedDates = additionalDates.map(date => 
-                    date ? dayjs(date).format('YYYY-MM-DD') : ''
+                // Filter out empty dates and format valid ones
+                const validDates = additionalDates.filter(date => date && date !== "");
+                const formattedDates = validDates.map(date => 
+                    dayjs(date).format('YYYY-MM-DD')
                 );
 
-                const response = await addVehicle({
+                // Filter out empty titles
+                const validTitles = additionalTitles.filter(title => title && title.trim() !== "");
+
+                // Create payload object
+                const payload = {
                     ...vehicleData,
                     image: vehicleImages,
                     registrationDocument: regDocs,
                     insuranceDocument: insuranceDocs,
                     inspectionDocument: inspectionDocs,
                     additionalDocuments: additionalDocs,
-                    additionalExpiry: formattedDates,
-                    additionalTitles: additionalTitles
-                })
+                };
+
+                // Only add additionalExpiry if there are valid dates
+                if (formattedDates.length > 0) {
+                    payload.additionalExpiry = formattedDates;
+                }
+
+                // Only add additionalTitles if there are valid titles
+                if (validTitles.length > 0) {
+                    payload.additionalTitles = validTitles;
+                }
+
+                const response = await addVehicle(payload)
 
                 if (response.data) {
                     toast.success("Vehicle Added Successfully")
@@ -233,19 +246,19 @@ function AddVehicle() {
                     </div>
                     <div className={`${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
                         <div>
-                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Registration Documents <Switch value={vehicleData} setValue={setVehicleData} fieldKey="registrationStatus" /></div>
+                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Registration Documents <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="registrationStatus" /> <span className='text-[0.8rem] font-normal'>Share</span> </div></div>
                             <div className=''>
                                 <DocumentUploader value={regDocs} setValue={setRegDocs} />
                             </div>
                         </div>
                         <div>
-                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Insurance Documents <Switch value={vehicleData} setValue={setVehicleData} fieldKey="insuranceStatus" /></div>
+                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Insurance Documents  <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="insuranceStatus" /><span className='text-[0.8rem] font-normal'>Share</span> </div></div>
                             <div className=''>
                                 <DocumentUploader value={insuranceDocs} setValue={setInsuranceDocs} />
                             </div>
                         </div>
                         <div>
-                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Inspection Documents <Switch value={vehicleData} setValue={setVehicleData} fieldKey="inspectionStatus" /></div>
+                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Inspection Documents <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="inspectionStatus" /><span className='text-[0.8rem] font-normal'>Share</span> </div></div> 
                             <div >
                                 <DocumentUploader value={inspectionDocs} setValue={setInspectionDocs} />
                             </div>
@@ -257,7 +270,7 @@ function AddVehicle() {
             <div className='w-full pt-3 flex flex-col gap-3'>
                 <div className={`${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
                     <div>
-                        <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Additional Documents <Switch value={vehicleData} setValue={setVehicleData} fieldKey="additionalStatus" /></div>
+                        <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Additional Documents <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="additionalStatus" /><span className='text-[0.8rem] font-normal'>Share</span> </div></div>
                         <div className=''>
                             <DocumentUploader value={additionalDocs} setValue={setAdditionalDocs} type='additional' setAdditionalTitles={setAdditionalTitles} setAdditionalDates={setAdditionalDates}/>
                         </div>

@@ -1,9 +1,11 @@
-import { useId, useState } from "react";
+import { useId, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../Contexts/ThemeContext";
 import add from "./assets/add.png";
 import addLight from "./assets/addLight.png";
-import { X } from "lucide-react";
+import { X, Crop, Check } from "lucide-react";
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 // Image compression utility
 const compressImage = (file, maxWidth = 1920, maxHeight = 1080, quality = 0.8) => {
@@ -52,12 +54,62 @@ const compressImage = (file, maxWidth = 1920, maxHeight = 1080, quality = 0.8) =
   });
 };
 
+// Crop image utility
+const getCroppedImg = (image, crop, fileName) => {
+  return new Promise((resolve) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    );
+
+    canvas.toBlob((blob) => {
+      const croppedFile = new File([blob], fileName, {
+        type: blob.type,
+        lastModified: Date.now()
+      });
+      resolve(croppedFile);
+    }, 'image/jpeg', 0.95);
+  });
+};
+
 const ImageUploader = ({ value = [], setValue }) => {
   const { theme } = useTheme();
   const inputId = useId();
   const [imageView, setImageView] = useState([]);
   const [isCompressing, setIsCompressing] = useState(false);
   const [compressionInfo, setCompressionInfo] = useState([]);
+  
+  // Cropper states
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [currentCropImage, setCurrentCropImage] = useState(null);
+  const [currentCropIndex, setCurrentCropIndex] = useState(null);
+  const [crop, setCrop] = useState({
+    unit: '%',
+    width: 50,
+    height: 50,
+    x: 25,
+    y: 25
+  });
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const [originalFiles, setOriginalFiles] = useState([]);
+  const [cropResolve, setCropResolve] = useState(null);
+  const imgRef = useRef(null);
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -71,46 +123,35 @@ const ImageUploader = ({ value = [], setValue }) => {
     const files = Array.from(event.target.files).slice(0, 3 - value.length);
     
     if (files.length > 0) {
-      setIsCompressing(true);
-      
-      try {
-        // Compress all images and track compression info
-        const compressionResults = await Promise.all(
-          files.map(async (file) => {
-            const compressedFile = await compressImage(file, 1920, 1080, 0.6);
-            const compressionRatio = ((file.size - compressedFile.size) / file.size * 100).toFixed(1);
-            
-            return {
-              original: file,
-              compressed: compressedFile,
-              originalSize: file.size,
-              compressedSize: compressedFile.size,
-              compressionRatio: compressionRatio,
-              fileName: file.name
-            };
-          })
-        );
+      // Process files one by one and open cropper for each
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const imageUrl = URL.createObjectURL(file);
         
-        const compressedFiles = compressionResults.map(result => result.compressed);
-        const newImages = [...value, ...compressedFiles].slice(0, 3);
-        const imagePreviews = [...imageView, ...compressedFiles.map((file) => URL.createObjectURL(file))].slice(0, 3);
-        const newCompressionInfo = [...compressionInfo, ...compressionResults].slice(0, 3);
+        // Open cropper modal for this image
+        setCurrentCropImage(imageUrl);
+        setCurrentCropIndex(value.length + i);
+        setCropModalOpen(true);
+        setCrop({
+          unit: '%',
+          width: 50,
+          height: 50,
+          x: 25,
+          y: 25
+        });
         
-        setValue(newImages);
-        setImageView(imagePreviews);
-        setCompressionInfo(newCompressionInfo);
-      } catch (error) {
-        console.error('Error compressing images:', error);
-        // Fallback to original files if compression fails
-        const newImages = [...value, ...files].slice(0, 3);
-        const imagePreviews = [...imageView, ...files.map((file) => URL.createObjectURL(file))].slice(0, 3);
+        // Store the original file temporarily for cropping
+        setOriginalFiles(prev => [...(prev || []), file]);
         
-        setValue(newImages);
-        setImageView(imagePreviews);
-      } finally {
-        setIsCompressing(false);
+        // Wait for user to complete cropping before processing next image
+        await new Promise(resolve => {
+          setCropResolve(() => resolve);
+        });
       }
     }
+    
+    // Clear the input value to allow selecting the same file again
+    event.target.value = '';
   };
 
   const removeImage = (index) => {
@@ -120,6 +161,79 @@ const ImageUploader = ({ value = [], setValue }) => {
     setValue(updatedImages);
     setImageView(updatedPreviews);
     setCompressionInfo(updatedCompressionInfo);
+  };
+
+  const openCropModal = (index) => {
+    setCurrentCropImage(imageView[index]);
+    setCurrentCropIndex(index);
+    setCropModalOpen(true);
+    setCrop({
+      unit: '%',
+      width: 50,
+      height: 50,
+      x: 25,
+      y: 25
+    });
+  };
+
+  const closeCropModal = () => {
+    setCropModalOpen(false);
+    setCurrentCropImage(null);
+    setCurrentCropIndex(null);
+    setCompletedCrop(null);
+    
+    // Resolve the promise to continue processing next image
+    if (cropResolve) {
+      cropResolve();
+      setCropResolve(null);
+    }
+  };
+
+  const applyCrop = async () => {
+    if (completedCrop && imgRef.current && currentCropIndex !== null) {
+      setIsCompressing(true);
+      
+      try {
+        const originalFile = originalFiles[currentCropIndex] || 
+                           originalFiles[originalFiles.length - 1]; // Fallback to last file
+        
+        const croppedFile = await getCroppedImg(
+          imgRef.current,
+          completedCrop,
+          originalFile.name
+        );
+        
+        // Compress the cropped image
+        const compressedCroppedFile = await compressImage(croppedFile, 1920, 1080, 0.6);
+        
+        // Calculate compression info
+        const compressionRatio = ((originalFile.size - compressedCroppedFile.size) / originalFile.size * 100).toFixed(1);
+        const compressionData = {
+          original: originalFile,
+          compressed: compressedCroppedFile,
+          originalSize: originalFile.size,
+          compressedSize: compressedCroppedFile.size,
+          compressionRatio: compressionRatio,
+          fileName: originalFile.name
+        };
+        
+        // Add to the arrays
+        const newImages = [...value, compressedCroppedFile];
+        const imagePreviews = [...imageView, URL.createObjectURL(compressedCroppedFile)];
+        const newCompressionInfo = [...compressionInfo, compressionData];
+        
+        setValue(newImages);
+        setImageView(imagePreviews);
+        setCompressionInfo(newCompressionInfo);
+        
+        closeCropModal();
+      } catch (error) {
+        console.error('Error cropping image:', error);
+        closeCropModal();
+      } finally {
+        setIsCompressing(false);
+      }
+    }
   };
 
   return (
@@ -145,15 +259,16 @@ const ImageUploader = ({ value = [], setValue }) => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
                   />
-                  <button
-                    onClick={() => removeImage(index)}
-                    className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full cursor-pointer hover:bg-red-600 transition-colors"
-                  >
-                    <X size={14} />
-                  </button>
+                  <div className="absolute top-1 right-1 flex gap-1">
+                    <button
+                      onClick={() => removeImage(index)}
+                      className="bg-red-500 text-white p-1 rounded-full cursor-pointer hover:bg-red-600 transition-colors"
+                      title="Remove Image"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
                 </div>
-                
-                
               </div>
             ) : (
               <motion.div
@@ -179,6 +294,7 @@ const ImageUploader = ({ value = [], setValue }) => {
           </div>
         ))}
       </div>
+      
       <input
         type="file"
         accept="image/*"
@@ -188,6 +304,89 @@ const ImageUploader = ({ value = [], setValue }) => {
         id={inputId}
         disabled={isCompressing}
       />
+
+      {/* Crop Modal */}
+      {cropModalOpen && (
+        <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className={`max-w-4xl w-full max-h-[90vh] overflow-auto rounded-lg ${
+            theme === "dark" ? "bg-[#1b1c1e]" : "bg-white"
+          }`}>
+            <div className={`p-4 border-b ${
+              theme === "dark" ? "border-gray-700" : "border-gray-200"
+            }`}>
+              <div className="flex justify-between items-center">
+                <h3 className={`text-lg font-semibold ${
+                  theme === "dark" ? "text-white" : "text-gray-900"
+                }`}>
+                  Crop Image
+                </h3>
+                <button
+                  onClick={closeCropModal}
+                  className={`p-2 rounded-full hover:bg-opacity-80 ${
+                    theme === "dark" ? "hover:bg-gray-700" : "hover:bg-gray-100"
+                  }`}
+                >
+                  <X size={20} className={theme === "dark" ? "text-white" : "text-gray-900"} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-4">
+              <div className="mb-4">
+                <ReactCrop
+                  crop={crop}
+                  onChange={(c) => setCrop(c)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                  aspect={undefined}
+                  className="max-w-full"
+                >
+                  <img
+                    ref={imgRef}
+                    src={currentCropImage}
+                    alt="Crop preview"
+                    className="max-w-full h-auto"
+                    onLoad={() => {
+                      // Reset crop when image loads
+                      setCrop({
+                        unit: '%',
+                        width: 50,
+                        height: 50,
+                        x: 25,
+                        y: 25
+                      });
+                    }}
+                  />
+                </ReactCrop>
+              </div>
+              
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={closeCropModal}
+                  className={`px-4 py-2 rounded-lg border transition-colors ${
+                    theme === "dark" 
+                      ? "border-gray-600 text-gray-300 hover:bg-gray-700" 
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  Skip Crop
+                </button>
+                <button
+                  onClick={applyCrop}
+                  disabled={!completedCrop}
+                  className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                    completedCrop
+                      ? "bg-blue-500 text-white hover:bg-blue-600"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
+                >
+                  <Check size={16} />
+                  Apply Crop
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

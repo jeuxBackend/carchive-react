@@ -153,6 +153,14 @@ const Topbar = ({ setSide }) => {
                 </p>
               </div>
             )}
+            {active === "/Admin/Vehicles" && (
+              <div className="flex items-center gap-2">
+                
+                <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
+                  All Vehicles
+                </p>
+              </div>
+            )}
             {active === "/Admin/Invoices" && (
               <div className="flex items-center gap-2">
                 <img
@@ -183,15 +191,7 @@ const Topbar = ({ setSide }) => {
             {active === "/Admin/Dashboard" && <p>Welcome Back, Julia 👋</p>}
           </div>
 
-          {active === "/Admin/Vehicles" && (
-            <Link
-              to="/Add-Vehicle"
-              className="flex items-center gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]"
-            >
-              <FiPlus className="text-[1.5rem]" />
-              <span className="sm:block hidden">Add Vehicles</span>
-            </Link>
-          )}
+         
           {active.startsWith("/Admin/Company/") && (
             <Link
               to="/Admin/Invoices"
