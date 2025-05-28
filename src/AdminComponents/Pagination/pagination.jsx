@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTheme } from '../../Contexts/ThemeContext';
 
 const Pagination = ({ 
   currentPage, 
@@ -10,9 +11,9 @@ const Pagination = ({
   take, 
   totalCount 
 }) => {
-  // Generate page numbers to display
+  const {theme} = useTheme();
   const getPageNumbers = () => {
-    const delta = 2; // Number of pages to show on each side of current page
+    const delta = 2; 
     const range = [];
     const rangeWithDots = [];
 
