@@ -11,7 +11,7 @@ const Pagination = ({
   take, 
   totalCount 
 }) => {
-  const {theme} = useTheme();
+  const { theme } = useTheme();
   const getPageNumbers = () => {
     const delta = 2; 
     const range = [];
@@ -65,11 +65,27 @@ const Pagination = ({
 
   if (totalPages <= 1) return null;
 
+  // Determine dark mode classes
+  const isDark = theme === 'dark';
+  const textClass = isDark ? 'text-gray-300' : 'text-gray-600';
+  const buttonClass = isDark 
+    ? 'text-gray-200 bg-gray-700 border-gray-600 hover:bg-gray-600' 
+    : 'text-gray-700 bg-white border-gray-300 hover:bg-gray-50';
+  const currentButtonClass = isDark
+    ? 'bg-blue-600 text-white border-blue-600'
+    : 'bg-blue-500 text-white border-blue-500';
+  const disabledButtonClass = isDark 
+    ? 'text-gray-500 bg-gray-700 border-gray-600' 
+    : 'text-gray-500 bg-white border-gray-300';
+  const selectClass = isDark
+    ? 'bg-gray-700 border-gray-600 text-white'
+    : 'bg-white border-gray-300';
+
   return (
-    <div className="mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3">
+    <div className={`mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 ${isDark ? 'bg-gray-800' : ''}`}>
       {/* Results info - Left side */}
-      <div className="flex items-center text-sm text-gray-600">
-        <span>Showing {startItem} to {endItem === totalCount ? 'NaN' : endItem} of {totalCount}</span>
+      <div className={`flex items-center text-sm ${textClass}`}>
+        <span>Showing {startItem} to {endItem} of {totalCount}</span>
       </div>
 
       {/* Pagination controls - Center */}
@@ -79,7 +95,11 @@ const Pagination = ({
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="flex items-center justify-center w-8 h-8 text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`flex items-center justify-center w-8 h-8 border rounded transition-colors ${
+              currentPage === 1 
+                ? `${disabledButtonClass} opacity-50 cursor-not-allowed` 
+                : buttonClass
+            }`}
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -87,17 +107,17 @@ const Pagination = ({
           {/* Page numbers */}
           {pageNumbers.map((page, index) => (
             page === '...' ? (
-              <span key={`dots-${index}`} className="px-2 py-1 text-gray-400">
+              <span key={`dots-${index}`} className={`px-2 py-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                 ...
               </span>
             ) : (
               <button
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`flex items-center justify-center w-8 h-8 text-sm font-medium rounded transition-colors ${
+                className={`flex items-center justify-center w-8 h-8 text-sm font-medium rounded transition-colors border ${
                   currentPage === page
-                    ? 'bg-blue-500 text-white border border-blue-500'
-                    : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                    ? currentButtonClass
+                    : buttonClass
                 }`}
               >
                 {page}
@@ -109,7 +129,11 @@ const Pagination = ({
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="flex items-center justify-center w-8 h-8 text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`flex items-center justify-center w-8 h-8 border rounded transition-colors ${
+              currentPage === totalPages 
+                ? `${disabledButtonClass} opacity-50 cursor-not-allowed` 
+                : buttonClass
+            }`}
           >
             <ChevronRight className="w-4 h-4" />
           </button>
@@ -117,12 +141,12 @@ const Pagination = ({
       </div>
 
       {/* Page size selector - Right side */}
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className={`flex items-center gap-2 text-sm ${textClass}`}>
         <span>Show</span>
         <select
           value={take}
           onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-          className="border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className={`border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${selectClass}`}
         >
           <option value={5}>5</option>
           <option value={10}>10</option>
