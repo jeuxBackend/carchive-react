@@ -1,28 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import car1 from "./assets/car1.png";
-import car2 from "./assets/car2.png";
-import car3 from "./assets/car3.png";
-import car4 from "./assets/car4.png";
-import car5 from "./assets/car5.png";
-import car6 from "./assets/car6.png";
-import d1 from "./assets/d1.png";
-import d2 from "./assets/d2.png";
-import d3 from "./assets/d3.png";
 import { useTheme } from "../../Contexts/ThemeContext";
 import AdminDriverCards from "./AdminDriverCard";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { getAdminCompanyDetail } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
 import VehicleDetailsModal from "../Vehicles/VehicleDetailsModal";
+import DriverDetail from "../../AdminComponents/DriverDetail/DriverDetail";
 
 function AdminCompanyDetail() {
   const { theme } = useTheme();
   const { companyId } = useGlobalContext();
+  const { selectedDriverId, setSelectedDriverId } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [companyDetailData, setCompanyDetailData] = useState({});
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+   const [open, setOpen] = useState(false);
 
   const handleViewDetails = (vehicleData) => {
     setSelectedVehicle(vehicleData);
@@ -66,7 +60,7 @@ function AdminCompanyDetail() {
 
   const drivers =
     companyDetailData?.drivers?.map((driver) => ({
-      id: driver.driverId,
+      id: driver.userId,
       name: driver.name,
       image: driver.image,
     })) || [];
@@ -78,6 +72,7 @@ function AdminCompanyDetail() {
         onClose={() => setIsModalOpen(false)}
         vehicleData={selectedVehicle}
       />
+      <DriverDetail open={open} setOpen={setOpen} />
       {loading ? (
         <div className="flex justify-center items-center h-[80vh]">
           <BeatLoader color="#009eff" loading={loading} size={15} />
@@ -198,6 +193,10 @@ function AdminCompanyDetail() {
                       key={driver.id}
                       img={driver.image}
                       name={driver.name}
+                      id={driver.id}
+                      setSelectedDriverId={setSelectedDriverId}
+                      setOpen={setOpen}
+                     
                     />
                   ))
                 ) : (
