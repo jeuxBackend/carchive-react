@@ -14,18 +14,26 @@ import AdminDriverCards from "./AdminDriverCard";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { getAdminCompanyDetail } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
+import VehicleDetailsModal from "../Vehicles/VehicleDetailsModal";
 
 function AdminCompanyDetail() {
   const { theme } = useTheme();
   const { companyId } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [companyDetailData, setCompanyDetailData] = useState({});
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewDetails = (vehicleData) => {
+    setSelectedVehicle(vehicleData);
+    setIsModalOpen(true);
+  };
 
   const fetchAdminCompanyDetailData = useCallback(async (id) => {
     setLoading(true);
     try {
       const response = await getAdminCompanyDetail(id);
-      if(response){
+      if (response) {
         console.log(response.data)
       }
       setCompanyDetailData(response?.data?.data || {});
@@ -45,13 +53,16 @@ function AdminCompanyDetail() {
     email: companyDetailData?.email || "Email Not Found",
     phone: companyDetailData?.phNumber || "Phone# Not Found",
     vat: companyDetailData?.vatNum || "Vat# Not Found",
-    address: companyDetailData?.company?.street + " , " + companyDetailData?.company?.city + " , " + companyDetailData?.company?.country  || "Address Not Found",
+    address:
+      companyDetailData?.company?.street &&
+        companyDetailData?.company?.city &&
+        companyDetailData?.company?.country
+        ? `${companyDetailData.company.street}, ${companyDetailData.company.city}, ${companyDetailData.company.country}`
+        : "Address Not Found",
+
   };
 
-  const cars = companyDetailData?.cars?.map((car) => ({
-    id: car.id,
-    image: Array.isArray(car.image) && car.image.length > 0 ? car.image[0] : null,
-  })) || [];
+  const cars = companyDetailData?.cars || [];
 
   const drivers =
     companyDetailData?.drivers?.map((driver) => ({
@@ -62,29 +73,32 @@ function AdminCompanyDetail() {
 
   return (
     <>
+      <VehicleDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        vehicleData={selectedVehicle}
+      />
       {loading ? (
         <div className="flex justify-center items-center h-[80vh]">
-          <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
+          <BeatLoader color="#009eff" loading={loading} size={15} />
         </div>
       ) : (
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className={`w-[100%] ${
-            theme === "dark" ? "text-white" : "text-black "
-          }`}
+          className={`w-[100%] ${theme === "dark" ? "text-white" : "text-black "
+            }`}
         >
           <div className="w-full grid md:grid-cols-2 grid-cols-1 gap-6">
             <motion.div
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-              className={`p-2 sm:p-6 rounded-lg ${
-                theme === "dark"
-                  ? "bg-[#323335] border-2 border-[#323335]"
-                  : "bg-[#FFFFFF] border-2 border-[#ECECEC]"
-              }`}
+              className={`p-2 sm:p-6 rounded-lg ${theme === "dark"
+                ? "bg-[#323335] border-2 border-[#323335]"
+                : "bg-[#FFFFFF] border-2 border-[#ECECEC]"
+                }`}
             >
               <h2 className="text-xl mb-4">Details</h2>
               <div className="space-y-3">
@@ -95,21 +109,18 @@ function AdminCompanyDetail() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     whileHover={{ scale: 1.05 }}
-                    className={`p-4 flex gap-1 flex-col md:flex-row rounded-xl transition-all duration-200 ${
-                      theme === "dark" ? "bg-[#1B1C1E]" : "bg-[#F7F7F7]"
-                    }`}
+                    className={`p-4 flex gap-1 flex-col md:flex-row rounded-xl transition-all duration-200 ${theme === "dark" ? "bg-[#1B1C1E]" : "bg-[#F7F7F7]"
+                      }`}
                   >
                     <span
-                      className={`${
-                        theme === "dark" ? "text-[#767778]" : "text-black"
-                      }`}
+                      className={`${theme === "dark" ? "text-[#767778]" : "text-black"
+                        }`}
                     >
                       {key.replace(/^\w/, (c) => c.toUpperCase())}:
                     </span>
                     <strong
-                      className={`sm:text-[1rem] text-[0.8rem] ${
-                        theme === "dark" ? "text-[#F7F7F7]" : "text-black"
-                      }`}
+                      className={`sm:text-[1rem] text-[0.8rem] ${theme === "dark" ? "text-[#F7F7F7]" : "text-black"
+                        }`}
                     >
                       {value}
                     </strong>
@@ -122,11 +133,10 @@ function AdminCompanyDetail() {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.4 }}
-              className={`p-2 sm:p-6 rounded-lg ${
-                theme === "dark"
-                  ? "bg-[#323335] border-2 border-[#323335]"
-                  : "bg-[#FFFFFF] border-2 border-[#ECECEC]"
-              }`}
+              className={`p-2 sm:p-6 rounded-lg ${theme === "dark"
+                ? "bg-[#323335] border-2 border-[#323335]"
+                : "bg-[#FFFFFF] border-2 border-[#ECECEC]"
+                }`}
             >
               <h2 className="text-xl mb-4">Company Vehicles</h2>
               <motion.div
@@ -152,9 +162,10 @@ function AdminCompanyDetail() {
                         boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
                       }}
                       transition={{ duration: 0.5, ease: "easeOut" }}
-                      className={`w-full flex justify-center rounded-xl transition-all duration-300 ${
-                        theme === "dark" ? "bg-[#1B1C1E]" : "bg-[#F7F7F7]"
-                      }`}
+                      className={`w-full flex justify-center rounded-xl transition-all duration-300 ${theme === "dark" ? "bg-[#1B1C1E]" : "bg-[#F7F7F7]"
+                        }`}
+                      onClick={() => handleViewDetails(car)}
+
                     >
                       <img
                         src={car.image}
@@ -174,11 +185,10 @@ function AdminCompanyDetail() {
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-              className={`p-2 sm:p-6 w-full rounded-lg mt-4 ${
-                theme === "dark"
-                  ? "bg-[#323335] border-2 border-[#323335]"
-                  : "bg-[#FFFFFF] border-2 border-[#ECECEC]"
-              }`}
+              className={`p-2 sm:p-6 w-full rounded-lg mt-4 ${theme === "dark"
+                ? "bg-[#323335] border-2 border-[#323335]"
+                : "bg-[#FFFFFF] border-2 border-[#ECECEC]"
+                }`}
             >
               <h2 className="text-xl mb-4">Company Drivers</h2>
               <div className="grid w-full grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">

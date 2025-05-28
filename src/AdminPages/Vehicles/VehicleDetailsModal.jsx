@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) => {
     const { theme } = useTheme();
     const [loading, setLoading] = React.useState(false);
+    console.log("selected vehicle data:", vehicleData);
+
 
     if (!vehicleData) return null;
 
@@ -114,7 +116,7 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
     const releaseCar = async () => {
         try {
             setLoading(true);
-            const response = adminReleaseVehicle({id: vehicleData.id});
+            const response = adminReleaseVehicle({ id: vehicleData.id });
             if (response) {
                 toast.success("Vehicle released successfully");
                 onClose();
@@ -168,22 +170,36 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
 
                         <div className="p-6">
                             {/* Vehicle Images */}
-                            {vehicleData.image && vehicleData.image.length > 0 && (
+                            {/* Vehicle Images */}
+                            {vehicleData?.image && (
                                 <div className="mb-6">
                                     <h3 className={`text-lg font-medium ${theme === "dark" ? "text-white" : "text-gray-800"} mb-3`}>Vehicle Images</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {vehicleData.image.map((img, index) => (
-                                            <div key={index} className={`aspect-video ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-gray-100"} rounded-lg overflow-hidden`}>
+                                        {Array.isArray(vehicleData.image) ? (
+                                            vehicleData.image.map((img, index) => (
+                                                <div key={index} className={`aspect-video ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-gray-100"} rounded-lg overflow-hidden`}>
+                                                    <img
+                                                        src={img}
+                                                        alt={`Vehicle ${index + 1}`}
+                                                        className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
+                                                        onError={(e) => {
+                                                            e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNTAgMTAwTDEyNSA3NUgxNzVMMTUwIDEwMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                                                        }}
+                                                    />
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className={`aspect-video ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-gray-100"} rounded-lg overflow-hidden`}>
                                                 <img
-                                                    src={img}
-                                                    alt={`Vehicle ${index + 1}`}
+                                                    src={vehicleData.image}
+                                                    alt="Vehicle"
                                                     className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
                                                     onError={(e) => {
                                                         e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNTAgMTAwTDEyNSA3NUgxNzVMMTUwIDEwMFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                                                     }}
                                                 />
                                             </div>
-                                        ))}
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -350,7 +366,7 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
                                 <div
                                     className={`w-full py-3 px-3 cursor-pointer xl:text-[1rem] lg:text-[0.6rem] text-center 2xl:px-4 flex justify-center items-center rounded-xl focus:outline-none ${theme === "dark" ? "bg-[#479cff] text-white" : "bg-[#1b1c1e] text-white "
                                         }`}
-                                        onClick={releaseCar}
+                                    onClick={releaseCar}
                                 >
                                     {loading ? (
                                         <motion.div
