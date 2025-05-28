@@ -2,12 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import Search from "../../AdminComponents/Search/Search";
 import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import GradientCards from "../../AdminComponents/Cards/GradientCards";
-import { getAdminCompanies } from "../../API/adminServices";
+import { bypassVerification, getAdminCompanies } from "../../API/adminServices";
 import { getApproveAdminCompanies } from "../../API/adminServices";
 import { getUnapproveAdminCompanies } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
 import Pagination from "../../AdminComponents/Pagination/Pagination";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
+import { toast } from "react-toastify";
 
 function AdminCompany() {
   const [loading, setLoading] = useState(false);
@@ -17,6 +18,7 @@ function AdminCompany() {
   const [search, setSearch] = useState("");
   const [totalCount, setTotalCount] = useState(0);
   const [dropdownSelected, setDropdownSelected] = useState("All Company");
+  const [bypassLoading, setBypassLoading] = useState({});
 
   const apiMap = {
     "All Company": getAdminCompanies,
@@ -48,6 +50,20 @@ function AdminCompany() {
 
   const totalPages = Math.ceil(totalCount / take);
   const currentPage = Math.floor(skip / take) + 1;
+   const handleBypassVerification = async (id) => {
+    setBypassLoading(prev => ({ ...prev, [id]: true }));
+    try {
+      const response = await bypassVerification({id: id});
+      console.log("Bypass verification response:", response);
+      // Refresh the data after successful bypass
+      await fetchCompanyData();
+      toast.success("Verification bypassed successfully!");
+    } catch (error) {
+      console.error("Error bypassing verification:", error);
+    } finally {
+      setBypassLoading(prev => ({ ...prev, [id]: false }));
+    }
+  };
 
   return (
     <div>
@@ -87,6 +103,10 @@ function AdminCompany() {
                   img={data?.image || ""}
                   title={data?.name || "Not Found"}
                   contact={data?.phNumber || "Not Found"}
+                  handleBypassVerification={handleBypassVerification}
+                  bypassLoading={bypassLoading[data?.id] || false}
+                  
+
                 />
               </div>
             ))}

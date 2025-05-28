@@ -40,3 +40,6 @@ export const addAdminInvoice = (data) => postRequest("admin/add-invoice", data);
 // Vehicle APIs
 export const getAdminVehicles = (data) => postRequest("admin/all-cars", data);
 export const adminReleaseVehicle = (data) => postRequest("admin/release-car", data);
+
+//Bypass Verification API
+export const bypassVerification = (data) => postRequest("admin/bypass-verification", data);

@@ -6,18 +6,20 @@ import DriverDetail from "../../AdminComponents/DriverDetail/DriverDetail";
 import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import Search from "../../AdminComponents/Search/Search";
 import GradientButton from "../../AdminComponents/Logout/GradientButton";
-import { getAllAdminDrivers } from "../../API/adminServices";
+import { bypassVerification, getAllAdminDrivers } from "../../API/adminServices";
 import { getApproveAdminDrivers } from "../../API/adminServices";
 import { getUnapproveAdminDrivers } from "../../API/adminServices";
 import Pagination from "../../AdminComponents/Pagination/Pagination";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { BeatLoader } from "react-spinners";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
+import { toast } from "react-toastify";
 
 function AdminDrivers() {
   const { theme } = useTheme();
   const { selectedDriverId, setSelectedDriverId } = useGlobalContext();
   const [loading, setLoading] = useState(false);
+  const [bypassLoading, setBypassLoading] = useState({}); // Track loading state for each driver
   const [open, setOpen] = useState(false);
   const [allDriverData, setAllDriverData] = useState([]);
   const [skip, setSkip] = useState(0);
@@ -63,6 +65,21 @@ function AdminDrivers() {
     visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
 
+  const handleBypassVerification = async (id) => {
+    setBypassLoading(prev => ({ ...prev, [id]: true }));
+    try {
+      const response = await bypassVerification({id: id});
+      console.log("Bypass verification response:", response);
+      // Refresh the data after successful bypass
+      await fetchAdminDriverData();
+      toast.success("Verification bypassed successfully!");
+    } catch (error) {
+      console.error("Error bypassing verification:", error);
+    } finally {
+      setBypassLoading(prev => ({ ...prev, [id]: false }));
+    }
+  };
+
   return (
     <div>
       <DriverDetail open={open} setOpen={setOpen} />
@@ -86,7 +103,6 @@ function AdminDrivers() {
         </div>
       </div>
 
-
       {loading ? (
         <div className="flex justify-center items-center h-[80vh]">
           <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
@@ -106,7 +122,7 @@ function AdminDrivers() {
             >
               <thead>
                 <tr>
-                  {["Sr.No", "Driver", "Phone Number", "Action"].map(
+                  {["Sr.No", "Driver", "Phone Number", "Actions"].map(
                     (heading, index) => (
                       <th key={index} className="py-3 border-0 mb-3">
                         <p
@@ -153,7 +169,6 @@ function AdminDrivers() {
                           className="w-[50px] h-[50px] rounded-full"
                           alt=""
                         />
-
                         {item?.name}
                       </div>
                     </td>
@@ -167,12 +182,29 @@ function AdminDrivers() {
                       className={`py-3 border w-[25%] ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
                         }`}
                     >
-                      <div className="px-12">
+                      <div className="flex flex-col gap-2 px-4">
                         <GradientButton
                           driverData={fetchAdminDriverData}
                           name={item?.status === "0" ? "Deactivate" : "Activate"}
                           driverId={item?.id}
                         />
+                        <button
+                          onClick={() => handleBypassVerification(item.id)}
+                          disabled={bypassLoading[item.id]}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            bypassLoading[item.id]
+                              ? "bg-gray-400 cursor-not-allowed"
+                              : "bg-[#479cff] text-white"
+                          }`}
+                        >
+                          {bypassLoading[item.id] ? (
+                            <div className="flex items-center justify-center">
+                              <BeatLoader color="#ffffff" size={8} />
+                            </div>
+                          ) : (
+                            "Bypass Verification"
+                          )}
+                        </button>
                       </div>
                     </td>
                   </motion.tr>
