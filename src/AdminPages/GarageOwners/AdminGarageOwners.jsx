@@ -107,7 +107,7 @@ function AdminGarageOwners() {
             >
               <thead>
                 <tr>
-                  {["Sr.No", "Company", "VIN Number", "Address", "Action"].map(
+                  {["Sr.No", "Company", "VAT Number", "Address", "Action"].map(
                     (heading, index) => (
                       <th key={index} className="py-3 border-0 mb-3">
                         <p
@@ -183,7 +183,7 @@ function AdminGarageOwners() {
                        
                         </>
                       ) : (
-                        "VIN Number not found"
+                        "VAT Number not found"
                       )}
                     </td>
                     <td
