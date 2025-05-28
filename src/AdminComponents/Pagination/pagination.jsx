@@ -69,20 +69,20 @@ const Pagination = ({
   const isDark = theme === 'dark';
   const textClass = isDark ? 'text-gray-300' : 'text-gray-600';
   const buttonClass = isDark 
-    ? 'text-gray-200 bg-gray-700 border-gray-600 hover:bg-gray-600' 
+    ? 'text-gray-200 bg-[#323335] border-gray-600 hover:bg-gray-600' 
     : 'text-gray-700 bg-white border-gray-300 hover:bg-gray-50';
   const currentButtonClass = isDark
-    ? 'bg-blue-600 text-white border-blue-600'
-    : 'bg-blue-500 text-white border-blue-500';
+    ? 'bg-[#479cff] text-white border-blue-600'
+    : 'bg-[#479cff] text-white border-blue-500';
   const disabledButtonClass = isDark 
-    ? 'text-gray-500 bg-gray-700 border-gray-600' 
+    ? 'text-gray-500 bg-[#323335] border-gray-600' 
     : 'text-gray-500 bg-white border-gray-300';
   const selectClass = isDark
-    ? 'bg-gray-700 border-gray-600 text-white'
+    ? 'bg-[#323335] border-gray-600 text-white'
     : 'bg-white border-gray-300';
 
   return (
-    <div className={`mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 ${isDark ? 'bg-gray-800' : ''}`}>
+    <div className={`mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 px-4 py-3 ${isDark ? 'bg-[#323335] rounded-md' : ''}`}>
       {/* Results info - Left side */}
       <div className={`flex items-center text-sm ${textClass}`}>
         <span>Showing {startItem} to {endItem} of {totalCount}</span>
