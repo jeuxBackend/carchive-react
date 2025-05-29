@@ -15,6 +15,7 @@ import GarageDetail from "../../AdminComponents/DriverDetail/GarageDetail";
 import { BeatLoader } from "react-spinners";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 function AdminGarageOwners() {
   const { theme } = useTheme();
@@ -28,6 +29,8 @@ function AdminGarageOwners() {
   const [bypassLoading, setBypassLoading] = useState({});
   const [totalCount, setTotalCount] = useState(0);
   const [dropdownSelected, setDropdownSelected] = useState("All Garages");
+  const {  setCompanyId } = useGlobalContext();
+  const navigate = useNavigate()
 
   const apiMap = {
     "All Garages": getAllAdminGarage,
@@ -176,7 +179,16 @@ function AdminGarageOwners() {
                           className="w-[50px] h-[50px] rounded-full"
                           alt="image"
                         />
-                        {item?.name || "Name Not Found"}
+                        <div className="text-left">
+                        <p className="text-md font-semibold capitalize">
+                          {item?.name || "Name Not Found"}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {item?.email || "Email Not Found"}
+                        </p>
+                        
+
+                        </div>
                       </div>
                     </td>
                     <td
@@ -227,7 +239,7 @@ function AdminGarageOwners() {
                         <button
                           onClick={() => handleBypassVerification(item.id)}
                           disabled={bypassLoading[item.id]}
-                          className={`px-4 mt-2 w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 ${bypassLoading[item.id]
+                          className={`px-4 mt-2 w-full py-2 rounded-lg text-sm cursor-pointer font-medium transition-all duration-200 ${bypassLoading[item.id]
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-[#479cff] text-white"
                             }`}
@@ -239,6 +251,15 @@ function AdminGarageOwners() {
                           ) : (
                             "Bypass Verification"
                           )}
+                        </button>
+                        <button
+                          onClick={() => {setCompanyId(item.id), navigate('/Admin/Invoices')}}
+                          disabled={bypassLoading[item.id]}
+                          className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#479cff] text-white`}
+                        >
+                         
+                            Show Invoices
+                        
                         </button>
                       </div>
                     </td>

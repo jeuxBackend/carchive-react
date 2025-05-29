@@ -36,6 +36,8 @@ export const updateSettings = (data) => postRequest("admin/update-settings", dat
 
 // Invoice API
 export const addAdminInvoice = (data) => postRequest("admin/add-invoice", data);
+export const adminInvoice = (data) => postRequest("admin/get-invoices-user", data);
+
 
 // Vehicle APIs
 export const getAdminVehicles = (data) => postRequest("admin/all-cars", data);

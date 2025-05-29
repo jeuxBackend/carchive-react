@@ -38,7 +38,6 @@ function Sidebar({ side, setSide,setLogout }) {
             name: "Company",
             path: "/Admin/Companies",
             path1: "/Admin/Company/",
-            subPath: "/Admin/Invoices"
             // subPath: "/Add-Vehicle"
         },
         {
