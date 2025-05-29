@@ -28,7 +28,7 @@ function MaintenanceRecord() {
         setLoading(true);
         try {
             const response = await getVehicleById(id);
-            setData(response?.data?.car?.maintenance || []);
+            setData(response?.data?.data?.maintenance || []);
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
         } finally {

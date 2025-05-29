@@ -136,6 +136,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                             fieldKey="serviceType"
                             value={formData}
                             setValue={setFormData}
+                            label={"Select Service Type"}
                         />
                     </div>
 
