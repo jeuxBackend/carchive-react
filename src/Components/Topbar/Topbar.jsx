@@ -322,7 +322,7 @@ const Topbar = ({ setSide }) => {
               </div>
             )}
 
-            {active === "/Dashboard" && <p>Welcome Back👋</p>}
+            {active === "/Dashboard" && <p>{t("welcome_back")}</p>}
           </div>
           {}
           <div className="flex items-center gap-2">

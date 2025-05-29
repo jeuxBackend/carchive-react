@@ -1,4 +1,8 @@
 {
-  "dashboard": "Dashboard"
-  
+  "dashboard": "Dashboard",
+  "number_of_vehicles": "Aantal voertuigen",
+  "number_of_drivers": "Aantal chauffeurs",
+  "number_of_unpaid_invoices": "Aantal onbetaalde facturen",
+  "welcome_back": "Welkom terug 👋"
+
 }

@@ -1,4 +1,8 @@
 {
-  "dashboard": "Dashboard"
-  
+  "dashboard": "Dashboard",
+  "number_of_vehicles": "Number of Vehicles",
+  "number_of_drivers": "Number of Drivers",
+  "number_of_unpaid_invoices": "Number of Unpaid Invoices",
+  "welcome_back": "Welcome Back 👋"
+
 }

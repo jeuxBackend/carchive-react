@@ -1,4 +1,7 @@
 {
-  "dashboard": "tableau de bord"
-  
+  "dashboard": "Tableau de bord",
+  "number_of_vehicles": "Nombre de véhicules",
+  "number_of_drivers": "Nombre de conducteurs",
+  "number_of_unpaid_invoices": "Nombre de factures impayées",
+  "welcome_back": "Bon retour 👋"
 }
