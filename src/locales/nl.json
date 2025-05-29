@@ -125,5 +125,10 @@
   "document_date": "Documentdatum",
   "leave_empty_no_date": "Leeg laten voor \"Geen datum\"",
   "cancel": "Annuleren",
-  "add_document": "Document toevoegen"
+  "add_document": "Document toevoegen",
+  "view_document": "Bekijk document",
+  "start_date": "Startdatum",
+  "end_date": "Einddatum",
+  "status": "Status",
+  "document": "Document"
 }
