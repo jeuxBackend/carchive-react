@@ -15,6 +15,7 @@ import backLight from "../../assets/backLight.png";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { archiveVehicle, delVehicle } from "../../API/portalServices";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const Topbar = ({ setSide }) => {
   const [active, setActive] = useState("");
@@ -31,6 +32,7 @@ const Topbar = ({ setSide }) => {
     setAddTransfer,
   } = useGlobalContext();
   const dropdownRef = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -51,7 +53,7 @@ const Topbar = ({ setSide }) => {
   const titles = {
     "/Settings": "Settings",
     "/Vehicles": "Vehicles Management",
-    "/Dashboard": "Dashboard",
+    "/Dashboard": t("dashboard"),
     "/Chat": "Chat",
     "/Invoices": "Invoices",
     "/Drivers": "Drivers",

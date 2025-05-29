@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { ThemeProvider } from "./Contexts/ThemeContext.jsx";
 import { BrowserRouter } from "react-router-dom";
 import { GlobalContextProvider } from "./Contexts/GlobalContext.jsx";
+import './Language-Setting/i18n.jsx';
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
