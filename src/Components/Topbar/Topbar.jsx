@@ -160,7 +160,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('vehicle_details')}
+                  {t('vehicle_details')}
                 </p>
               </div>
             )}
@@ -173,7 +173,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('update_vehicle')}
+                  {t('update_vehicle')}
                 </p>
               </div>
             )}
@@ -186,7 +186,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('maintenance_record')}
+                  {t('maintenance_record')}
                 </p>
               </div>
             )}
@@ -199,7 +199,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('vehicle_requests')}
+                  {t('vehicle_requests')}
                 </p>
               </div>
             )}
@@ -212,7 +212,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('update_vehicle')}
+                  {t('update_vehicle')}
                 </p>
               </div>
             )}
@@ -225,7 +225,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('privacy_policy')}
+                  {t('privacy_policy')}
                 </p>
               </div>
             )}
@@ -238,7 +238,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('about_us')}
+                  {t('about_us')}
                 </p>
               </div>
             )}
@@ -251,7 +251,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('terms_conditions')}
+                  {t('terms_conditions')}
                 </p>
               </div>
             )}
@@ -264,7 +264,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('vehicle_details')}
+                  {t('vehicle_details')}
                 </p>
               </div>
             )}
@@ -277,7 +277,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('view_logs')}
+                  {t('view_logs')}
                 </p>
               </div>
             )}
@@ -290,7 +290,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('vehicle_garages')}
+                  {t('vehicle_garages')}
                 </p>
               </div>
             )}
@@ -303,7 +303,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('language')}
+                  {t('language')}
                 </p>
               </div>
             )}
@@ -316,7 +316,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                {t('add_vehicle')}
+                  {t('add_vehicle')}
                 </p>
               </div>
             )}
@@ -368,15 +368,16 @@ const Topbar = ({ setSide }) => {
                       to="/Update-Vehicle"
                       className="flex items-center gap-2 p-3"
                     >
-                      <BiSolidEditAlt /> Edit Vehicle
+                      <BiSolidEditAlt /> {t("edit_vehicle")}
                     </Link>
                   </p>
+
                   <p
                     onClick={() => handleDelete(vehicle?.id)}
                     className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
                   >
                     <RiDeleteBin4Fill />{" "}
-                    {loadingDelete ? "Please Wait..." : "Delete Vehicle"}
+                    {loadingDelete ? t("please_wait") : t("delete_vehicle")}
                   </p>
                   <p
                     onClick={() => handleArchive(vehicle?.id)}
@@ -384,16 +385,16 @@ const Topbar = ({ setSide }) => {
                   >
                     <IoArchiveSharp />
                     {loadingArchive
-                      ? "Please Wait..."
+                      ? t("please_wait")
                       : vehicle?.isArchive === "0"
-                        ? "Archive Vehicle"
-                        : "Unarchive Vehicle"}{" "}
+                        ? t("archive_vehicle")
+                        : t("unarchive_vehicle")}
                   </p>
                   <p
                     onClick={handleShare}
                     className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
                   >
-                    <IoShareSocial /> Share
+                    <IoShareSocial /> {t("share")}
                   </p>
                 </div>
               )}

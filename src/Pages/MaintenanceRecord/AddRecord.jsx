@@ -119,23 +119,24 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                         <div className="w-full flex gap-4">
                             <div className="flex-1">
                                 <FieldTitle title={t("mileage")} />
-                                <InputField label="Mileage" fieldKey="millage" value={formData} setValue={setFormData} isNumber={true} />
+                                <InputField label={t("mileage")} fieldKey="millage" value={formData} setValue={setFormData} isNumber={true} />
                             </div>
                             <div className="flex-1">
                                 <FieldTitle title={t("dealer_name")} />
-                                <InputField label="Dealer Name" fieldKey="dealerName" value={formData} setValue={setFormData} />
+                                <InputField label={t("dealer_name")} fieldKey="dealerName" value={formData} setValue={setFormData} />
                             </div>
                         </div>
 
                         <div>
                             <FieldTitle title={t("service_date")} />
-                            <BasicDatePicker label="Date" fieldKey="date" value={formData} setValue={setFormData} />
+                            <BasicDatePicker label={t("date")} fieldKey="date" value={formData} setValue={setFormData} />
                         </div>
 
-                        <div>
-                            <FieldTitle title={t("service_type")} />
-                            <CustomDropdown label="Service Type" fieldKey="serviceType" value={formData} setValue={setFormData} />
-                        </div>
+                        <CustomDropdown
+                            fieldKey="serviceType"
+                            value={formData}
+                            setValue={setFormData}
+                        />
                     </div>
 
                     <div className="w-full pt-4">
@@ -194,8 +195,9 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                         {serviceLines.length > 0 && (
                             <div className="w-full mt-4">
                                 <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.4rem] font-medium mb-3`}>
-                                    Added Services
+                                    {t("added_services")}
                                 </p>
+
                                 <div className="flex flex-col gap-2">
                                     {serviceLines.map((line, index) => (
                                         <div
@@ -227,7 +229,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                                         className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin"
                                     />
                                 ) : (
-                                    "Add Record"
+                                    t('add_record')
                                 )}
                             </button>
                         </div>

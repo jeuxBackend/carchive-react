@@ -16,8 +16,11 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { IoClose } from "react-icons/io5";
+import { useTranslation } from "react-i18next";
+
 
 function UpdateVehicle() {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const { vehicle } = useGlobalContext();
   const [loading, setLoading] = useState(false);
@@ -340,100 +343,93 @@ function UpdateVehicle() {
     <div>
       <div className="flex gap-5 lg:flex-row flex-col">
         <div
-          className={`w-full lg:w-[50%] ${theme === "dark"
-              ? "bg-[#323335]"
-              : "bg-white border border-[#ececec]"
+          className={`w-full lg:w-[50%] ${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"
             } p-4 rounded-xl`}
         >
-          <p
-            className={`${theme === "dark" ? "text-white" : "text-black"
-              } text-[1.5rem] font-medium`}
-          >
-            Details
+          <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>
+            {t("details")}
           </p>
-          <div className="pt-3 flex flex-col gap-3">
-            <p className='text-[#fff]'>Make*</p>
 
+          <div className="pt-3 flex flex-col gap-3">
+            <p className='text-[#fff]'>{t("make")}*</p>
             <MakesDropdown
-              label="Vehicle Make"
+              label={t("vehicle_make")}
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="make"
               options={makesData}
             />
-            <p className='text-[#fff]'>Model*</p>
+
+            <p className='text-[#fff]'>{t("model")}*</p>
             <InputField
-              label="Model"
+              label={t("model")}
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="model"
             />
-            <p className='text-[#fff]'>VIN Number*</p>
+
+            <p className='text-[#fff]'>{t("vin_number")}*</p>
             <InputField
-              label="Vin Number"
+              label={t("vin_number")}
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="vinNumber"
             />
-            <p className='text-[#fff]'>Miles</p>
+
+            <p className='text-[#fff]'>{t("miles")}</p>
             <InputField
-              label="Miles"
+              label={t("miles")}
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="mileage"
             />
-            <p className='text-[#fff]'>Number Plate</p>
+
+            <p className='text-[#fff]'>{t("number_plate")}</p>
             <InputField
-              label="Number Plate"
+              label={t("number_plate")}
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="numberPlate"
             />
+
             <div className="flex gap-6 sm:gap-3 sm:flex-row flex-col pt-4">
               <BasicDatePicker
-                label="Manufacturing Year"
+                label={t("manufacturing_year")}
                 value={vehicleData}
                 setValue={setVehicleData}
                 fieldKey="manufacturingYear"
               />
               <BasicDatePicker
-                label="Registration Expiry"
+                label={t("registration_expiry")}
                 value={vehicleData}
                 setValue={setVehicleData}
                 fieldKey="registrationExpiry"
               />
             </div>
+
             <div className="flex gap-6 sm:gap-3 sm:flex-row flex-col pt-4">
               <BasicDatePicker
-                label="Insurance Expiry"
+                label={t("insurance_expiry")}
                 value={vehicleData}
                 setValue={setVehicleData}
                 fieldKey="insuranceExpiry"
               />
               <BasicDatePicker
-                label="Vehicle Inspection"
+                label={t("vehicle_inspection")}
                 value={vehicleData}
                 setValue={setVehicleData}
                 fieldKey="inspectionExpiry"
               />
             </div>
-            {/* Removed the single Additional Documents Expiry field */}
           </div>
         </div>
+
         <div className="w-full lg:w-[50%] flex flex-col gap-3">
-          <div
-            className={`${theme === "dark"
-                ? "bg-[#323335]"
-                : "bg-white border border-[#ececec]"
-              } p-4 rounded-xl`}
-          >
-            <p
-              className={`${theme === "dark" ? "text-white" : "text-black"
-                } text-[1.5rem] font-medium`}
-            >
-              Vehicle Images
+          <div className={`${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
+            <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>
+              {t("vehicle_images")}
             </p>
-            <div className="">
+            <div>
               <ImageUploader
                 value={vehicleImages}
                 setValue={setVehicleImages}
@@ -444,25 +440,13 @@ function UpdateVehicle() {
             </div>
           </div>
 
-          <div
-            className={`${theme === "dark"
-                ? "bg-[#323335]"
-                : "bg-white border border-[#ececec]"
-              } p-4 rounded-xl`}
-          >
+          <div className={`${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
             <div>
-              <p
-                className={`${theme === "dark" ? "text-white" : "text-black"
-                  } text-[1.5rem] font-medium flex items-center gap-2`}
-              >
-                Registration Documents{" "}
-                <Switch
-                  value={vehicleData}
-                  setValue={setVehicleData}
-                  fieldKey="registrationStatus"
-                />
+              <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>
+                {t("registration_documents")}
+                <Switch value={vehicleData} setValue={setVehicleData} fieldKey="registrationStatus" />
               </p>
-              <div className="">
+              <div>
                 <DocumentUploader
                   value={regDocs}
                   setValue={setRegDocs}
@@ -475,18 +459,11 @@ function UpdateVehicle() {
             </div>
 
             <div>
-              <p
-                className={`${theme === "dark" ? "text-white" : "text-black"
-                  } text-[1.5rem] font-medium flex items-center gap-2`}
-              >
-                Insurance Documents{" "}
-                <Switch
-                  value={vehicleData}
-                  setValue={setVehicleData}
-                  fieldKey="insuranceStatus"
-                />
+              <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>
+                {t("insurance_documents")}
+                <Switch value={vehicleData} setValue={setVehicleData} fieldKey="insuranceStatus" />
               </p>
-              <div className="">
+              <div>
                 <DocumentUploader
                   value={insuranceDocs}
                   setValue={setInsuranceDocs}
@@ -499,16 +476,9 @@ function UpdateVehicle() {
             </div>
 
             <div>
-              <p
-                className={`${theme === "dark" ? "text-white" : "text-black"
-                  } text-[1.5rem] font-medium flex items-center gap-2`}
-              >
-                Inspection Documents{" "}
-                <Switch
-                  value={vehicleData}
-                  setValue={setVehicleData}
-                  fieldKey="inspectionStatus"
-                />
+              <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>
+                {t("inspection_documents")}
+                <Switch value={vehicleData} setValue={setVehicleData} fieldKey="inspectionStatus" />
               </p>
               <div>
                 <DocumentUploader
@@ -523,13 +493,14 @@ function UpdateVehicle() {
             </div>
           </div>
         </div>
+
       </div>
 
       <div className="w-full pt-3 flex flex-col gap-3">
         <div
           className={`${theme === "dark"
-              ? "bg-[#323335]"
-              : "bg-white border border-[#ececec]"
+            ? "bg-[#323335]"
+            : "bg-white border border-[#ececec]"
             } p-4 rounded-xl`}
         >
           <div>
@@ -537,7 +508,7 @@ function UpdateVehicle() {
               className={`${theme === "dark" ? "text-white" : "text-black"
                 } text-[1.5rem] font-medium flex items-center gap-2`}
             >
-              Additional Documents{" "}
+              {t("additional_documents")}
               <Switch
                 value={vehicleData}
                 setValue={setVehicleData}
@@ -570,7 +541,7 @@ function UpdateVehicle() {
           {loading ? (
             <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin" />
           ) : (
-            "Update"
+            t("update")
           )}
         </div>
       </div>
