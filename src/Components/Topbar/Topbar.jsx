@@ -52,7 +52,7 @@ const Topbar = ({ setSide }) => {
 
   const titles = {
     "/Settings": "Settings",
-    "/Vehicles": "Vehicles Management",
+    "/Vehicles": t("vehicles_management"),
     "/Dashboard": t("dashboard"),
     "/Chat": "Chat",
     "/Invoices": "Invoices",
@@ -139,9 +139,8 @@ const Topbar = ({ setSide }) => {
         </motion.div>
 
         <motion.div
-          className={`w-full flex items-center justify-between ${
-            theme === "dark" ? "text-white" : "text-black"
-          }`}
+          className={`w-full flex items-center justify-between ${theme === "dark" ? "text-white" : "text-black"
+            }`}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
@@ -324,7 +323,7 @@ const Topbar = ({ setSide }) => {
 
             {active === "/Dashboard" && <p>{t("welcome_back")}</p>}
           </div>
-          {}
+          { }
           <div className="flex items-center gap-2">
             {/* {active === "/Vehicles" && (
               <div
@@ -341,7 +340,7 @@ const Topbar = ({ setSide }) => {
                 className="flex items-center gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]"
               >
                 <FiPlus className="text-[1.5rem]" />
-                <span className="sm:block hidden">Add Vehicles</span>
+                <span className="sm:block hidden">{t("add_vehicles")}</span>
               </Link>
             )}
           </div>
@@ -364,14 +363,14 @@ const Topbar = ({ setSide }) => {
               />
               {open && (
                 <div onClick={() => setOpen(false)} className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg  rounded-tl-3xl">
-                    <p>
-                      <Link
-                        to="/Update-Vehicle"
-                        className="flex items-center gap-2 p-3"
-                      >
-                        <BiSolidEditAlt /> Edit Vehicle
-                      </Link>
-                    </p>
+                  <p>
+                    <Link
+                      to="/Update-Vehicle"
+                      className="flex items-center gap-2 p-3"
+                    >
+                      <BiSolidEditAlt /> Edit Vehicle
+                    </Link>
+                  </p>
                   <p
                     onClick={() => handleDelete(vehicle?.id)}
                     className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
@@ -387,8 +386,8 @@ const Topbar = ({ setSide }) => {
                     {loadingArchive
                       ? "Please Wait..."
                       : vehicle?.isArchive === "0"
-                      ? "Archive Vehicle"
-                      : "Unarchive Vehicle"}{" "}
+                        ? "Archive Vehicle"
+                        : "Unarchive Vehicle"}{" "}
                   </p>
                   <p
                     onClick={handleShare}
