@@ -68,7 +68,7 @@ function InfoCard({ data = {} }) {
                     transition={{ delay: 0.4, duration: 0.5 }}
                     className='text-[#2D9BFF] text-[1.8rem]'
                 >
-                    {data?.make || "Unknown Make"}
+                    {data?.make || "Unknown Make"} / {data?.model || "Unknown Model"}
                 </motion.p>
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
@@ -76,7 +76,7 @@ function InfoCard({ data = {} }) {
                     transition={{ delay: 0.6, duration: 0.5 }}
                     className={`text-[9.5vw] sm:text-[10vw] md:text-[12vw] lg:text-[4.5vw] 2xl:text-[4.7vw] absolute bottom-0 z-10 text-outline ${theme === "dark" ? 'text-black' : "text-[#e4e4e4]"}`}
                 >
-                    {data?.make || "No Make"}
+                    {data?.make || "No Make"} 
                 </motion.p>
 
                 {data?.image?.length > 1 ? (
