@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { releaseVehicle, updateVehicle } from "../../../API/portalServices";
 import { toast } from "react-toastify";
 import InsuranceSwitch from "../../../Components/Buttons/InsuranceSwitch";
+import { useTranslation } from 'react-i18next';
+
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -14,6 +16,7 @@ const itemVariants = {
 };
 
 function Services({ data, setLoading }) {
+  const { t } = useTranslation();
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -37,31 +40,31 @@ function Services({ data, setLoading }) {
   const updateStatusInBackground = useCallback(async (id, statusField, newStatus, originalStatus) => {
     try {
       setSwitchLoading(prev => ({ ...prev, [statusField]: true }));
-      
+
       // Create the update payload with all status fields
       // Send all statuses, with the changed one having the new value
       const currentStates = { ...localSwitchStates };
       currentStates[statusField] = newStatus;
-      
+
       const updatePayload = {
         id,
         insuranceStatus: currentStates.insuranceStatus,
         inspectionStatus: currentStates.inspectionStatus,
         additionalStatus: currentStates.additionalStatus,
       };
-      
+
       const response = await updateVehicle(updatePayload);
-      
+
       if (response.data) {
-        const fieldName = statusField.replace('Status', '').charAt(0).toUpperCase() + 
-                         statusField.replace('Status', '').slice(1);
+        const fieldName = statusField.replace('Status', '').charAt(0).toUpperCase() +
+          statusField.replace('Status', '').slice(1);
         toast.success(`The document status has been updated and is now available for viewing.`);
       }
     } catch (error) {
       console.error('API Error:', error);
-      const errorMessage = error.response?.data?.message || 
-                          `Failed to update ${statusField.replace('Status', '')} status`;
-      
+      const errorMessage = error.response?.data?.message ||
+        `Failed to update ${statusField.replace('Status', '')} status`;
+
       toast.error(errorMessage);
 
       // Revert the local state if API call fails
@@ -149,15 +152,15 @@ function Services({ data, setLoading }) {
 
   const isInsuranceExpired = isExpired(data?.insuranceExpiry);
   const isInspectionExpired = isExpired(data?.inspectionExpiry);
-  const isAdditionalExpired = Array.isArray(data?.additionalExpiry) && 
-                              data.additionalExpiry[0] && 
-                              isExpired(data.additionalExpiry[0]);
+  const isAdditionalExpired = Array.isArray(data?.additionalExpiry) &&
+    data.additionalExpiry[0] &&
+    isExpired(data.additionalExpiry[0]);
 
   const serviceItems = [
     {
-      title: "Insurance",
+      title: t('insurance'),
       subtitle: data?.insuranceExpiry ? `(${formatDate(data.insuranceExpiry)})` : "",
-      expired: isInsuranceExpired ? "Expired" : "",
+      expired: isInsuranceExpired ? t('expired') : "",
       showSwitch: true,
       switchChecked: localSwitchStates.insuranceStatus === 1,
       switchLoading: switchLoading.insuranceStatus,
@@ -165,9 +168,9 @@ function Services({ data, setLoading }) {
       statusField: 'insuranceStatus',
     },
     {
-      title: "Inspection Documents",
+      title: t('inspection_documents'),
       subtitle: data?.inspectionExpiry ? `(${formatDate(data.inspectionExpiry)})` : "",
-      expired: isInspectionExpired ? "Expired" : "",
+      expired: isInspectionExpired ? t('expired') : "",
       showSwitch: true,
       switchChecked: localSwitchStates.inspectionStatus === 1,
       switchLoading: switchLoading.inspectionStatus,
@@ -175,11 +178,11 @@ function Services({ data, setLoading }) {
       statusField: 'inspectionStatus',
     },
     {
-      title: "Additional Documents",
+      title: t('additional_documents'),
       subtitle: Array.isArray(data?.additionalExpiry) && data.additionalExpiry[0]
         ? `(${formatDate(data.additionalExpiry[0])})`
         : "",
-      expired: isAdditionalExpired ? "Expired" : "",
+      expired: isAdditionalExpired ? t('expired') : "",
       showSwitch: true,
       switchChecked: localSwitchStates.additionalStatus === 1,
       switchLoading: switchLoading.additionalStatus,
@@ -187,12 +190,12 @@ function Services({ data, setLoading }) {
       statusField: 'additionalStatus',
     },
     {
-      title: "Maintenance Records",
+      title: t('maintenance_records'),
       showArrow: true,
       route: `/VehicleMaintenence/${data?.id}`,
     },
     {
-      title: "Release Vehicle",
+      title: t('release_vehicle'),
       showArrow: false,
       func: () => releaseCar(data?.id),
       dangerous: true,
@@ -218,13 +221,11 @@ function Services({ data, setLoading }) {
       {serviceItems.map((item, index) => (
         <motion.div
           key={index}
-          className={`w-full rounded-xl p-4 2xl:p-5 ${
-            theme === "dark"
+          className={`w-full rounded-xl p-4 2xl:p-5 ${theme === "dark"
               ? "bg-[#323335]"
               : "bg-white border border-[#ececec]"
-          } shadow-md flex items-center justify-between ${
-            item.func || item.route ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
-          } ${item.dangerous ? 'hover:border-red-300' : ''}`}
+            } shadow-md flex items-center justify-between ${item.func || item.route ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
+            } ${item.dangerous ? 'hover:border-red-300' : ''}`}
           variants={itemVariants}
           onClick={(e) => {
             // Only handle card click for non-switch items
@@ -239,11 +240,9 @@ function Services({ data, setLoading }) {
         >
           <div className="flex items-center gap-2">
             <p
-              className={`${
-                theme === "dark" ? "text-white" : "text-black"
-              } text-[1.4rem] font-medium ${
-                item.dangerous ? 'text-red-600' : ''
-              }`}
+              className={`${theme === "dark" ? "text-white" : "text-black"
+                } text-[1.4rem] font-medium ${item.dangerous ? 'text-red-600' : ''
+                }`}
             >
               {item.title}
             </p>
@@ -254,9 +253,9 @@ function Services({ data, setLoading }) {
               </p>
             )}
           </div>
-          
+
           {item.showSwitch && (
-            <div 
+            <div
               onClick={(e) => e.stopPropagation()}
               className="relative"
             >
@@ -277,12 +276,11 @@ function Services({ data, setLoading }) {
               )}
             </div>
           )}
-          
+
           {item.showArrow && (
             <IoIosArrowForward
-              className={`text-[1.4rem] ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
+              className={`text-[1.4rem] ${theme === "dark" ? "text-white" : "text-black"
+                }`}
             />
           )}
         </motion.div>

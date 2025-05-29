@@ -3,8 +3,11 @@ import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { Link } from 'react-router-dom';
 import { useGlobalContext } from '../../Contexts/GlobalContext';
+import { useTranslation } from "react-i18next";
+
 
 function VehicleCard({ data, navigable = true, onCardClick }) {
+    const { t } = useTranslation();
     const { theme } = useTheme();
     const { setVehicle } = useGlobalContext();
 
@@ -27,13 +30,13 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
         if (hasValue(data?.expired) && data.expired === '1') {
             return (
                 <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10">
-                    EXPIRED
+                    {t('expired')}
                 </div>
             );
         } else if (hasValue(data?.month_expiry) && data.month_expiry === '1') {
             return (
                 <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10">
-                    EXPIRES SOON
+                    {t('expires_soon')}
                 </div>
             );
         }
@@ -61,12 +64,12 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
             <p className={`font-medium ${theme === 'dark' ? "text-white" : "text-black"}`}>{vehicleVin}</p>
             <p className={`font-medium ${theme === 'dark' ? "text-white" : "text-black"}`}>{vehiclePlate}</p>
             {getVehicleImage() && (
-                <img 
-                    src={getVehicleImage()} 
+                <img
+                    src={getVehicleImage()}
                     alt={`${vehicleMake} vehicle`}
                     className='w-[17rem] lg:w-[18rem] xl:w-[17rem] h-[10.5rem] absolute bottom-0 sm:bottom-2 right-0 border-none'
                     onError={(e) => {
-                        e.target.style.display = 'none'; 
+                        e.target.style.display = 'none';
                     }}
                 />
             )}

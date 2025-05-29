@@ -8,6 +8,8 @@ import backLight from "../../../assets/backLight.png"
 import { useGlobalContext } from "../../../Contexts/GlobalContext";
 import { assignDriver } from "../../../API/portalServices";
 import { toast } from "react-toastify";
+import { useTranslation } from 'react-i18next';
+
 
 
 
@@ -36,13 +38,7 @@ function AddDriver({ open, setOpen, fetchVehicleData }) {
             setLoading(false);
         }
     };
-
-
-
-
-
-
-
+    const { t } = useTranslation();
     return (
         <motion.div className={`bg-black/50 backdrop-blur-lg overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%)] max-h-full poppins`}
             initial={{ opacity: 0 }}
@@ -72,7 +68,7 @@ function AddDriver({ open, setOpen, fetchVehicleData }) {
                             className={`${theme === "dark" ? "text-white" : "text-black"
                                 } text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium`}
                         >
-                            Assign Driver
+                            {t('assign_driver')}
                         </p>
                     </div>
                     <form onSubmit={handleSubmit} className="w-full pt-2 flex flex-col items-center justify-center">
@@ -81,7 +77,7 @@ function AddDriver({ open, setOpen, fetchVehicleData }) {
                             onChange={(e) => setEmail(e.target.value)}
                             type="email"
                             rows={8}
-                            placeholder="Email Address"
+                            placeholder={t('email_address')}
                             className={`flex items-center gap-2 w-full p-4 rounded-xl ${theme === "dark"
                                 ? "bg-[#323335] text-white"
                                 : "bg-[#f7f7f7] border border-[#e8e8e8] text-black"
@@ -100,7 +96,7 @@ function AddDriver({ open, setOpen, fetchVehicleData }) {
                                     className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin"
                                 />
                             ) : (
-                                "Assign"
+                                t('assign')
                             )}
 
                         </motion.button>

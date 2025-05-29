@@ -5,8 +5,11 @@ import { useTheme } from '../../../Contexts/ThemeContext';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import back from "../../../assets/back.png";
 import backLight from "../../../assets/backLight.png";
+import { useTranslation } from 'react-i18next';
+
 
 function InfoCard({ data = {} }) {
+    const { t } = useTranslation();
     const { theme } = useTheme();
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -51,17 +54,17 @@ function InfoCard({ data = {} }) {
             className={`w-full rounded-xl p-5 overflow-hidden ${theme === "dark" ? 'bg-[#323335]' : "bg-white border border-[#ececec]"} relative shadow-md`}
         >
             <div className='font-medium lg:h-[350px]'>
-                <motion.p 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.5 }}
                     className={`${theme === "dark" ? 'text-white' : "text-black"} text-[1.3rem]`}
                 >
-                    Vehicle Make / Model
+                    {t('vehicle_make_model')}
                 </motion.p>
-                <motion.p 
-                    initial={{ opacity: 0, y: 20 }} 
-                    animate={{ opacity: 1, y: 0 }} 
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.5 }}
                     className='text-[#2D9BFF] text-[1.8rem]'
                 >
@@ -94,7 +97,7 @@ function InfoCard({ data = {} }) {
                             </div>
                         </div>
 
-                      
+
                         <button
                             onClick={() => emblaApi && emblaApi.scrollPrev()}
                             className="absolute left-1 top-1/2 transform -translate-y-1/2 rounded-full shadow-md z-50 sm:block hidden"
@@ -109,15 +112,14 @@ function InfoCard({ data = {} }) {
                             <img src={theme === "dark" ? back : backLight} alt="Next" className="w-[2rem] rotate-180" />
                         </button>
 
-                      
+
                         <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
                             {data.image.map((_, index) => (
                                 <button
                                     key={index}
                                     onClick={() => emblaApi && emblaApi.scrollTo(index)}
-                                    className={`w-2 h-2 rounded-full transition-all ${
-                                        selectedIndex === index ? "bg-blue-500 w-4 h-2" : "bg-gray-400"
-                                    }`}
+                                    className={`w-2 h-2 rounded-full transition-all ${selectedIndex === index ? "bg-blue-500 w-4 h-2" : "bg-gray-400"
+                                        }`}
                                 />
                             ))}
                         </div>
@@ -133,7 +135,7 @@ function InfoCard({ data = {} }) {
                     />
                 ) : (
                     <motion.p className="text-gray-400 text-center mt-5">
-                        No Image Available
+                        {t('no_image_available')}
                     </motion.p>
                 )}
             </div>

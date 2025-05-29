@@ -8,6 +8,8 @@ import { BeatLoader } from 'react-spinners';
 import NoDataFound from '../../GlobalComponents/NoDataFound/NoDataFound';
 import { useGlobalContext } from '../../Contexts/GlobalContext';
 import TransferVehicle from './TransferVehicle';
+import { useTranslation } from "react-i18next";
+
 
 function Vehicles() {
     const [loading, setLoading] = useState(false);
@@ -15,6 +17,8 @@ function Vehicles() {
     const [search, setSearch] = useState('');
     const {addTransfer, setAddTransfer} = useGlobalContext()
     const [selectedValue, setSelectedValue] = useState("");
+    const { t } = useTranslation();
+
 
     const fetchVehiclesData = useCallback(async () => {
         setLoading(true);

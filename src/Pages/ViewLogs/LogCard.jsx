@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { GoogleMap, useLoadScript, Marker, Polyline } from '@react-google-maps/api';
+import { useTranslation } from 'react-i18next';
+
 
 const mapContainerStyle = {
   width: '100%',
@@ -9,6 +11,7 @@ const mapContainerStyle = {
 };
 
 const LogCard = ({ data }) => {
+  const { t } = useTranslation();
   const { theme } = useTheme();
 
   // Load Google Maps API
@@ -22,12 +25,12 @@ const LogCard = ({ data }) => {
     if (typeof timeString === 'string' && timeString.includes(':')) {
       return timeString;
     }
-    
+
     if (!isNaN(Number(timeString))) {
       const date = new Date(Number(timeString));
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} `;
     }
-    
+
     return timeString || 'N/A';
   }
 
@@ -62,7 +65,7 @@ const LogCard = ({ data }) => {
     streetViewControl: true,
     fullscreenControl: true,
     zoomControl: true,
-    mapId: 'DEMO_MAP_ID', 
+    mapId: 'DEMO_MAP_ID',
   };
 
   // Polyline options
@@ -82,40 +85,40 @@ const LogCard = ({ data }) => {
       transition={{ duration: 0.3 }}
     >
       <div className="w-full flex items-center justify-center">
-        <p className={`text-[1.3rem] font-medium ${theme === 'dark' ? 'text-white' : 'text-black'}`}>View Logs</p>
+        <p className={`text-[1.3rem] font-medium ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{t('view_logs')}</p>
       </div>
 
       <div className="flex lg:items-center justify-between gap-3 lg:flex-row flex-col">
         <div className="flex flex-col gap-3 mt-5">
           <div className="flex items-center gap-1">
-            <p className="text-[#777e90] font-medium">Start Time:</p>
+            <p className="text-[#777e90] font-medium">{t('start_time')}</p>
             <p className={theme === "dark" ? "text-white" : "text-black"}>{formatTime(data?.start_time)}</p>
           </div>
           <div className="flex items-center gap-1">
-            <p className="text-[#777e90] font-medium">End Time:</p>
+            <p className="text-[#777e90] font-medium">{t('end_time')}</p>
             <p className={theme === "dark" ? "text-white" : "text-black"}>{formatTime(data?.end_time)}</p>
           </div>
         </div>
         <div className="flex flex-col gap-3 lg:mt-5">
           <div className="flex items-center gap-1">
-            <p className="text-[#777e90] font-medium">Start Mileage:</p>
+            <p className="text-[#777e90] font-medium">{t('start_mileage')}</p>
             <p className={theme === "dark" ? "text-white" : "text-black"}>{data?.start_mileage}</p>
           </div>
           <div className="flex items-center gap-1">
-            <p className="text-[#777e90] font-medium">End Mileage:</p>
+            <p className="text-[#777e90] font-medium">{t('end_mileage')}</p>
             <p className={theme === "dark" ? "text-white" : "text-black"}>{data?.end_mileage}</p>
           </div>
         </div>
       </div>
 
       <div className="flex items-center gap-1 mt-2">
-        <p className="text-[#777e90] font-medium">Total distance driven:</p>
+        <p className="text-[#777e90] font-medium">{t('total_distance_driven')}</p>
         <p className={theme === "dark" ? "text-white" : "text-black"}>{data?.total_distance}</p>
       </div>
 
       {hasValidCoordinates && isLoaded && (
         <div className="mt-2">
-          <p className="text-[#777e90] font-medium mb-2">Map:</p>
+          <p className="text-[#777e90] font-medium mb-2">{t('map')}</p>
           <GoogleMap
             mapContainerStyle={mapContainerStyle}
             options={mapOptions}
@@ -127,8 +130,8 @@ const LogCard = ({ data }) => {
               <Marker position={endPosition} />
             )}
             {path && (
-              <Polyline 
-                path={path} 
+              <Polyline
+                path={path}
                 options={polylineOptions}
               />
             )}
@@ -138,7 +141,7 @@ const LogCard = ({ data }) => {
 
       {hasValidCoordinates && !isLoaded && (
         <div className="mt-2">
-          <p className="text-[#777e90] font-medium mb-2">Loading map...</p>
+          <p className="text-[#777e90] font-medium mb-2">{t('loading_map')}</p>
         </div>
       )}
     </motion.div>

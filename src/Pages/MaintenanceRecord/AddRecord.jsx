@@ -12,6 +12,8 @@ import { createMaintenanceRecord } from "../../API/portalServices";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import CustomDropdown from "./CustomDropdown";
+import { useTranslation } from 'react-i18next';
+
 
 function AddRecord({ open, setOpen, fetchMaintenanceData }) {
     if (!open) return null;
@@ -55,7 +57,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
             toast.error("All fields are required");
             return;
         }
-         else {
+        else {
             setLoading(true);
             try {
                 // Convert serviceLines array to JSON string
@@ -82,6 +84,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
             {title}
         </p>
     );
+    const { t } = useTranslation();
 
     return (
         <motion.div
@@ -108,29 +111,29 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                             onClick={() => setOpen(false)}
                         />
                         <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>
-                            Add Maintenance Record
+                            {t('add_maintenance_record')}
                         </p>
                     </div>
 
                     <div className="w-full flex flex-col gap-4">
                         <div className="w-full flex gap-4">
                             <div className="flex-1">
-                                <FieldTitle title="Mileage" />
-                                <InputField label="Mileage" fieldKey="millage" value={formData} setValue={setFormData} isNumber={true}/>
+                                <FieldTitle title={t("mileage")} />
+                                <InputField label="Mileage" fieldKey="millage" value={formData} setValue={setFormData} isNumber={true} />
                             </div>
                             <div className="flex-1">
-                                <FieldTitle title="Dealer Name" />
+                                <FieldTitle title={t("dealer_name")} />
                                 <InputField label="Dealer Name" fieldKey="dealerName" value={formData} setValue={setFormData} />
                             </div>
                         </div>
-                        
+
                         <div>
-                            <FieldTitle title="Service Date" />
+                            <FieldTitle title={t("service_date")} />
                             <BasicDatePicker label="Date" fieldKey="date" value={formData} setValue={setFormData} />
                         </div>
-                        
+
                         <div>
-                            <FieldTitle title="Service Type" />
+                            <FieldTitle title={t("service_type")} />
                             <CustomDropdown label="Service Type" fieldKey="serviceType" value={formData} setValue={setFormData} />
                         </div>
                     </div>
@@ -138,7 +141,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                     <div className="w-full pt-4">
                         <div className="flex items-center justify-between mb-3">
                             <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.6rem] font-medium`}>
-                                Add Service Line
+                                {t("add_service_line")}
                             </p>
                             <div
                                 className="bg-[#499cfe] text-[1.7rem] text-white p-1 rounded-md cursor-pointer"
@@ -150,7 +153,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
 
                         <div className="flex flex-col gap-3 mb-3">
                             <div>
-                                <FieldTitle title="Item Name" />
+                                <FieldTitle title={t("item_name")} />
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -159,7 +162,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                                     ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-[#f7f7f7] border border-[#e8e8e8]"}`}
                                 >
                                     <input
-                                        placeholder="Enter item name"
+                                        placeholder={t("enter_item_name")}
                                         className={`flex-1 outline-none border-none font-medium bg-transparent
                                         ${theme === "dark" ? "text-white" : "text-black"}`}
                                         value={itemName}
@@ -167,9 +170,9 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                                     />
                                 </motion.div>
                             </div>
-                            
+
                             <div>
-                                <FieldTitle title="Remarks" />
+                                <FieldTitle title={t("remarks")} />
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -178,7 +181,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                                     ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-[#f7f7f7] border border-[#e8e8e8]"}`}
                                 >
                                     <input
-                                        placeholder="Enter remarks"
+                                        placeholder={t("enter_remarks")}
                                         className={`flex-1 outline-none border-none font-medium bg-transparent
                                         ${theme === "dark" ? "text-white" : "text-black"}`}
                                         value={remarks}
@@ -213,7 +216,7 @@ function AddRecord({ open, setOpen, fetchMaintenanceData }) {
                                 </div>
                             </div>
                         )}
-                        
+
                         <div className="flex items-center justify-center">
                             <button
                                 className="p-3 rounded-lg bg-[#499cfe] text-white text-[1.2rem] font-medium w-[60%] mt-4"

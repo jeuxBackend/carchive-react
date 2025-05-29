@@ -12,12 +12,15 @@ import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { initializeChat } from '../../../utils/ChatUtils'
 import { useGlobalContext } from '../../../Contexts/GlobalContext'
+import { useTranslation } from 'react-i18next';
+
 
 function DriversCard({ data, setOpen, fetchVehicleData }) {
+    const { t } = useTranslation();
     const { theme } = useTheme()
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const {currentUserId} = useGlobalContext()
+    const { currentUserId } = useGlobalContext()
 
     const handleUnassign = async (driverId) => {
         setLoading(true);
@@ -30,10 +33,10 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
         } catch (error) {
             console.error("Error fetching data:", error);
             toast.error(error?.response?.data?.message);
-        }finally{
+        } finally {
             setLoading(false);
         }
-        
+
     }
 
     return (
@@ -45,15 +48,15 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
             className={`w-full rounded-xl p-2 sm:p-4 ${theme === "dark" ? 'bg-[#323335]' : "bg-white border border-[#ececec]"} relative shadow-md h-[390px] overflow-auto`}
         >
             <div className='flex items-center justify-between'>
-            <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className={`${theme === "dark" ? 'text-white' : "text-black"} text-[1.3rem] font-medium`}
-            >
-                Driver's
-            </motion.p>
-            <div onClick={()=>setOpen(true)} className='flex items-center cursor-pointer gap-2 py-2 px-3 rounded bg-[#2d9bff] text-white'><CiCirclePlus className='text-[1.5rem]'/><span className='sm:block hidden'>Assign Driver</span> </div>
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                    className={`${theme === "dark" ? 'text-white' : "text-black"} text-[1.3rem] font-medium`}
+                >
+                    {t('drivers_possessive')}
+                </motion.p>
+                <div onClick={() => setOpen(true)} className='flex items-center cursor-pointer gap-2 py-2 px-3 rounded bg-[#2d9bff] text-white'><CiCirclePlus className='text-[1.5rem]' /><span className='sm:block hidden'>{t('assign_driver')}</span> </div>
             </div>
             {data?.drivers?.length > 0 ? (
 
@@ -102,7 +105,7 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.5 * index, duration: 0.5 }}
                                 >
-                                    <GradientButton name="Un-Assign Vehicle" handleClick={()=>handleUnassign(data?.driver?.id)} loading={loading}/>
+                                    <GradientButton name={t('unassign_vehicle')} handleClick={() => handleUnassign(data?.driver?.id)} loading={loading} />
                                 </motion.div>
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.8 }}
@@ -110,7 +113,7 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
                                     whileHover={{ scale: 1.1 }}
                                     transition={{ delay: 0.6 * index, duration: 0.5 }}
                                     className='bg-[#2D9BFF] p-2 rounded-xl w-[3rem] h-[3rem] flex items-center justify-center'
-                                    onClick={() => {navigate(`/Chat`)}}
+                                    onClick={() => { navigate(`/Chat`) }}
                                 >
                                     <img src={chat} alt="" />
                                 </motion.div>
@@ -120,10 +123,10 @@ function DriversCard({ data, setOpen, fetchVehicleData }) {
                 </div>) : <div className="min-h-[310px] flex flex-col items-center justify-center">
                 <FaUserSlash className="text-[#2d9bff]  text-6xl mb-4" />
                 <p className="text-lg font-semibold text-gray-600 dark:text-gray-300">
-                    No Driver Found
+                    {t('no_driver_found')}
                 </p>
                 <p className="text-sm text-gray-500  mt-2">
-                    Try adding driver to the list.
+                    {t('try_adding_driver')}
                 </p>
             </div>}
         </motion.div>

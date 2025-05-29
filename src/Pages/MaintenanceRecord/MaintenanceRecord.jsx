@@ -11,8 +11,11 @@ import NoDataFound from '../../GlobalComponents/NoDataFound/NoDataFound';
 import AddRecord from './AddRecord';
 import MaintenanceOverviewModal from './MaintenanceOverviewModal';
 import { useGlobalContext } from '../../Contexts/GlobalContext';
+import { useTranslation } from 'react-i18next';
+
 
 function MaintenanceRecord() {
+    const { t } = useTranslation();
     const { theme } = useTheme();
     const { addRecord, setAddRecord } = useGlobalContext();
     const [Data, setData] = useState([])
@@ -76,8 +79,8 @@ function MaintenanceRecord() {
                                 <div className="relative z-10">
                                     <div className="text-sm ">
                                         <div className="mt-2 flex justify-between text-[#98999A]">
-                                            <p className="text-gray-400">Date</p>
-                                            <p className="text-gray-400">Mileage</p>
+                                            <p className="text-gray-400">{t('date')}</p>
+                                            <p className="text-gray-400">{t('mileage')}</p>
                                         </div>
                                         <div className="mt-1 flex justify-between text-sm">
                                             <p className={`${theme === "dark" ? "text-white" : "text-black"} font-semibold`}>{request.date}</p>
@@ -86,8 +89,8 @@ function MaintenanceRecord() {
                                     </div>
                                     <div className="text-sm">
                                         <div className="mt-2 flex justify-between text-[#98999A]">
-                                            <p className="text-gray-400">Type</p>
-                                            <p className="text-gray-400">Dealer</p>
+                                            <p className="text-gray-400">{t('type')}</p>
+                                            <p className="text-gray-400">{t('dealer')}</p>
                                         </div>
                                         <div className="mt-1 flex justify-between text-sm">
                                             <p className={`${theme === "dark" ? "text-white" : "text-black"} font-semibold`}>{request.serviceType}</p>
@@ -112,7 +115,7 @@ function MaintenanceRecord() {
                                             className="mt-4 bg-[#1B1C1E] text-white w-full py-2 rounded-md font-medium cursor-pointer hover:bg-[#2a2b2d] transition-colors"
                                             onClick={() => handleOverviewClick(request)}
                                         >
-                                            Over View
+                                            {t('overview')}
                                         </button>
                                     </div>
                                 </div>

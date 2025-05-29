@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { useTheme } from "../../Contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const Dropdown = ({ setValue }) => {
+  const { t } = useTranslation();
+
   const options = [
-    { name: "All Vehicles", value: "0" },
-    { name: "Archived Vehicles", value: "1" },
+    { name: t("all_vehicles"), value: "0" },
+    { name: t("archived_vehicles"), value: "1" },
   ];
 
   const [isOpen, setIsOpen] = useState(false);

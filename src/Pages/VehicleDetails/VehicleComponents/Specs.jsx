@@ -15,35 +15,38 @@ import phone from "./assets/phone.png"
 import phoneLight from "./assets/phoneLight.png"
 import userLight from "./assets/userLight.png"
 import user from "./assets/user.png"
+import { useTranslation } from 'react-i18next';
+
 
 const itemVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } }
 };
 
-function Specs({data}) {
+function Specs({ data }) {
+    const { t } = useTranslation();
     const { theme } = useTheme();
     const specs = [
-        { label: 'Vin Number', value: data?.vinNumber, darkImg: vin, lightImg: vinLight },
-        { label: 'Number Plate', value: data?.numberPlate, darkImg: plate, lightImg: plateLight },
-        { label: 'Mileage', value: data?.mileage, darkImg: mileage, lightImg: mileageLight },
-        { label: 'Manufacturing Year', value: data?.manufacturingYear, darkImg: year, lightImg: yearLight },
-     
+        { label: t('vin_number'), value: data?.vinNumber, darkImg: vin, lightImg: vinLight },
+        { label: t('number_plate'), value: data?.numberPlate, darkImg: plate, lightImg: plateLight },
+        { label: t('mileage'), value: data?.mileage, darkImg: mileage, lightImg: mileageLight },
+        { label: t('manufacturing_year'), value: data?.manufacturingYear, darkImg: year, lightImg: yearLight },
+
     ];
 
     return (
-        <motion.div 
+        <motion.div
             className={`w-full rounded-xl p-5 ${theme === 'dark' ? 'bg-[#323335]' : 'bg-white border border-[#ececec]'} relative shadow-md`}
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
         >
-            <p className={`${theme === 'dark' ? 'text-white' : 'text-black'} text-[1.3rem] font-medium`}>Specifications</p>
+            <p className={`${theme === 'dark' ? 'text-white' : 'text-black'} text-[1.3rem] font-medium`}>{t('specifications')}</p>
             <div className='grid sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3 xl:gap-2 my-4 xl:text-[0.7rem] 2xl:text-[0.8rem]'>
                 {specs.map((spec, index) => (
-                    <motion.div 
-                        key={index} 
-                        className='flex flex-col items-center justify-center' 
+                    <motion.div
+                        key={index}
+                        className='flex flex-col items-center justify-center'
                         variants={itemVariants}
                     >
                         <div className={`${theme === 'dark' ? 'bg-[#1b1c1e]' : 'bg-[#f7f7f7]'} p-5 rounded-2xl`}>

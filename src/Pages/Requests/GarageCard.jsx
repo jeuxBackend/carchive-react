@@ -5,8 +5,11 @@ import RequestButton from '../../Components/Buttons/RequestButton'
 import { motion } from 'framer-motion'
 import { changeGarageStatus } from '../../API/portalServices'
 import { toast } from 'react-toastify'
+import { useTranslation } from 'react-i18next';
+
 
 function GarageCard({ data, fetchRequestsData }) {
+  const { t } = useTranslation();
   const { theme } = useTheme()
   const [loading, setLoading] = useState(false)
   const requestStatus = async (id, status) => {
@@ -45,33 +48,33 @@ function GarageCard({ data, fetchRequestsData }) {
       
       
       <div className={`pt-2 flex justify-between ${theme === "dark" ? "text-white" : ""}`}>
-          <p className='fontbold text-lg'>Email:</p>
+          <p className='fontbold text-lg'>{t('email')}</p>
           <p className={theme === "dark" ? "text-gray-300" : "text-[#7B7B7B]"}>{data?.garage?.email}</p> 
       </div>
       <div className={`pt-2 flex justify-between ${theme === "dark" ? "text-white" : ""}`}>
-          <p className='fontbold text-lg'>Phone:</p>
+          <p className='fontbold text-lg'>{t('phone')}</p>
           <p className={theme === "dark" ? "text-gray-300" : "text-[#7B7B7B]"}>{data?.garage?.phNumber}</p> 
       </div>
       <div className={`pt-2 flex justify-between ${theme === "dark" ? "text-white" : ""}`}>
-          <p className='fontbold text-lg'>City:</p>
+          <p className='fontbold text-lg'>{t('city')}</p>
           <p className={theme === "dark" ? "text-gray-300" : "text-[#7B7B7B]"}>{data?.garage?.city}</p> 
       </div>
       <div className={`pt-2 flex justify-between ${theme === "dark" ? "text-white" : ""}`}>
-          <p className='fontbold text-lg'>ZipCode:</p>
+          <p className='fontbold text-lg'>{t('zipcode')}</p>
           <p className={theme === "dark" ? "text-gray-300" : "text-[#7B7B7B]"}>{data?.garage?.zipCode}</p> 
       </div>
       <div className={`pt-2 flex justify-between ${theme === "dark" ? "text-white" : ""}`}>
-          <p className='fontbold text-lg'>Street:</p>
+          <p className='fontbold text-lg'>{t('street')}</p>
           <p className={theme === "dark" ? "text-gray-300" : "text-[#7B7B7B]"}>{data?.garage?.street}</p> 
       </div>
       <div className={`pt-2 flex justify-between ${theme === "dark" ? "text-white" : ""}`}>
-          <p className='fontbold text-lg'>House No:</p>
+          <p className='fontbold text-lg'>{t('house_no')}</p>
           <p className={theme === "dark" ? "text-gray-300" : "text-[#7B7B7B]"}>{data?.garage?.houseNum}</p> 
       </div>
 
       <div className="mt-2 flex gap-4 sm:flex-row flex-col">
-        <GradientButton name='Reject' handleClick={() => requestStatus(data?.id, "4")} loading={loading} />
-        <RequestButton name="Accept" handleClick={() => requestStatus(data?.id, "2")} loading={loading} />
+        <GradientButton name={t('reject')}  handleClick={() => requestStatus(data?.id, "4")} loading={loading} />
+        <RequestButton name={t('accept')} handleClick={() => requestStatus(data?.id, "2")} loading={loading} />
       </div>
     </motion.div>
   )

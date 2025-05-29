@@ -160,7 +160,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Vehicle Details
+                {t('vehicle_details')}
                 </p>
               </div>
             )}
@@ -173,7 +173,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Update Vehicle
+                {t('update_vehicle')}
                 </p>
               </div>
             )}
@@ -186,7 +186,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Maintenance Record
+                {t('maintenance_record')}
                 </p>
               </div>
             )}
@@ -199,7 +199,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Vehicle Requests
+                {t('vehicle_requests')}
                 </p>
               </div>
             )}
@@ -212,7 +212,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Profile Update
+                {t('update_vehicle')}
                 </p>
               </div>
             )}
@@ -225,7 +225,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Privacy Policy
+                {t('privacy_policy')}
                 </p>
               </div>
             )}
@@ -238,7 +238,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  About Us
+                {t('about_us')}
                 </p>
               </div>
             )}
@@ -251,7 +251,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Terms & Conditions
+                {t('terms_conditions')}
                 </p>
               </div>
             )}
@@ -264,7 +264,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Vehicle Details
+                {t('vehicle_details')}
                 </p>
               </div>
             )}
@@ -277,7 +277,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  View Logs
+                {t('view_logs')}
                 </p>
               </div>
             )}
@@ -290,7 +290,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Vehicle Garages
+                {t('vehicle_garages')}
                 </p>
               </div>
             )}
@@ -303,7 +303,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Language
+                {t('language')}
                 </p>
               </div>
             )}
@@ -316,7 +316,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Add Vehicle
+                {t('add_vehicle')}
                 </p>
               </div>
             )}

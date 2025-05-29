@@ -9,8 +9,11 @@ import { getVehicleById } from '../../API/portalServices'
 import { BeatLoader } from 'react-spinners'
 import AddDriver from './VehicleComponents/AddDriver'
 import Specs from './VehicleComponents/Specs'
+import { useTranslation } from 'react-i18next';
+
 
 function VehicleDetails() {
+  const { t } = useTranslation();
   const { id } = useParams()
   const [vehicleDetail, setVehicleDetail] = useState({})
   const [loading, setLoading] = useState(false);
@@ -51,14 +54,14 @@ function VehicleDetails() {
               <Specs data={vehicleDetail} />
               <div className='grid grid-cols-1 gap-5 my-4'>
 
-                <BlueButton name='View Logs' to={`/ViewLogs/${id}`} />
-                <BlueButton name='Requests' to={`/VehicleRequests/${id}`} />
+                <BlueButton name={t('view_logs')} to={`/ViewLogs/${id}`} />
+                <BlueButton name={t('requests')} to={`/VehicleRequests/${id}`} />
               </div>
             </div>
             <div className='w-full  h-full'>
               <Services data={vehicleDetail} setLoading={setLoading} />
               <div className='grid grid-cols-1 gap-5 my-4'>
-                <BlueButton name='View Garages' to={`/VehicleGarages/${id}`} />
+                <BlueButton name={t('view_garages')} to={`/VehicleGarages/${id}`} />
 
               </div>
             </div>
