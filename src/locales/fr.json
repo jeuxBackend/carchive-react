@@ -180,5 +180,15 @@
   "Date": "Date",
   "Mileage": "Kilométrage",
   "Service Type": "Type de service",
-  "Dealer Name": "Nom du concessionnaire"
+  "Dealer Name": "Nom du concessionnaire",
+  "garages": "Garages",
+  "No drivers found": "Aucun conducteur trouvé",
+  "No garages found": "Aucun garage trouvé",
+  "Select a conversation to start chatting": "Sélectionnez une conversation pour commencer à discuter",
+  "Select a chat": "Sélectionnez une discussion",
+  "No messages yet. Start a conversation!": "Aucun message pour l'instant. Commencez une conversation !",
+  "Type Message": "Tapez un message",
+  "Select a chat to start messaging": "Sélectionnez une discussion pour commencer à envoyer des messages",
+  "Select a Car": "Sélectionnez une voiture",
+  "Year": "Année"
 }

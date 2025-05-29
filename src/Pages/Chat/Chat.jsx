@@ -18,6 +18,7 @@ import {
 import { useGlobalContext } from '../../Contexts/GlobalContext';
 import { getDrivers, getGaragesList } from '../../API/portalServices';
 import CarsModal from './CarsModal';
+import { useTranslation } from 'react-i18next';
 
 const Chat = () => {
   const { theme } = useTheme();
@@ -38,6 +39,7 @@ const Chat = () => {
   const [sendingMessage, setSendingMessage] = useState(false);
   const [activeTab, setActiveTab] = useState("drivers");
   const messagesEndRef = useRef(null);
+  const { t } = useTranslation();
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -330,7 +332,7 @@ const Chat = () => {
                 theme === "dark" ? "border-b-2 border-blue-400 text-blue-400" : "border-b-2 border-blue-500 text-blue-500" : 
                 ""}`}
             >
-              Drivers
+              {t("drivers")}
             </button>
             <button 
               onClick={() => setActiveTab("garages")}
@@ -338,7 +340,7 @@ const Chat = () => {
                 theme === "dark" ? "border-b-2 border-blue-400 text-blue-400" : "border-b-2 border-blue-500 text-blue-500" : 
                 ""}`}
             >
-              Garages
+              {t("garages")}
             </button>
           </div>
 
@@ -365,7 +367,7 @@ const Chat = () => {
             ) : activeTab === "drivers" ? (
               filteredUsers.length === 0 ? (
                 <div className="flex justify-center items-center h-32">
-                  <p className="text-gray-500">No drivers found</p>
+                  <p className="text-gray-500">{t("No drivers found")}</p>
                 </div>
               ) : (
                 filteredUsers.map((user) => (
@@ -401,7 +403,7 @@ const Chat = () => {
                           : "bg-[#479cff] text-white"} transition-colors`}
                       >
                         <MessageCircle size={18} />
-                        <span>Chat</span>
+                        <span>{t("chat")}</span>
                       </div>
                     </div>
                   </div>
@@ -411,7 +413,7 @@ const Chat = () => {
               // Garages Tab Content
               filteredGarages.length === 0 ? (
                 <div className="flex justify-center items-center h-32">
-                  <p className="text-gray-500">No garages found</p>
+                  <p className="text-gray-500">{t("No garages found")}</p>
                 </div>
               ) : (
                 filteredGarages.map((garage) => (
@@ -447,7 +449,7 @@ const Chat = () => {
                           : "bg-[#479cff] text-white"} transition-colors`}
                       >
                         <MessageCircle size={18} />
-                        <span>Chat</span>
+                        <span>{t("chat")}</span>
                       </div>
                     </div>
                   </div>
@@ -483,7 +485,7 @@ const Chat = () => {
             <div className="ml-3 flex-grow">
               <div className="flex items-center">
                 <h3 className="font-semibold">
-                  {selectedChat?.name || selectedChat?.make || "Select a chat"}
+                  {selectedChat?.name || selectedChat?.make || t("Select a chat")}
                   {selectedChat?.lastName ? ` ${selectedChat.lastName}` : ''}
                 </h3>
                 {selectedChat?.isCar && (
@@ -510,7 +512,7 @@ const Chat = () => {
           <div className="flex-1 p-4 overflow-y-auto">
             {!selectedChat?.id ? (
               <div className="h-full flex items-center justify-center">
-                <p className="text-gray-500">Select a conversation to start chatting</p>
+                <p className="text-gray-500">{t("Select a conversation to start chatting")}</p>
               </div>
             ) : isLoading && messages.length === 0 ? (
               <div className="h-full flex items-center justify-center">
@@ -522,7 +524,7 @@ const Chat = () => {
               </div>
             ) : messages.length === 0 ? (
               <div className="h-full flex items-center justify-center">
-                <p className="text-gray-500">No messages yet. Start a conversation!</p>
+                <p className="text-gray-500">{t("No messages yet. Start a conversation!")}</p>
               </div>
             ) : (
               messages.map((msg) => (
@@ -550,7 +552,7 @@ const Chat = () => {
           <div className="p-4 relative w-full">
             <input
               type="text"
-              placeholder={selectedChat?.id ? "Type Message" : "Select a chat to start messaging"}
+              placeholder={selectedChat?.id ? t("Type Message") : t("Select a chat to start messaging")}
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyDown={handleKeyDown}

@@ -180,5 +180,15 @@
   "Date": "Datum",
   "Mileage": "Kilometerstand",
   "Service Type": "Soort dienst",
-  "Dealer Name": "Dealer naam"
+  "Dealer Name": "Dealer naam",
+  "garages": "Garages",
+  "No drivers found": "Geen chauffeurs gevonden",
+  "No garages found": "Geen garages gevonden",
+  "Select a conversation to start chatting": "Selecteer een gesprek om te beginnen met chatten",
+  "Select a chat": "Selecteer een chat",
+  "No messages yet. Start a conversation!": "Nog geen berichten. Start een gesprek!",
+  "Type Message": "Typ een bericht",
+  "Select a chat to start messaging": "Selecteer een chat om te beginnen met berichten",
+  "Select a Car": "Selecteer een auto",
+  "Year": "Jaar"
 }

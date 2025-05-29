@@ -7,6 +7,7 @@ import { getCarsbyDriver } from "../../API/portalServices";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { initializeChat } from "../../utils/ChatUtils";
 import { MessageCircle, Car } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 function CarsModal({ open, setOpen, id, onSelectCar }) {
     if (!open) return null;
@@ -15,6 +16,7 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
     const [cars, setCars] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { t } = useTranslation();
 
     const fetchDriverCars = useCallback(async () => {
         setIsLoading(true);
@@ -93,7 +95,7 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                             className={`${theme === "dark" ? "text-white" : "text-black"} 
                                 text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium`}
                         >
-                            Select a Car
+                            {t("Select a Car")}
                         </p>
                     </div>
 
@@ -156,11 +158,11 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                                                     <Car size={16} className="ml-2 text-blue-500" />
                                                 </div>
                                                 <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                                                    Model: {car.model || "N/A"}
+                                                    {t("model")}: {car.model || "N/A"}
                                                 </p>
                                                 {car.year && (
                                                     <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                                                        Year: {car.year}
+                                                        {t("Year")}: {car.year}
                                                     </p>
                                                 )}
                                             </div>
