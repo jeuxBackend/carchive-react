@@ -13,9 +13,12 @@ import logoDark from "./assets/logo-dark.png"
 import logoLight from "./assets/logo-light.png"
 import { IoMdClose } from "react-icons/io";
 import { useTheme } from '../../Contexts/ThemeContext';
+import { useTranslation } from "react-i18next";
+
 
 
 function Sidebar({ side, setSide,setLogout }) {
+    const { t } = useTranslation();
     const location = useLocation()
     const [active, setActive] = useState('')
     const { theme } = useTheme();
@@ -27,13 +30,13 @@ function Sidebar({ side, setSide,setLogout }) {
     const sidebar = [
         {
             icon: dashboard,
-            name: "Dashboard",
+            name: t("dashboard"),
             path: "/Dashboard",
             subPath: null
         },
         {
             icon: vehicles,
-            name: "Vehicles",
+            name: t("vehicles"),
             path: "/Vehicles",
             subPath: "/Add-Vehicle",
             subPath1: "/VehicleMaintenence/",
@@ -45,31 +48,31 @@ function Sidebar({ side, setSide,setLogout }) {
         },
         {
             icon: drivers,
-            name: "Drivers",
+            name: t("drivers"),
             path: "/Drivers",
             subPath: null
         },
         {
             icon: invoices,
-            name: "Invoices",
+            name: t("invoices"),
             path: "/Invoices",
             subPath: null
         },
         {
             icon: chat,
-            name: "Chat",
+            name: t("chat"),
             path: "/Chat",
             subPath: null
         },
         {
             icon: requests,
-            name: "Requests",
+            name: t("requests"),
             path: "/Requests",
             subPath: null
         },
         {
             icon: settings,
-            name: "Settings",
+            name: t("settings"),
             path: "/Settings",
             subPath: "/Language",
             subPath1: "/Update-Profile",

@@ -3,6 +3,14 @@
   "number_of_vehicles": "Number of Vehicles",
   "number_of_drivers": "Number of Drivers",
   "number_of_unpaid_invoices": "Number of Unpaid Invoices",
-  "welcome_back": "Welcome Back 👋"
-
+  "welcome_back": "Welcome Back 👋",
+  "vehicles_management": "Vehicles Management",
+  "add_vehicles": "Add Vehicles",
+  "vehicles": "Vehicles",
+  "drivers": "Drivers",
+  "invoices": "Invoices",
+  "chat": "Chat",
+  "requests": "Requests",
+  "settings": "Settings"
+  
 }

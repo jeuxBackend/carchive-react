@@ -3,6 +3,15 @@
   "number_of_vehicles": "Aantal voertuigen",
   "number_of_drivers": "Aantal chauffeurs",
   "number_of_unpaid_invoices": "Aantal onbetaalde facturen",
-  "welcome_back": "Welkom terug 👋"
+  "welcome_back": "Welkom terug 👋",
+  "vehicles_management": "Voertuigbeheer",
+  "add_vehicles": "Voertuigen toevoegen",
+  "vehicles": "Voertuigen",
+  "drivers": "Bestuurders",
+  "invoices": "Facturen",
+  "chat": "Chat",
+  "requests": "Verzoeken",
+  "settings": "Instellingen"
+
 
 }

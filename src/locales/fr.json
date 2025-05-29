@@ -3,5 +3,14 @@
   "number_of_vehicles": "Nombre de véhicules",
   "number_of_drivers": "Nombre de conducteurs",
   "number_of_unpaid_invoices": "Nombre de factures impayées",
-  "welcome_back": "Bon retour 👋"
+  "welcome_back": "Bon retour 👋",
+  "vehicles_management": "Gestion des véhicules",
+  "add_vehicles": "Ajouter des véhicules",
+  "vehicles": "Véhicules",
+  "drivers": "Conducteurs",
+  "invoices": "Factures",
+  "chat": "Discussion",
+  "requests": "Demandes",
+  "settings": "Paramètres"
+
 }
