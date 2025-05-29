@@ -5,6 +5,7 @@ import back from "../../assets/back.png";
 import backLight from "../../assets/backLight.png";
 import verifiedicon from "./assets/verify.png";
 import unverifiedicon from "./assets/unverify.png";
+import { useTranslation } from "react-i18next";
 
 function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
     if (!open || !maintenanceRecord) return null;
@@ -19,6 +20,7 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
             </p>
         </div>
     );
+    const { t } = useTranslation();
 
     return (
         <motion.div
@@ -46,28 +48,28 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                             onClick={() => setOpen(false)}
                         />
                         <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>
-                            Maintenance Record Overview
+                            {t("Maintenance Record Overview")}
                         </p>
                     </div>
 
                     {/* Basic Information */}
                     <div className="mt-4">
                         <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
-                            Basic Information
+                            {t("Basic Information")}
                         </h3>
                         <div className="space-y-1">
-                            <InfoRow label="Record ID" value={`#${maintenanceRecord.id}`} />
-                            <InfoRow label="Date" value={maintenanceRecord.date} />
-                            <InfoRow label="Mileage" value={maintenanceRecord.millage} />
-                            <InfoRow label="Service Type" value={maintenanceRecord.serviceType} />
-                            <InfoRow label="Dealer Name" value={maintenanceRecord.dealerName} />
+                            <InfoRow label={t("Record ID")} value={`#${maintenanceRecord.id}`} />
+                            <InfoRow label={t("Date")} value={maintenanceRecord.date} />
+                            <InfoRow label={t("Mileage")} value={maintenanceRecord.millage} />
+                            <InfoRow label={t("Service Type")} value={maintenanceRecord.serviceType} />
+                            <InfoRow label={t("Dealer Name")} value={maintenanceRecord.dealerName} />
                         </div>
                     </div>
 
                     {/* Status */}
                     <div className="mt-6">
                         <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
-                            Status
+                            {t("Status")}
                         </h3>
                         <div className="flex items-center gap-3 p-3 rounded-lg bg-opacity-10 bg-gray-500">
                             <img
@@ -76,7 +78,8 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                                 className="w-6 h-6"
                             />
                             <p className={`font-semibold ${maintenanceRecord.status === "0" ? "text-red-500" : "text-green-500"}`}>
-                                {maintenanceRecord.status === "0" ? "Unverified" : "Verified"}
+                                {maintenanceRecord.status === "0" ? t("Unverified") : t("Verified")}
+
                             </p>
                         </div>
                     </div>
@@ -85,7 +88,7 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                     {maintenanceRecord.serviceLine && maintenanceRecord.serviceLine.length > 0 && (
                         <div className="mt-6">
                             <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
-                                Service Line Details
+                                {t("Service Line Details")}
                             </h3>
                             <div className="space-y-3">
                                 {maintenanceRecord.serviceLine.map((service, index) => (
@@ -99,13 +102,13 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                                     >
                                         <div className="flex justify-between items-start mb-2">
                                             <div className="flex-1">
-                                                <p className="text-gray-400 text-sm">Item Name</p>
+                                                <p className="text-gray-400 text-sm">{t("Item Name")}</p>
                                                 <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium`}>
                                                     {service.itemName}
                                                 </p>
                                             </div>
                                             <div className="flex-1 ml-4">
-                                                <p className="text-gray-400 text-sm">Remarks</p>
+                                                <p className="text-gray-400 text-sm">{t("Remarks")}</p>
                                                 <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium`}>
                                                     {service.remarks}
                                                 </p>
@@ -131,14 +134,14 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                     {(!maintenanceRecord.serviceLine || maintenanceRecord.serviceLine.length === 0) && (
                         <div className="mt-6">
                             <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
-                                Service Line Details
+                                {t("Service Line Details")}
                             </h3>
                             <div className={`p-4 rounded-lg text-center
                                 ${theme === "dark"
                                     ? "bg-[#1b1c1e] text-gray-400"
                                     : "bg-[#f7f7f7] text-gray-500"
                                 }`}>
-                                <p>No service line details available for this record.</p>
+                                <p>{t("No service line details available for this record.")}</p>
                             </div>
                         </div>
                     )}
@@ -146,16 +149,16 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                     {/* Additional Information */}
                     <div className="mt-6">
                         <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
-                            Additional Information
+                            {t("Additional Information")}
                         </h3>
                         <div className="space-y-1">
-                            <InfoRow label="VIN Number" value={maintenanceRecord.vinNumber} />
-                            <InfoRow label="Created At" value={new Date(maintenanceRecord.created_at).toLocaleString()} />
-                            <InfoRow label="Updated At" value={new Date(maintenanceRecord.updated_at).toLocaleString()} />
+                            <InfoRow label={t("VIN Number")} value={maintenanceRecord.vinNumber} />
+                            <InfoRow label={t("Created At")} value={new Date(maintenanceRecord.created_at).toLocaleString()} />
+                            <InfoRow label={t("Updated At")} value={new Date(maintenanceRecord.updated_at).toLocaleString()} />
                         </div>
                     </div>
 
-                 
+
                 </div>
             </motion.div>
         </motion.div>

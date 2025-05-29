@@ -343,15 +343,15 @@ function UpdateVehicle() {
     <div>
       <div className="flex gap-5 lg:flex-row flex-col">
         <div
-          className={`w-full lg:w-[50%] ${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"
+          className={`w-full lg:w-[50%] ${theme === "dark" ? "bg-[#323335]" : "bg-white  border border-[#ececec]"
             } p-4 rounded-xl`}
         >
           <p className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>
             {t("details")}
           </p>
 
-          <div className="pt-3 flex flex-col gap-3">
-            <p className='text-[#fff]'>{t("make")}*</p>
+          <div  className="pt-3 flex flex-col gap-3">
+            <p>{t("make")}*</p>
             <MakesDropdown
               label={t("vehicle_make")}
               value={vehicleData}
@@ -360,7 +360,7 @@ function UpdateVehicle() {
               options={makesData}
             />
 
-            <p className='text-[#fff]'>{t("model")}*</p>
+            <p >{t("model")}*</p>
             <InputField
               label={t("model")}
               value={vehicleData}
@@ -368,7 +368,7 @@ function UpdateVehicle() {
               fieldKey="model"
             />
 
-            <p className='text-[#fff]'>{t("vin_number")}*</p>
+            <p >{t("vin_number")}*</p>
             <InputField
               label={t("vin_number")}
               value={vehicleData}
@@ -376,7 +376,7 @@ function UpdateVehicle() {
               fieldKey="vinNumber"
             />
 
-            <p className='text-[#fff]'>{t("miles")}</p>
+            <p >{t("miles")}</p>
             <InputField
               label={t("miles")}
               value={vehicleData}
@@ -384,7 +384,7 @@ function UpdateVehicle() {
               fieldKey="mileage"
             />
 
-            <p className='text-[#fff]'>{t("number_plate")}</p>
+            <p >{t("number_plate")}</p>
             <InputField
               label={t("number_plate")}
               value={vehicleData}

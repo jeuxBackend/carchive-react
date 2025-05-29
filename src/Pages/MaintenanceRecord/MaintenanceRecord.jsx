@@ -48,9 +48,9 @@ function MaintenanceRecord() {
     return (
         <>
             <AddRecord open={addRecord} setOpen={setAddRecord} fetchMaintenanceData={fetchMaintenanceData} />
-            <MaintenanceOverviewModal 
-                open={overviewModal} 
-                setOpen={setOverviewModal} 
+            <MaintenanceOverviewModal
+                open={overviewModal}
+                setOpen={setOverviewModal}
                 maintenanceRecord={selectedRecord}
             />
             <motion.div
@@ -89,7 +89,7 @@ function MaintenanceRecord() {
                                     </div>
                                     <div className="text-sm">
                                         <div className="mt-2 flex justify-between text-[#98999A]">
-                                            <p className="text-gray-400">{t('type')}</p>
+                                            <p className="text-gray-400">{t("Type")}</p>
                                             <p className="text-gray-400">{t('dealer')}</p>
                                         </div>
                                         <div className="mt-1 flex justify-between text-sm">
@@ -98,10 +98,12 @@ function MaintenanceRecord() {
                                         </div>
                                     </div>
                                     <div className="mt-4">
-                                        <p className="text-gray-400">Status</p>
+                                        <p className="text-gray-400">{t("Status")}</p>
+
                                         <div className="flex items-center gap-2 font-semibold">
                                             <p className={`${theme === "dark" ? "text-white" : "text-black"} ${request.status === "0" && "text-red-500"}`}>
-                                                {request.status === "0" ? "Unverified" : "Verified"}
+                                                {request.status === "0" ? t("Unverified") : t("Verified")}
+
                                             </p>
                                             <img
                                                 src={request.status === "0" ? unverifiedicon : verifiedicon}
@@ -111,7 +113,7 @@ function MaintenanceRecord() {
                                         </div>
                                     </div>
                                     <div className="flex justify-between gap-3">
-                                        <button 
+                                        <button
                                             className="mt-4 bg-[#1B1C1E] text-white w-full py-2 rounded-md font-medium cursor-pointer hover:bg-[#2a2b2d] transition-colors"
                                             onClick={() => handleOverviewClick(request)}
                                         >

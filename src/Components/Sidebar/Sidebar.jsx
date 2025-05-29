@@ -17,7 +17,7 @@ import { useTranslation } from "react-i18next";
 
 
 
-function Sidebar({ side, setSide,setLogout }) {
+function Sidebar({ side, setSide, setLogout }) {
     const { t } = useTranslation();
     const location = useLocation()
     const [active, setActive] = useState('')
@@ -80,11 +80,11 @@ function Sidebar({ side, setSide,setLogout }) {
             subPath3: "/About",
             subPath4: "/TermsConditions",
         },
-      
+
     ]
     const sidebarItemVariants = {
-        hidden: { opacity: 0, x: -20 }, 
-        visible: { opacity: 1, x: 0 },  
+        hidden: { opacity: 0, x: -20 },
+        visible: { opacity: 1, x: 0 },
     };
 
     const sidebarListVariants = {
@@ -92,7 +92,7 @@ function Sidebar({ side, setSide,setLogout }) {
         visible: {
             opacity: 1,
             transition: {
-                staggerChildren: 0.1, 
+                staggerChildren: 0.1,
             },
         },
     };
@@ -109,32 +109,32 @@ function Sidebar({ side, setSide,setLogout }) {
                     ) : (
                         <img src={logoLight} alt="" className='w-[11rem] ' />
                     )}
-             
+
                 </div>
             </div>
             <div className='flex flex-col justify-between h-[77vh] gap-6'>
                 <motion.div
                     className='flex flex-col gap-3 py-4 mr-5'
-                    variants={sidebarListVariants}   
-                    initial="hidden"                 
-                    animate="visible"                
+                    variants={sidebarListVariants}
+                    initial="hidden"
+                    animate="visible"
                 >
                     {sidebar.map((data, index) => (
                         <Link
                             key={index}
-                            
+
                             to={data.path}
                             className='flex items-center gap-3 cursor-pointer'
                         >
-                           
+
                             <motion.div
-                            onClick={function(){setSide(false)}}
-                                className={`flex ml-2 lg:ml-4 pl-3 lg:pl-5 w-full items-center gap-3 transition-all ${data?.name==="Vehicles"?"p-3":"p-2"}  rounded-md ${active === data.path || active.startsWith(data.path) || active === data.subPath || active===data.subPath1 || active===data.subPath2 || active===data.subPath3 || active.startsWith(data.subPath1) || active.startsWith(data.subPath2) || active.startsWith(data.subPath3) || active === data.subPath4 || active.startsWith(data.subPath4) || active === data.subPath5 || active.startsWith(data.subPath5) ||active === data.subPath6 || active.startsWith(data.subPath6)
+                                onClick={function () { setSide(false) }}
+                                className={`flex ml-2 lg:ml-4 pl-3 lg:pl-5 w-full items-center gap-3 transition-all ${data?.name === "Vehicles" ? "p-3" : "p-2"}  rounded-md ${active === data.path || active.startsWith(data.path) || active === data.subPath || active === data.subPath1 || active === data.subPath2 || active === data.subPath3 || active.startsWith(data.subPath1) || active.startsWith(data.subPath2) || active.startsWith(data.subPath3) || active === data.subPath4 || active.startsWith(data.subPath4) || active === data.subPath5 || active.startsWith(data.subPath5) || active === data.subPath6 || active.startsWith(data.subPath6)
                                     ? 'bg-[#1b1c1e]'
                                     : 'hover:bg-white/20'
                                     }`}
-                                variants={sidebarItemVariants}  
-                                whileHover={{ scale: 1.05 }}   
+                                variants={sidebarItemVariants}
+                                whileHover={{ scale: 1.05 }}
                             >
                                 <img src={data.icon} alt="" className='w-[1.5rem] xl:w-[2rem]' />
                                 <motion.p className='font-medium xl:text-[1rem] text-[0.8rem]'>
@@ -145,15 +145,15 @@ function Sidebar({ side, setSide,setLogout }) {
                     ))}
 
                 </motion.div>
-                
+
                 <motion.div
                     className={`flex pl-6 lg:pl-10 w-full cursor-pointer items-center gap-3 transition-all p-3 rounded-md pb-6`}
-                    variants={sidebarItemVariants}  
-                    onClick={function(){setLogout(true),setStatus(0)}}
+                    variants={sidebarItemVariants}
+                    onClick={function () { setLogout(true), setStatus(0) }}
                 >
                     <img src={logout} alt="" className='w-[1.5rem] xl:w-[1.7rem]' />
                     <motion.p className='font-medium xl:text-[1rem] text-[0.8rem] '>
-                        Logout
+                        {t("Logout")}
                     </motion.p>
                 </motion.div>
             </div>

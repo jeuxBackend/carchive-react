@@ -17,8 +17,11 @@ import { Link } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { getProfile } from "../../API/portalServices";
 import avatar from "/avatar.png"
+import { useTranslation } from 'react-i18next';
+
 
 const Settings = () => {
+  const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const [loading, setLoading] = useState(false);
   const [profileData, setProfileData] = useState({})
@@ -70,15 +73,15 @@ const Settings = () => {
             </div>
           </div>
           <Link to='/Update-Profile' className="bg-[#479cff] text-white py-2 px-5 rounded-lg">
-            Update Profile
+          {t("Update Profile")}
           </Link>
         </div>}
 
       <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-        {[{ to: "/Language", icon: lang, iconDark: langDark, label: "Language" },
-        { to: "/About", icon: about, iconDark: aboutDark, label: "About Us" },
-        { to: "/TermsConditions", icon: about, iconDark: aboutDark, label: "Terms & Conditions" },
-        { to: "/Privacy-Policy", icon: privacy, iconDark: privacyDark, label: "Privacy Policy", iconSize: "w-[1.7rem]" }].map((item, index) => (
+        {[{ to: "/Language", icon: lang, iconDark: langDark, label: t("Language") },
+        { to: "/About", icon: about, iconDark: aboutDark, label: t("About Us") },
+        { to: "/TermsConditions", icon: about, iconDark: aboutDark, label: t("Terms & Conditions") },
+        { to: "/Privacy-Policy", icon: privacy, iconDark: privacyDark, label: t("Privacy Policy"), iconSize: "w-[1.7rem]" }].map((item, index) => (
           <motion.div
             key={index}
             whileHover={{ scale: 1.05 }}
@@ -98,7 +101,7 @@ const Settings = () => {
         >
           <div className="flex items-center gap-3">
             <img src={theme === "dark" ? mode : modeDark} alt="" className="w-[2.2rem]" />
-            <p className={`lg:text-[1.3rem] xl:text-[1.1rem] 2xl:text-[1.5rem]  ${theme === "dark" ? "text-white" : "text-black"}`}>Light Mode</p>
+            <p className={`lg:text-[1.3rem] xl:text-[1.1rem] 2xl:text-[1.5rem]  ${theme === "dark" ? "text-white" : "text-black"}`}>{t("Light Mode")}</p>
           </div>
           <button
             onClick={toggleTheme}

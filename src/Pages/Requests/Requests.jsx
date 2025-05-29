@@ -11,8 +11,12 @@ import { BeatLoader } from "react-spinners";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 import { toast } from "react-toastify";
 import ViewDetailsModal from "./Modals/ViewDetailsModal";
+import { useTranslation } from "react-i18next";
+
 
 const Requests = () => {
+  const { t } = useTranslation();
+
   const { theme } = useTheme();
 
   const [loading, setLoading] = useState(false);
@@ -106,7 +110,7 @@ const Requests = () => {
                   <div className="relative z-10">
                     <div className="flex justify-between sm:flex-row flex-col">
                       <div>
-                        <p className="text-[#8D8D8F] text-sm">Driver Name</p>
+                        <p className="text-[#8D8D8F] text-sm">{t("Driver Name")}</p>
                         <p
                           className={`${
                             theme === "dark" ? "text-white" : "text-black"
@@ -116,7 +120,7 @@ const Requests = () => {
                         </p>
                       </div>
                       <div>
-                        <p className="text-[#8D8D8F] text-sm">Number Plate</p>
+                        <p className="text-[#8D8D8F] text-sm">{t("Number Plate")}</p>
                         <p
                           className={`${
                             theme === "dark" ? "text-white" : "text-black"
@@ -129,7 +133,7 @@ const Requests = () => {
 
                     <div className="flex justify-between sm:flex-row flex-col">
                       <div className="mt-4">
-                        <p className="text-[#8D8D8F] text-sm">Vin Number</p>
+                        <p className="text-[#8D8D8F] text-sm">{t("Vin Number")}</p>
                         <p
                           className={`${
                             theme === "dark" ? "text-white" : "text-black"
@@ -148,21 +152,21 @@ const Requests = () => {
                             handleViewDetails(request);
                           }}
                         >
-                          View Details
+                          {t("View Details")}
                         </a>
                       </div>
                     </div>
 
                     <div className="mt-4 flex gap-4 sm:flex-row flex-col">
                       <GradientButton
-                        name="Reject"
+                       name={t("Reject")}
                         handleClick={() =>
                           requestStatus(request?.request?.id, "2")
                         }
                         loading={loading}
                       />
                       <RequestButton
-                        name="Accept"
+                        name={t("Accept")}
                         handleClick={() =>
                           requestStatus(request?.request?.id, "1")
                         }
@@ -191,7 +195,7 @@ const Requests = () => {
                 theme === "dark" ? "text-white" : "text-black"
               } font-medium text-[2rem] my-4`}
             >
-              Garage Requests
+              {t("Garage Requests")}
             </p>
             {requestsData?.grages?.length > 0 ? (
               <motion.div

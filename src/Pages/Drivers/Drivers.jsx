@@ -14,6 +14,8 @@ import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { useNavigate } from "react-router-dom";
 import { initializeChat } from "../../utils/ChatUtils";
 import DriverDetailsModal from "./DriverDetailsModal"; // Import the modal component
+import { useTranslation } from 'react-i18next';
+
 
 
 const cardVariants = {
@@ -33,6 +35,7 @@ const menuVariants = {
 };
 
 const Drivers = () => {
+    const { t } = useTranslation();
     const { theme } = useTheme();
     const [openMenu, setOpenMenu] = useState(null);
     const dropdownRef = useRef(null);
@@ -161,7 +164,7 @@ const Drivers = () => {
                                     onClick={() => { navigate(`/Chat`) }}
                                 >
                                     <img className="w-5 h-5" src={msg} alt="message icon" />
-                                    Message
+                                    {t("Message")}
                                 </motion.button>
 
                             </div>

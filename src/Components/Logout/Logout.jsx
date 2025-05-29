@@ -7,6 +7,7 @@ import logoutDark from './logoutDark.png'
 import { useTheme } from "../../Contexts/ThemeContext";
 import GradientButton from "../Buttons/GradientButton";
 import RequestButton from "../Buttons/RequestButton";
+import { useTranslation } from 'react-i18next';
 
 
 
@@ -15,7 +16,7 @@ function Logout({ logout, setLogout }) {
   const { theme } = useTheme()
   const navigate = useNavigate()
 
-  const logoutHandle=()=>{
+  const logoutHandle = () => {
     localStorage.clear()
     navigate('/')
     setLogout(false)
@@ -23,6 +24,7 @@ function Logout({ logout, setLogout }) {
   }
 
 
+  const { t } = useTranslation();
 
 
   return (
@@ -42,26 +44,26 @@ function Logout({ logout, setLogout }) {
         >
           <div className="w-full p-6 flex flex-col gap-3">
             <div className="flex flex-col gap-3 justify-center items-center">
-              <img src={theme==="dark"?logoutDark:logoutPic} alt="" className="w-[10rem]"/>
+              <img src={theme === "dark" ? logoutDark : logoutPic} alt="" className="w-[10rem]" />
               <div className="text-center">
-                <p className={`${theme==="dark"?"text-white":"text-black"} text-2xl font-medium py-2`}>Log Out</p>
-                <p className={`${theme==="dark"?"text-[#8d8d8e]":"text-[#0000004d]"}  font-medium`}>
-                Are you sure to sign out your account?
+                <p className={`${theme === "dark" ? "text-white" : "text-black"} text-2xl font-medium py-2`}>{t("Log Out")}</p>
+                <p className={`${theme === "dark" ? "text-[#8d8d8e]" : "text-[#0000004d]"}  font-medium`}>
+                  {t("Are you sure you want to sign out of your account?")}
                 </p>
               </div>
             </div>
             <div className="flex items-center justify-center gap-3">
-            <div className="w-full cursor-pointer" onClick={()=>setLogout(false)}>
-              <GradientButton name="Cancel"/>
+              <div className="w-full cursor-pointer" onClick={() => setLogout(false)}>
+                <GradientButton name={t("Cancel")} />
 
               </div>
               <div className="w-full cursor-pointer" onClick={logoutHandle}>
-              <RequestButton name="Logout"/>
+                <RequestButton name={t("Logout")} />
 
               </div>
             </div>
-            
-            
+
+
           </div>
         </motion.div>
       </div>

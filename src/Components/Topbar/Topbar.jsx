@@ -51,13 +51,13 @@ const Topbar = ({ setSide }) => {
   }, [location]);
 
   const titles = {
-    "/Settings": "Settings",
+    "/Settings": t("Settings"),
     "/Vehicles": t("vehicles_management"),
     "/Dashboard": t("dashboard"),
-    "/Chat": "Chat",
-    "/Invoices": "Invoices",
-    "/Drivers": "Drivers",
-    "/Requests": "Requests",
+    "/Chat": t("Chat"),
+    "/Invoices": t("Invoices"),
+    "/Drivers": t("Drivers"),
+    "/Requests": t("Requests"),
   };
 
   const [loadingArchive, setLoadingArchive] = useState(false);
@@ -350,7 +350,7 @@ const Topbar = ({ setSide }) => {
               className="flex items-center cursor-pointer gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]"
             >
               <FiPlus className="text-[1.5rem]" />
-              <span className="sm:block hidden">Add Record</span>
+              <span className="sm:block hidden">{t("Add Record")}</span>
             </div>
           )}
           {active.startsWith("/Vehicles/") && (
