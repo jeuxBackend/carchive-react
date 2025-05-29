@@ -180,5 +180,20 @@
   "Date": "Date",
   "Mileage": "Kilométrage",
   "Service Type": "Type de service",
-  "Dealer Name": "Nom du concessionnaire"
+  "Dealer Name": "Nom du concessionnaire",
+  "User Name": "Nom d'utilisateur",
+  "First Name": "Prénom",
+  "Last Name": "Nom de famille",
+  "Contact Number": "Numéro de contact",
+  "Address": "Adresse",
+  "Street": "Rue",
+  "House No": "N° de maison",
+  "Zip Code": "Code postal",
+  "City": "Ville",
+  "Country": "Pays",
+  "Update": "Mettre à jour",
+  "Upload": "Téléverser",
+  "Buyer Details": "Détails de l'acheteur",
+  "Name": "Nom",
+  "Document": "Document"
 }

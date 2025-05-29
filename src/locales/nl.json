@@ -180,5 +180,20 @@
   "Date": "Datum",
   "Mileage": "Kilometerstand",
   "Service Type": "Soort dienst",
-  "Dealer Name": "Dealer naam"
+  "Dealer Name": "Dealer naam",
+  "User Name": "Gebruikersnaam",
+  "First Name": "Voornaam",
+  "Last Name": "Achternaam",
+  "Contact Number": "Contactnummer",
+  "Address": "Adres",
+  "Street": "Straat",
+  "House No": "Huisnummer",
+  "Zip Code": "Postcode",
+  "City": "Stad",
+  "Country": "Land",
+  "Update": "Bijwerken",
+  "Upload": "Uploaden",
+  "Buyer Details": "Kopergegevens",
+  "Name": "Naam",
+  "Document": "Document"
 }

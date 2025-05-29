@@ -2,10 +2,13 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import placeholder from "./placeholder.png";
 import { useTheme } from "../../Contexts/ThemeContext";
+import { useTranslation } from 'react-i18next';
+
 
 const ImageUploader = ({setImageFile, setImage, image}) => {
  
   const { theme } = useTheme();
+  const { t } = useTranslation();
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -53,7 +56,7 @@ const ImageUploader = ({setImageFile, setImage, image}) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        Upload
+        {t("Upload")}
       </motion.label>
     </div>
   );
