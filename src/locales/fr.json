@@ -125,6 +125,12 @@
   "document_date": "Date du document",
   "leave_empty_no_date": "Laisser vide pour utiliser \"Pas de date\"",
   "cancel": "Annuler",
-  "add_document": "Ajouter le document"
+  "add_document": "Ajouter le document",
+  "view_document": "Voir le document",
+  "start_date": "Date de début",
+  "end_date": "Date de fin",
+  "status": "Statut",
+  "document": "Document"
+
 
 }

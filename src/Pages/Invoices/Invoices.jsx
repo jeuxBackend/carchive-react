@@ -4,10 +4,12 @@ import { motion } from "framer-motion";
 import { getInvoices } from "../../API/portalServices";
 import { BeatLoader } from "react-spinners";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
+import { useTranslation } from "react-i18next";
+
 
 const Invoices = () => {
     const { theme } = useTheme();
-
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
     const [invoiceData, setInvoiceData] = useState({})
 
@@ -54,12 +56,21 @@ const Invoices = () => {
                     >
                         <thead>
                             <tr>
-                                {['Start Date', 'End Date', 'Status', 'Document'].map((heading, index) => (
+                                {["start_date", "end_date", "status", "document"].map((key, index) => (
                                     <th key={index} className="py-3 border-0 mb-3">
-                                        <p className={`${theme === "dark" ? "bg-[#323335] border-[#323335]" : "bg-transparent border border-[#b5b5b7]"} text-center py-2 ${index === 0 ? 'rounded-tl-xl' : ''} ${index === 3 ? 'rounded-tr-xl' : ''}`}>{heading}</p>
+                                        <p
+                                            className={`${theme === "dark"
+                                                    ? "bg-[#323335] border-[#323335]"
+                                                    : "bg-transparent border border-[#b5b5b7]"
+                                                } text-center py-2 ${index === 0 ? "rounded-tl-xl" : ""} ${index === 3 ? "rounded-tr-xl" : ""
+                                                }`}
+                                        >
+                                            {t(key)}
+                                        </p>
                                     </th>
                                 ))}
                             </tr>
+
                         </thead>
                         <tbody>
                             {invoiceData.map((item, index) => (
@@ -84,10 +95,10 @@ const Invoices = () => {
                                             year: "numeric",
                                         }
                                     )}</td>
-                                    <td className={`py-6 border ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"}`}>{item.status==="0"?"Unpaid":"Paid"}</td>
+                                    <td className={`py-6 border ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"}`}>{item.status === "0" ? "Unpaid" : "Paid"}</td>
                                     <td className={`py-6 border ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"}`}>
                                         <a href={item.image} target="_blank" className="text-blue-500 hover:underline">
-                                            View Document
+                                            {t("view_document")}
                                         </a>
                                     </td>
                                 </motion.tr>

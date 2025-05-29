@@ -126,7 +126,11 @@
   "document_date": "Document Date",
   "leave_empty_no_date": "Leave empty to use \"No Date\"",
   "cancel": "Cancel",
-  "add_document": "Add Document"
-
+  "add_document": "Add Document",
+  "view_document": "View Document",
+  "start_date": "Start Date",
+  "end_date": "End Date",
+  "status": "Status",
+  "document": "Document"
   
 }
