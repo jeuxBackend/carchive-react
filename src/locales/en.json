@@ -191,5 +191,21 @@
   "Type Message": "Type Message",
   "Select a chat to start messaging": "Select a chat to start messaging",
   "Select a Car": "Select a Car",
-  "Year": "Year"
+  "Year": "Year",
+  "User Name": "User Name",
+  "First Name": "First Name",
+  "Last Name": "Last Name",
+  "Contact Number": "Contact Number",
+  "Address": "Address",
+  "Street": "Street",
+  "House No": "House No",
+  "Zip Code": "Zip Code",
+  "City": "City",
+  "Country": "Country",
+  "Update": "Update",
+  "Upload": "Upload",
+  "Buyer Details": "Buyer Details",
+  "Name": "Name",
+  "Document": "Document"
+
 }

@@ -190,5 +190,20 @@
   "Type Message": "Tapez un message",
   "Select a chat to start messaging": "Sélectionnez une discussion pour commencer à envoyer des messages",
   "Select a Car": "Sélectionnez une voiture",
-  "Year": "Année"
+  "Year": "Année",
+  "User Name": "Nom d'utilisateur",
+  "First Name": "Prénom",
+  "Last Name": "Nom de famille",
+  "Contact Number": "Numéro de contact",
+  "Address": "Adresse",
+  "Street": "Rue",
+  "House No": "N° de maison",
+  "Zip Code": "Code postal",
+  "City": "Ville",
+  "Country": "Pays",
+  "Update": "Mettre à jour",
+  "Upload": "Téléverser",
+  "Buyer Details": "Détails de l'acheteur",
+  "Name": "Nom",
+  "Document": "Document"
 }

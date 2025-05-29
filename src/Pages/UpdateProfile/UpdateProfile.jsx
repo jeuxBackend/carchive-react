@@ -7,12 +7,14 @@ import CountryCode from '../../Components/DropDown/CountryCode';
 import ImageUploader from '../../Components/ImageUploaders/ImageUploader';
 import { getProfile, updateProfile } from '../../API/portalServices';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 
 
 function UpdateProfile() {
     const navigate = useNavigate();
     const { theme } = useTheme();
+    const { t } = useTranslation();
     const [image, setImage] = useState(null);
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(false)
@@ -140,12 +142,12 @@ function UpdateProfile() {
                     onSubmit={handleUpdate}
                 >
                     <div className=' py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label="User Name" />
+                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label={t("User Name")} />
 
                     </div>
                     <div className='grid md:grid-cols-2 gap-5 py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="name" label="First Name" />
-                        <InputField value={formData} setValue={setFormData} fieldKey="lastName" label="Last Name" />
+                        <InputField value={formData} setValue={setFormData} fieldKey="name" label={t("First Name")} />
+                        <InputField value={formData} setValue={setFormData} fieldKey="lastName" label={t("Last Name")} />
                     </div>
                     <div className='flex lg:flex-row flex-col-reverse'>
                         <div className='w-full lg:w-[70%]'>
@@ -153,15 +155,15 @@ function UpdateProfile() {
                                 {/* <div className='w-full sm:w-[20%]'>
                                 <CountryCode setCountryCode={setCountryCode} />
                             </div> */}
-                                <InputField value={formData} setValue={setFormData} fieldKey="phNumber" label="Contact Number" isNumber={true} isReadOnly={true} />
+                                <InputField value={formData} setValue={setFormData} fieldKey="phNumber" label={t("Contact Number")} isNumber={true} isReadOnly={true} />
                             </div>
                             <div className='py-2'><InputField label="Email" value={formData} setValue={setFormData} fieldKey="email" isReadOnly={true} /></div>
                             {/* <div className='py-2'><InputField label="Password" type="password" value={formData} setValue={setFormData} fieldKey="password" isRequired={false}/></div>
                         <div className='py-2'><InputField label="Confirm Password" type="password" value={formData} setValue={setFormData} fieldKey="confirmPassword" isRequired={false}/></div> */}
                             <div className='pt-2'>
-                                <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>VAT Number</p>
+                                <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>{t("VAT Number")}</p>
                                 <div className='py-2'>
-                                    <InputField label="VAT Number" value={formData} setValue={setFormData} fieldKey="vatNum" />
+                                    <InputField label={t("VAT Number")} value={formData} setValue={setFormData} fieldKey="vatNum" />
                                 </div>
                             </div>
                         </div>
@@ -170,17 +172,18 @@ function UpdateProfile() {
                         </div>
                     </div>
                     <div>
-                        <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>Address</p>
+                        <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>{t("Address")}</p>
                         <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label="Street" value={formData} setValue={setFormData} fieldKey="street" />
-                            <InputField label="House No" value={formData} setValue={setFormData} fieldKey="houseNumber" />
+                            <InputField label={t("Street")} value={formData} setValue={setFormData} fieldKey="street" />
+                            <InputField label={t("House No")} value={formData} setValue={setFormData} fieldKey="houseNumber" />
+                        </div>
+
+                        <div className='grid md:grid-cols-2 gap-5 py-2'>
+                            <InputField label={t("Zip Code")} value={formData} setValue={setFormData} fieldKey="zip" isNumber={true} />
+                            <InputField label={t("City")} value={formData} setValue={setFormData} fieldKey="city" />
                         </div>
                         <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label="Zip Code" value={formData} setValue={setFormData} fieldKey="zip" isNumber={true} />
-                            <InputField label="City" value={formData} setValue={setFormData} fieldKey="city" />
-                        </div>
-                        <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label="Country" value={formData} setValue={setFormData} fieldKey="country" />
+                            <InputField label={t("Country")} value={formData} setValue={setFormData} fieldKey="country" />
                         </div>
                     </div>
 
@@ -198,7 +201,7 @@ function UpdateProfile() {
                             {loading ? (
                                 <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin" />
                             ) : (
-                                "Update"
+                                t("Update")
                             )}
                         </motion.button>
 
