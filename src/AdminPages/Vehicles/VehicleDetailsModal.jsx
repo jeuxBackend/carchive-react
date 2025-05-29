@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Car, Calendar, FileText, AlertTriangle, CheckCircle, XCircle, EyeOff } from 'lucide-react';
+import { X, Car, Calendar, FileText, AlertTriangle, CheckCircle, XCircle, EyeOff, User } from 'lucide-react';
 import { useTheme } from '../../Contexts/ThemeContext';
 import BlueButton from '../../Components/Buttons/BlueButton';
 import { adminReleaseVehicle } from '../../API/adminServices';
@@ -10,7 +10,6 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
     const { theme } = useTheme();
     const [loading, setLoading] = React.useState(false);
     console.log("selected vehicle data:", vehicleData);
-
 
     if (!vehicleData) return null;
 
@@ -129,6 +128,9 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
         }
     }
 
+    // Check if owner information is available
+    const hasOwnerInfo = vehicleData.owner || vehicleData.owner_user_type || vehicleData.owner_user_id;
+
     return (
         <AnimatePresence>
             {isOpen && (
@@ -170,7 +172,6 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
 
                         <div className="p-6">
                             {/* Vehicle Images */}
-                            {/* Vehicle Images */}
                             {vehicleData?.image && (
                                 <div className="mb-6">
                                     <h3 className={`text-lg font-medium ${theme === "dark" ? "text-white" : "text-gray-800"} mb-3`}>Vehicle Images</h3>
@@ -200,6 +201,73 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
                                                 />
                                             </div>
                                         )}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Owner Information - Show only if owner data exists */}
+                            {hasOwnerInfo && (
+                                <div className="mb-6">
+                                    <h3 className={`text-lg font-medium ${theme === "dark" ? "text-white border-gray-600" : "text-gray-800 border-gray-200"} border-b pb-2 mb-4`}>Owner Information</h3>
+                                    <div className={`p-4 ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-gray-50"} rounded-lg`}>
+                                        <div className="flex items-center gap-4">
+                                            {/* Owner Avatar */}
+                                            <div className="flex-shrink-0">
+                                                {vehicleData.owner_image ? (
+                                                    <img
+                                                        src={vehicleData.owner_image}
+                                                        alt="Owner"
+                                                        className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+                                                        onError={(e) => {
+                                                            e.target.style.display = 'none';
+                                                            e.target.nextSibling.style.display = 'flex';
+                                                        }}
+                                                    />
+                                                ) : null}
+                                                <div className={`w-16 h-16 rounded-full ${theme === "dark" ? "bg-gray-600" : "bg-gray-300"} flex items-center justify-center ${vehicleData.owner_image ? 'hidden' : 'flex'}`}>
+                                                    <User className={`w-8 h-8 ${theme === "dark" ? "text-gray-400" : "text-gray-500"}`} />
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Owner Details */}
+                                            <div className="flex-1">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    {vehicleData.owner && (
+                                                        <div>
+                                                            <span className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>Owner Name:</span>
+                                                            <div className={`font-medium ${theme === "dark" ? "text-white" : "text-black"} capitalize`}>
+                                                                {vehicleData.owner} {vehicleData.lastName}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    
+                                                    {vehicleData.owner_user_type && (
+                                                        <div>
+                                                            <span className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>User Type:</span>
+                                                            <div className={`font-medium ${theme === "dark" ? "text-white" : "text-black"}`}>
+                                                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                                                    vehicleData.owner_user_type === 'Driver' 
+                                                                        ? 'bg-blue-100 text-blue-800' 
+                                                                        : 'bg-green-100 text-green-800'
+                                                                }`}>
+                                                                    {vehicleData.owner_user_type}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {vehicleData.email && (
+                                                        <div>
+                                                            <span className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>Email:</span>
+                                                            <div className={`font-medium ${theme === "dark" ? "text-white" : "text-black"} capitalize`}>
+                                                                {vehicleData.email} 
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -362,6 +430,8 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
                                     </div>
                                 </div>
                             </div>
+                            
+                            {/* Release Car Button */}
                             <div className='mt-4'>
                                 <div
                                     className={`w-full py-3 px-3 cursor-pointer xl:text-[1rem] lg:text-[0.6rem] text-center 2xl:px-4 flex justify-center items-center rounded-xl focus:outline-none ${theme === "dark" ? "bg-[#479cff] text-white" : "bg-[#1b1c1e] text-white "
@@ -373,8 +443,6 @@ const VehicleDetailsModal = ({ isOpen, onClose, vehicleData, fetchVehicles }) =>
                                             className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin"
                                         />
                                     ) : (" Release Car")}
-
-
                                 </div>
                             </div>
                         </div>
