@@ -18,30 +18,30 @@ function Layout() {
     const adminToken = localStorage.getItem("CarchiveAdminToken");
 
     if (adminToken) {
-        return <Navigate to="/Admin" />; 
-      }
+        return <Navigate to="/Admin" />;
+    }
 
     return (
         <div>
-            <ToastContainer/>
+            <ToastContainer />
             {portalToken ?
-        <>
-            <Logout logout={logout} setLogout={setLogout} />
-            <div className={`flex h-screen  relative lg:p-3 transition-all ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-white"} overflow-hidden`}>
-                <div className='absolute top-0 right-0 z-50'>
-                    <LanguageSwitcher/>
-                </div>
-                <Sidebar side={side} setSide={setSide} setLogout={setLogout} />
-                <div className='w-full lg:w-[80%] px-8 py-4 h-full overflow-auto'>
-                    <Topbar side={side} setSide={setSide} />
-                    <div onClick={() => setSide(false)}>
-                        <Outlet />
+                <>
+                    <Logout logout={logout} setLogout={setLogout} />
+                    <div className={`flex h-screen  relative lg:p-3 transition-all ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-white"} overflow-hidden`}>
+                        <div className='absolute top-0 right-0 z-50'>
+                            <LanguageSwitcher />
+                        </div>
+                        <Sidebar side={side} setSide={setSide} setLogout={setLogout} />
+                        <div className='w-full lg:w-[80%] px-8 py-4 h-full overflow-auto'>
+                            <Topbar side={side} setSide={setSide} />
+                            <div onClick={() => setSide(false)}>
+                                <Outlet />
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </>:
-        <Navigate to="/" />
-        }
+                </> :
+                <Navigate to="/" />
+            }
         </div>
     )
 }
