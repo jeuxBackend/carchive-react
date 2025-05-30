@@ -170,7 +170,7 @@ function AdminGarageOwners() {
                       <div
                         onClick={function () {
                           setOpen(true);
-                          setSelectedGarageId(item?.id);
+                          setSelectedGarageId(item?.garage_id);
                         }}
                         className="flex items-center gap-x-2 justify-start pl-3 cursor-pointer"
                       >

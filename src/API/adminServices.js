@@ -25,7 +25,7 @@ export const getAdminDriverDetail = (id) => postRequest("admin/driver-detail", {
 export const getAllAdminGarage = (data) => postRequest("admin/grages", data);
 export const getApproveAdminGarage = (data) => postRequest("admin/approved-grages", data);
 export const getUnapproveAdminGarage = (data) => postRequest("admin/unapproved-grages", data);
-export const getAdminGarageDetail = (id) => postRequest("admin/grage-detail", { id });
+export const getAdminGarageDetail = (id) => postRequest("admin/garages-detail", { id });
 
 // Active/Block APIs
 export const activeBlock = (id) => postRequest("admin/active-block", { id });
