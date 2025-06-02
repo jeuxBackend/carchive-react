@@ -13,14 +13,14 @@ const cardVariants = {
   hover: { scale: 1.05, rotate: 2, transition: { duration: 0.3 } },
 };
 
-const StatCard = ({ title, value, theme, delay, onNavigate }) => (
+const StatCard = ({ title, value, theme, delay, onNavigate, index }) => (
   <motion.div
     variants={cardVariants}
     initial="hidden"
     animate="visible"
     whileHover="hover"
     transition={{ delay }}
-    onClick={() => onNavigate(title === "Number of Vehicles" ? "/Vehicles" : title === "Number of Drivers" ? "/Drivers" : "/Invoices")}
+    onClick={() => onNavigate(index === 0 ? "/Vehicles" : index === 1 ? "/Drivers" : "/Invoices")}
     className={`px-5 py-10 rounded-lg border border-black/50 shadow-md cursor-pointer ${theme === "dark" ? "bg-[#323335] text-white" : "bg-white text-black"
       }`}
   >
@@ -87,7 +87,7 @@ function Dashboard() {
           variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
         >
           {stats.map((stat, index) => (
-            <StatCard key={index} {...stat} theme={theme} onNavigate={navigate} />
+            <StatCard key={index} {...stat} theme={theme} onNavigate={navigate} index={index}/>
           ))}
         </motion.div>
       )}

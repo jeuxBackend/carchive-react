@@ -9,8 +9,26 @@ import { useTranslation } from "react-i18next";
 
 function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
     if (!open || !maintenanceRecord) return null;
+    console.log("Maintenance Record Overview:", maintenanceRecord);
 
     const { theme } = useTheme();
+
+    // Parse serviceLine if it's a string
+    const parseServiceLine = (serviceLine) => {
+        if (!serviceLine) return [];
+        if (Array.isArray(serviceLine)) return serviceLine;
+        if (typeof serviceLine === 'string') {
+            try {
+                return JSON.parse(serviceLine);
+            } catch (error) {
+                console.error('Error parsing serviceLine:', error);
+                return [];
+            }
+        }
+        return [];
+    };
+
+    const parsedServiceLine = parseServiceLine(maintenanceRecord.serviceLine);
 
     const InfoRow = ({ label, value }) => (
         <div className="flex justify-between items-center py-2 border-b border-opacity-20 border-gray-400">
@@ -85,13 +103,13 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                     </div>
 
                     {/* Service Line Details */}
-                    {maintenanceRecord.serviceLine && maintenanceRecord.serviceLine.length > 0 && (
+                    {parsedServiceLine && parsedServiceLine.length > 0 && (
                         <div className="mt-6">
                             <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
                                 {t("Service Line Details")}
                             </h3>
                             <div className="space-y-3">
-                                {maintenanceRecord.serviceLine.map((service, index) => (
+                                {parsedServiceLine.map((service, index) => (
                                     <div
                                         key={index}
                                         className={`p-4 rounded-lg border
@@ -116,12 +134,12 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                                         </div>
                                         <div className="flex items-center gap-3 p-3 rounded-lg bg-opacity-10 bg-gray-500">
                                             <img
-                                                src={service.status === "0" ? unverifiedicon : verifiedicon}
+                                                src={service.status === 0 || service.status === "0" ? unverifiedicon : verifiedicon}
                                                 alt={service.status}
                                                 className="w-6 h-6"
                                             />
-                                            <p className={`font-semibold ${service.status === "0" ? "text-red-500" : "text-white"}`}>
-                                                {service.status === "0" ? "Unverified" : "Verified"}
+                                            <p className={`font-semibold ${service.status === 0 || service.status === "0" ? "text-red-500" : "text-green-500"}`}>
+                                                {service.status === 0 || service.status === "0" ? t("Unverified") : t("Verified")}
                                             </p>
                                         </div>
                                     </div>
@@ -131,7 +149,7 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                     )}
 
                     {/* No Service Line Message */}
-                    {(!maintenanceRecord.serviceLine || maintenanceRecord.serviceLine.length === 0) && (
+                    {(!parsedServiceLine || parsedServiceLine.length === 0) && (
                         <div className="mt-6">
                             <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
                                 {t("Service Line Details")}

@@ -7,16 +7,13 @@ import Search from "../../Components/Search/Search";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
-const languages = [
-    { name: "English", flag: english, code: "en" },
-    { name: "French", flag: french, code: "fr" },
-    { name: "Nederland's", flag: netherlands, code: "nl" }
-];
+
 
 const Language = () => {
     const { theme } = useTheme();
     const { i18n } = useTranslation();
     const [searchValue, setSearchValue] = useState("");
+        const { t } = useTranslation();
     
     const changeLanguage = (lang) => {
         i18n.changeLanguage(lang);
@@ -26,11 +23,16 @@ const Language = () => {
     // Get current language
     const currentLanguage = i18n.language;
 
-    // Filter languages based on search value
+    
+    const languages = [
+    { name: t("English"), flag: english, code: "en" },
+    { name: t("French"), flag: french, code: "fr" },
+    { name: t("Netherland"), flag: netherlands, code: "nl" }
+];
+// Filter languages based on search value
     const filteredLanguages = languages.filter(lang =>
         lang.name.toLowerCase().includes(searchValue.toLowerCase())
     );
-
     return (
         <div>
             <div className="pb-4">
