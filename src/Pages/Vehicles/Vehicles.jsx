@@ -42,7 +42,8 @@ function Vehicles() {
         const matchesSearch = 
             vehicle?.make?.toLowerCase()?.includes(searchTerm) ||  
             vehicle?.vinNumber?.toLowerCase()?.includes(searchTerm) || 
-            vehicle?.plateNumber?.toLowerCase()?.includes(searchTerm);
+            vehicle?.plateNumber?.toLowerCase()?.includes(searchTerm) ||
+            vehicle?.model?.toLowerCase()?.includes(searchTerm) 
     
         if (selectedValue === "1") {
             return matchesSearch && vehicle?.isArchive === "1"; 
