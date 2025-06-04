@@ -156,6 +156,16 @@ const Requests = () => {
                         </a>
                       </div>
                     </div>
+                      <div className="mt-3">
+                        <p
+                          
+                          className="text-[#319BFB] font-medium hover:underline"
+                          
+                        >
+                          {t("Buying Request")}
+                        </p>
+                      </div>
+                   
 
                     <div className="mt-4 flex gap-4 sm:flex-row flex-col">
                       <GradientButton

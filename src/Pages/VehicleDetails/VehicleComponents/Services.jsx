@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 import InsuranceSwitch from "../../../Components/Buttons/InsuranceSwitch";
 import { useTranslation } from 'react-i18next';
 
-
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -20,28 +19,24 @@ function Services({ data, setLoading }) {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-
   const [localSwitchStates, setLocalSwitchStates] = useState({
     insuranceStatus: data?.insuranceStatus || 0,
     inspectionStatus: data?.inspectionStatus || 0,
     additionalStatus: data?.additionalStatus || 0,
   });
 
- 
   const [switchLoading, setSwitchLoading] = useState({
     insuranceStatus: false,
     inspectionStatus: false,
     additionalStatus: false,
   });
 
-  
   const [debounceTimers, setDebounceTimers] = useState({});
 
   const updateStatusInBackground = useCallback(async (id, statusField, newStatus, originalStatus) => {
     try {
       setSwitchLoading(prev => ({ ...prev, [statusField]: true }));
 
-    
       const currentStates = { ...localSwitchStates };
       currentStates[statusField] = newStatus;
 
@@ -66,7 +61,6 @@ function Services({ data, setLoading }) {
 
       toast.error(errorMessage);
 
-   
       setLocalSwitchStates(prev => ({
         ...prev,
         [statusField]: originalStatus
@@ -84,13 +78,11 @@ function Services({ data, setLoading }) {
       clearTimeout(debounceTimers[statusField]);
     }
 
-    
     setLocalSwitchStates(prev => ({
       ...prev,
       [statusField]: newStatus
     }));
 
-    
     const timer = setTimeout(() => {
       updateStatusInBackground(data?.id, statusField, newStatus, currentStatus);
     }, 300);
@@ -107,7 +99,6 @@ function Services({ data, setLoading }) {
       return;
     }
 
-    
     if (!window.confirm("Are you sure you want to release this vehicle?")) {
       return;
     }
@@ -128,7 +119,6 @@ function Services({ data, setLoading }) {
     }
   };
 
- 
   const formatDate = (dateString) => {
     if (!dateString) return "";
     try {
@@ -138,11 +128,25 @@ function Services({ data, setLoading }) {
     }
   };
 
- 
   const isExpired = (dateString) => {
     if (!dateString) return false;
     try {
       return new Date(dateString) < new Date();
+    } catch {
+      return false;
+    }
+  };
+
+  // New function to check if expiry is within a month
+  const isExpiringSoon = (dateString) => {
+    if (!dateString) return false;
+    try {
+      const expiryDate = new Date(dateString);
+      const currentDate = new Date();
+      const oneMonthFromNow = new Date();
+      oneMonthFromNow.setMonth(currentDate.getMonth() + 1);
+      
+      return expiryDate <= oneMonthFromNow && expiryDate >= currentDate;
     } catch {
       return false;
     }
@@ -154,11 +158,18 @@ function Services({ data, setLoading }) {
     data.additionalExpiry[0] &&
     isExpired(data.additionalExpiry[0]);
 
+  const isInsuranceExpiringSoon = isExpiringSoon(data?.insuranceExpiry);
+  const isInspectionExpiringSoon = isExpiringSoon(data?.inspectionExpiry);
+  const isAdditionalExpiringSoon = Array.isArray(data?.additionalExpiry) &&
+    data.additionalExpiry[0] &&
+    isExpiringSoon(data.additionalExpiry[0]);
+
   const serviceItems = [
     {
       title: t('insurance'),
       subtitle: data?.insuranceExpiry ? `(${formatDate(data.insuranceExpiry)})` : "",
       expired: isInsuranceExpired ? t('expired') : "",
+      expiringSoon: isInsuranceExpiringSoon ? t('expires_soon') || 'EXPIRES SOON' : "",
       showSwitch: true,
       switchChecked: localSwitchStates.insuranceStatus === 1,
       switchLoading: switchLoading.insuranceStatus,
@@ -169,6 +180,7 @@ function Services({ data, setLoading }) {
       title: t('inspection_documents'),
       subtitle: data?.inspectionExpiry ? `(${formatDate(data.inspectionExpiry)})` : "",
       expired: isInspectionExpired ? t('expired') : "",
+      expiringSoon: isInspectionExpiringSoon ? t('expires_soon') || 'EXPIRES SOON' : "",
       showSwitch: true,
       switchChecked: localSwitchStates.inspectionStatus === 1,
       switchLoading: switchLoading.inspectionStatus,
@@ -181,6 +193,7 @@ function Services({ data, setLoading }) {
         ? `(${formatDate(data.additionalExpiry[0])})`
         : "",
       expired: isAdditionalExpired ? t('expired') : "",
+      expiringSoon: isAdditionalExpiringSoon ? t('expires_soon') || 'EXPIRES SOON' : "",
       showSwitch: true,
       switchChecked: localSwitchStates.additionalStatus === 1,
       switchLoading: switchLoading.additionalStatus,
@@ -192,10 +205,8 @@ function Services({ data, setLoading }) {
       showArrow: true,
       route: `/VehicleMaintenence/${data?.id}`,
     }
-   
   ];
 
-  // Cleanup debounce timers on unmount
   React.useEffect(() => {
     return () => {
       Object.values(debounceTimers).forEach(timer => {
@@ -221,7 +232,6 @@ function Services({ data, setLoading }) {
             } ${item.dangerous ? 'hover:border-red-300' : ''}`}
           variants={itemVariants}
           onClick={(e) => {
-            // Only handle card click for non-switch items
             if (!item.showSwitch) {
               if (item.func) {
                 item.func();
@@ -243,6 +253,7 @@ function Services({ data, setLoading }) {
               <p className="text-[#2D9BFF] text-[0.8rem] font-medium">
                 {item.subtitle}{" "}
                 <span className="text-red-500 font-semibold">{item.expired}</span>
+                <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
               </p>
             )}
           </div>

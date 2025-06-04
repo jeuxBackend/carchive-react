@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import { IoClose } from "react-icons/io5";
 import { useGlobalContext } from '../../Contexts/GlobalContext'
 import { CiSearch } from 'react-icons/ci'
+import { useTranslation } from 'react-i18next'
 
 
 function AddVehicle() {
@@ -31,6 +32,7 @@ function AddVehicle() {
     const [additionalDates, setAdditionalDates] = useState([""]) 
     const [additionalTitles, setAdditionalTitles] = useState([""])
     const [loadingVin, setLoadingVin] = useState(false)
+      const { t } = useTranslation();
     const navigate = useNavigate();
     const [vehicleData, setVehicleData] = useState({
         vinNumber: "",
@@ -82,16 +84,16 @@ function AddVehicle() {
         } else {
             setLoading(true)
             try {
-                // Filter out empty dates and format valid ones
+                
                 const validDates = additionalDates.filter(date => date && date !== "");
                 const formattedDates = validDates.map(date => 
                     dayjs(date).format('YYYY-MM-DD')
                 );
 
-                // Filter out empty titles
+           
                 const validTitles = additionalTitles.filter(title => title && title.trim() !== "");
 
-                // Create payload object
+             
                 const payload = {
                     ...vehicleData,
                     image: vehicleImages,
@@ -101,12 +103,12 @@ function AddVehicle() {
                     additionalDocuments: additionalDocs,
                 };
 
-                // Only add additionalExpiry if there are valid dates
+              
                 if (formattedDates.length > 0) {
                     payload.additionalExpiry = formattedDates;
                 }
 
-                // Only add additionalTitles if there are valid titles
+                
                 if (validTitles.length > 0) {
                     payload.additionalTitles = validTitles;
                 }
@@ -202,63 +204,63 @@ function AddVehicle() {
         <div>
             <div className='flex gap-5 lg:flex-row flex-col'>
                 <div className={`w-full lg:w-[50%] ${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
-                    <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>Details</div>
+                    <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>{t('details')}</div>
                     <div className='pt-3 flex flex-col gap-3'>
-                        <p className='text-[#fff]'>Make*</p>
+                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>{t('make')}*</p>
                         <MakesDropdown
-                            label="Vehicle Make"
+                            label={t('vehicle_make')}
                             value={vehicleData}
                             setValue={setVehicleData}
                             fieldKey="make"
                             options={makesData}
                         />
-                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>Model*</p>
-                        <InputField label='Model' value={vehicleData} setValue={setVehicleData} fieldKey="model" />
-                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>VIN Number*</p>
+                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>{t("model")}*</p>
+                        <InputField label={t("model")} value={vehicleData} setValue={setVehicleData} fieldKey="model" />
+                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>{t("VIN Number")}*</p>
                         <div className='flex items-center gap-2'>
-                        <InputField label='Vin Number' value={vehicleData} setValue={setVehicleData} fieldKey="vinNumber" />
+                        <InputField label={t("VIN Number")} value={vehicleData} setValue={setVehicleData} fieldKey="vinNumber" />
                         <div onClick={()=>vinSearch()} className=' bg-[#479cff] text-[1.8rem] text-white py-4 px-2.5 cursor-pointer rounded-xl'> {loadingVin ? (
                         <motion.div
                             className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin"
                         />
                     ) : (<CiSearch />)}</div>
                         </div>
-                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>Miles</p>
-                        <InputField label='Miles' value={vehicleData} setValue={setVehicleData} fieldKey="mileage" />
-                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>Number Plate</p>
-                        <InputField label='Number Plate' value={vehicleData} setValue={setVehicleData} fieldKey="numberPlate" />
+                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>{t("miles")}</p>
+                        <InputField label={t("miles")} value={vehicleData} setValue={setVehicleData} fieldKey="mileage" />
+                        <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>{t("Number Plate")}</p>
+                        <InputField label={t("Number Plate")} value={vehicleData} setValue={setVehicleData} fieldKey="numberPlate" />
                         <div className='flex gap-6 sm:gap-3 sm:flex-row flex-col pt-3'>
-                            <BasicDatePicker label="Manufacturing Year" value={vehicleData} setValue={setVehicleData} fieldKey="manufacturingYear" />
-                            <BasicDatePicker label="Registration Expiry" value={vehicleData} setValue={setVehicleData} fieldKey="registrationExpiry" />
+                            <BasicDatePicker label={t("manufacturing_year")} value={vehicleData} setValue={setVehicleData} fieldKey="manufacturingYear" />
+                            <BasicDatePicker label={t("registration_expiry")} value={vehicleData} setValue={setVehicleData} fieldKey="registrationExpiry" />
                         </div>
                         <div className='flex gap-6 sm:gap-3 sm:flex-row flex-col pt-3'>
-                            <BasicDatePicker label="Insurance Expiry" value={vehicleData} setValue={setVehicleData} fieldKey="insuranceExpiry" />
-                            <BasicDatePicker label="Vehicle Inspection" value={vehicleData} setValue={setVehicleData} fieldKey="inspectionExpiry" />
+                            <BasicDatePicker label={t("insurance_expiry")} value={vehicleData} setValue={setVehicleData} fieldKey="insuranceExpiry" />
+                            <BasicDatePicker label={t('vehicle_inspection')} value={vehicleData} setValue={setVehicleData} fieldKey="inspectionExpiry" />
                         </div>
                     </div>
                 </div>
                 <div className='w-full lg:w-[50%] flex flex-col gap-3'>
                     <div className={` ${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
-                        <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>Vehicle Images</div>
+                        <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium`}>{t('vehicle_images')}</div>
                         <div className=''>
                             <ImageUploader value={vehicleImages} setValue={setVehicleImages} />
                         </div>
                     </div>
                     <div className={`${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
                         <div>
-                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Registration Documents <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="registrationStatus" /> <span className='text-[0.8rem] font-normal'>Share</span> </div></div>
+                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>{t('registration_documents')} <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="registrationStatus" /> <span className='text-[0.8rem] font-normal'>{t("share")}</span> </div></div>
                             <div className=''>
                                 <DocumentUploader value={regDocs} setValue={setRegDocs} />
                             </div>
                         </div>
                         <div>
-                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Insurance Documents  <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="insuranceStatus" /><span className='text-[0.8rem] font-normal'>Share</span> </div></div>
+                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>{t("insurance_documents")}  <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="insuranceStatus" /><span className='text-[0.8rem] font-normal'>{t("share")}</span> </div></div>
                             <div className=''>
                                 <DocumentUploader value={insuranceDocs} setValue={setInsuranceDocs} />
                             </div>
                         </div>
                         <div>
-                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Inspection Documents <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="inspectionStatus" /><span className='text-[0.8rem] font-normal'>Share</span> </div></div> 
+                            <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>{t('inspection_documents')} <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="inspectionStatus" /><span className='text-[0.8rem] font-normal'>{t("share")}</span> </div></div> 
                             <div >
                                 <DocumentUploader value={inspectionDocs} setValue={setInspectionDocs} />
                             </div>
@@ -270,7 +272,7 @@ function AddVehicle() {
             <div className='w-full pt-3 flex flex-col gap-3'>
                 <div className={`${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#ececec]"} p-4 rounded-xl`}>
                     <div>
-                        <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>Additional Documents <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="additionalStatus" /><span className='text-[0.8rem] font-normal'>Share</span> </div></div>
+                        <div className={`${theme === "dark" ? "text-white" : "text-black"} text-[1.5rem] font-medium flex items-center gap-2`}>{t('additional_documents')} <div className='flex items-center gap-2'> <Switch value={vehicleData} setValue={setVehicleData} fieldKey="additionalStatus" /><span className='text-[0.8rem] font-normal'>{t("share")}</span> </div></div>
                         <div className=''>
                             <DocumentUploader value={additionalDocs} setValue={setAdditionalDocs} type='additional' setAdditionalTitles={setAdditionalTitles} setAdditionalDates={setAdditionalDates}/>
                         </div>
@@ -284,7 +286,7 @@ function AddVehicle() {
                             className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin"
                         />
                     ) : (
-                        "Add"
+                        t("Add")
                     )}
                 </div>
             </div>

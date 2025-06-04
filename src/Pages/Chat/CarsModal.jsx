@@ -160,9 +160,14 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                                                 <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
                                                     {t("model")}: {car.model || "N/A"}
                                                 </p>
-                                                {car.year && (
+                                                {car.vinNumber && (
                                                     <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                                                        {t("Year")}: {car.year}
+                                                        {t("Vin Number")}: {car.vinNumber}
+                                                    </p>
+                                                )}
+                                                {car.numberPlate && (
+                                                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                                                        {t("number_plate")}: {car.numberPlate}
                                                     </p>
                                                 )}
                                             </div>
