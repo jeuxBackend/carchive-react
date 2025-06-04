@@ -54,7 +54,7 @@ function VehicleDetails() {
               <Specs data={vehicleDetail} />
               <div className='grid grid-cols-1 gap-5 my-4'>
 
-                <BlueButton name={t('view_logs')} to={`/ViewLogs/${id}`} />
+                <BlueButton name={t('driverslog')} to={`/ViewLogs/${id}`} />
                 <BlueButton name={t('requests')} to={`/VehicleRequests/${id}`} />
               </div>
             </div>

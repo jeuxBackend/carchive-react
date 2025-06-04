@@ -43,7 +43,14 @@ function Vehicles() {
             vehicle?.make?.toLowerCase()?.includes(searchTerm) ||  
             vehicle?.vinNumber?.toLowerCase()?.includes(searchTerm) || 
             vehicle?.plateNumber?.toLowerCase()?.includes(searchTerm) ||
-            vehicle?.model?.toLowerCase()?.includes(searchTerm) 
+            vehicle?.model?.toLowerCase()?.includes(searchTerm) ||
+            vehicle?.mileage?.toString()?.includes(searchTerm) ||
+            vehicle?.insuranceExpiry?.toString()?.includes(searchTerm) ||
+            vehicle?.inspectionExpiry2?.toString()?.includes(searchTerm) ||
+            vehicle?.registrationExpiry?.toString()?.includes(searchTerm) ||
+            vehicle?.numberPlate?.toString()?.includes(searchTerm) ||
+            vehicle?.inspectionExpiry?.toString()?.includes(searchTerm) ||
+            vehicle?.manufacturingYear?.toString()?.includes(searchTerm) 
     
         if (selectedValue === "1") {
             return matchesSearch && vehicle?.isArchive === "1"; 

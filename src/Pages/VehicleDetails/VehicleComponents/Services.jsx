@@ -20,29 +20,28 @@ function Services({ data, setLoading }) {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  // Local state to manage switch states for immediate UI updates
+
   const [localSwitchStates, setLocalSwitchStates] = useState({
     insuranceStatus: data?.insuranceStatus || 0,
     inspectionStatus: data?.inspectionStatus || 0,
     additionalStatus: data?.additionalStatus || 0,
   });
 
-  // Loading states for individual switches
+ 
   const [switchLoading, setSwitchLoading] = useState({
     insuranceStatus: false,
     inspectionStatus: false,
     additionalStatus: false,
   });
 
-  // Debounced API calls to prevent rapid toggles
+  
   const [debounceTimers, setDebounceTimers] = useState({});
 
   const updateStatusInBackground = useCallback(async (id, statusField, newStatus, originalStatus) => {
     try {
       setSwitchLoading(prev => ({ ...prev, [statusField]: true }));
 
-      // Create the update payload with all status fields
-      // Send all statuses, with the changed one having the new value
+    
       const currentStates = { ...localSwitchStates };
       currentStates[statusField] = newStatus;
 
@@ -67,7 +66,7 @@ function Services({ data, setLoading }) {
 
       toast.error(errorMessage);
 
-      // Revert the local state if API call fails
+   
       setLocalSwitchStates(prev => ({
         ...prev,
         [statusField]: originalStatus
@@ -81,18 +80,17 @@ function Services({ data, setLoading }) {
     const currentStatus = localSwitchStates[statusField];
     const newStatus = currentStatus === 1 ? 0 : 1;
 
-    // Clear existing debounce timer for this field
     if (debounceTimers[statusField]) {
       clearTimeout(debounceTimers[statusField]);
     }
 
-    // Update UI immediately for better UX
+    
     setLocalSwitchStates(prev => ({
       ...prev,
       [statusField]: newStatus
     }));
 
-    // Debounce the API call (300ms delay)
+    
     const timer = setTimeout(() => {
       updateStatusInBackground(data?.id, statusField, newStatus, currentStatus);
     }, 300);
@@ -109,7 +107,7 @@ function Services({ data, setLoading }) {
       return;
     }
 
-    // Confirm before releasing
+    
     if (!window.confirm("Are you sure you want to release this vehicle?")) {
       return;
     }
@@ -130,7 +128,7 @@ function Services({ data, setLoading }) {
     }
   };
 
-  // Helper function to format date display
+ 
   const formatDate = (dateString) => {
     if (!dateString) return "";
     try {
@@ -140,7 +138,7 @@ function Services({ data, setLoading }) {
     }
   };
 
-  // Check expiration status
+ 
   const isExpired = (dateString) => {
     if (!dateString) return false;
     try {
@@ -193,13 +191,8 @@ function Services({ data, setLoading }) {
       title: t('maintenance_records'),
       showArrow: true,
       route: `/VehicleMaintenence/${data?.id}`,
-    },
-    {
-      title: t('release_vehicle'),
-      showArrow: false,
-      func: () => releaseCar(data?.id),
-      dangerous: true,
-    },
+    }
+   
   ];
 
   // Cleanup debounce timers on unmount
@@ -257,8 +250,9 @@ function Services({ data, setLoading }) {
           {item.showSwitch && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="relative"
+              className="relative flex items-center gap-2"
             >
+              Share
               <InsuranceSwitch
                 checked={item.switchChecked}
                 disabled={item.switchLoading}

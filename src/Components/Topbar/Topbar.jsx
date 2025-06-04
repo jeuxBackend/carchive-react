@@ -13,9 +13,10 @@ import { RiDeleteBin4Fill } from "react-icons/ri";
 import { IoArchiveSharp, IoShareSocial } from "react-icons/io5";
 import backLight from "../../assets/backLight.png";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
-import { archiveVehicle, delVehicle } from "../../API/portalServices";
+import { archiveVehicle, delVehicle, releaseVehicle } from "../../API/portalServices";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import { GiCartwheel } from "react-icons/gi";
 
 const Topbar = ({ setSide }) => {
   const [active, setActive] = useState("");
@@ -62,6 +63,7 @@ const Topbar = ({ setSide }) => {
 
   const [loadingArchive, setLoadingArchive] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const [loadingRelease, setLoadingRelease] = useState(false);
 
   const handleArchive = async (id) => {
     setLoadingArchive(true);
@@ -114,6 +116,32 @@ const Topbar = ({ setSide }) => {
         toast.error("Failed to copy link");
       });
   };
+   const releaseCar = async (id) => {
+      if (!id) {
+        toast.error("Vehicle ID is required");
+        return;
+      }
+  
+      
+      if (!window.confirm("Are you sure you want to release this vehicle?")) {
+        return;
+      }
+  
+      setLoadingRelease(true);
+      try {
+        const response = await releaseVehicle(id);
+        if (response.data) {
+          toast.success("Vehicle Released Successfully");
+          navigate("/Vehicles");
+        }
+      } catch (error) {
+        console.error('Release Error:', error);
+        const errorMessage = error.response?.data?.message || "Failed to release vehicle";
+        toast.error(errorMessage);
+      } finally {
+        setLoadingRelease(false);
+      }
+    };
 
   return (
     <motion.div
@@ -389,6 +417,13 @@ const Topbar = ({ setSide }) => {
                       : vehicle?.isArchive === "0"
                         ? t("archive_vehicle")
                         : t("unarchive_vehicle")}
+                  </p>
+                  <p
+                    onClick={() => releaseCar(vehicle?.id)}
+                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+                  >
+                    <GiCartwheel />
+                    {loadingDelete ? t("please_wait") : t("release_vehicle")}
                   </p>
                   <p
                     onClick={handleShare}
