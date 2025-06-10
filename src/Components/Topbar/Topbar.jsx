@@ -142,6 +142,22 @@ const Topbar = ({ setSide }) => {
         setLoadingRelease(false);
       }
     };
+    const VehicledropdownRef = useRef(null);
+     useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (VehicledropdownRef.current && !VehicledropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
 
   return (
     <motion.div
@@ -381,60 +397,60 @@ const Topbar = ({ setSide }) => {
               <span className="sm:block hidden">{t("Add Record")}</span>
             </div>
           )}
-          {active.startsWith("/Vehicles/") && (
-            <div className="relative">
-              <img
-                src={theme === "dark" ? ham : hamLightCar}
-                alt=""
-                className="w-[2rem] cursor-pointer"
-                onClick={() => setOpen(!open)}
-              />
-              {open && (
-                <div onClick={() => setOpen(false)} className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg  rounded-tl-3xl">
-                  <p>
-                    <Link
-                      to="/Update-Vehicle"
-                      className="flex items-center gap-2 p-3"
-                    >
-                      <BiSolidEditAlt /> {t("edit_vehicle")}
-                    </Link>
-                  </p>
+           {active.startsWith("/Vehicles/") && (
+        <div className="relative" ref={VehicledropdownRef}>
+          <img
+            src={theme === "dark" ? ham : hamLightCar}
+            alt=""
+            className="w-[2rem] cursor-pointer"
+            onClick={() => setOpen(!open)}
+          />
+          {open && (
+            <div onClick={()=>setOpen(false)} className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg rounded-tl-3xl">
+              <p>
+                <Link to="/Update-Vehicle" className="flex items-center gap-2 p-3">
+                  <BiSolidEditAlt /> {t("edit_vehicle")}
+                </Link>
+              </p>
 
-                  <p
-                    onClick={() => handleDelete(vehicle?.id)}
-                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
-                  >
-                    <RiDeleteBin4Fill />{" "}
-                    {loadingDelete ? t("please_wait") : t("delete_vehicle")}
-                  </p>
-                  <p
-                    onClick={() => handleArchive(vehicle?.id)}
-                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
-                  >
-                    <IoArchiveSharp />
-                    {loadingArchive
-                      ? t("please_wait")
-                      : vehicle?.isArchive === "0"
-                        ? t("archive_vehicle")
-                        : t("unarchive_vehicle")}
-                  </p>
-                  <p
-                    onClick={() => releaseCar(vehicle?.id)}
-                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
-                  >
-                    <GiCartwheel />
-                    {loadingDelete ? t("please_wait") : t("release_vehicle")}
-                  </p>
-                  <p
-                    onClick={handleShare}
-                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
-                  >
-                    <IoShareSocial /> {t("share")}
-                  </p>
-                </div>
-              )}
+              <p
+                onClick={() => handleDelete(vehicle?.id)}
+                className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+              >
+                <RiDeleteBin4Fill />
+                {loadingDelete ? t("please_wait") : t("delete_vehicle")}
+              </p>
+
+              <p
+                onClick={() => handleArchive(vehicle?.id)}
+                className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+              >
+                <IoArchiveSharp />
+                {loadingArchive
+                  ? t("please_wait")
+                  : vehicle?.isArchive === "0"
+                  ? t("archive_vehicle")
+                  : t("unarchive_vehicle")}
+              </p>
+
+              <p
+                onClick={() => releaseCar(vehicle?.id)}
+                className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+              >
+                <GiCartwheel />
+                {loadingDelete ? t("please_wait") : t("release_vehicle")}
+              </p>
+
+              <p
+                onClick={handleShare}
+                className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+              >
+                <IoShareSocial /> {t("share")}
+              </p>
             </div>
           )}
+        </div>
+      )}
         </motion.div>
       </div>
     </motion.div>

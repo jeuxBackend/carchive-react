@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "../../Contexts/ThemeContext";
 import back from "../../assets/back.png";
@@ -12,6 +12,7 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
     console.log("Maintenance Record Overview:", maintenanceRecord);
 
     const { theme } = useTheme();
+    const [showTooltip, setShowTooltip] = useState(false);
 
     // Parse serviceLine if it's a string
     const parseServiceLine = (serviceLine) => {
@@ -76,7 +77,6 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                             {t("Basic Information")}
                         </h3>
                         <div className="space-y-1">
-                            <InfoRow label={t("Record ID")} value={`#${maintenanceRecord.id}`} />
                             <InfoRow label={t("Date")} value={maintenanceRecord.date} />
                             <InfoRow label={t("Mileage")} value={maintenanceRecord.millage} />
                             <InfoRow label={t("Service Type")} value={maintenanceRecord.serviceType} />
@@ -86,9 +86,46 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
 
                     {/* Status */}
                     <div className="mt-6">
-                        <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
-                            {t("Status")}
-                        </h3>
+                        <div className="flex items-center gap-2 mb-3">
+                            <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold`}>
+                                {t("Status")}
+                            </h3>
+                            <div className="relative">
+                                <div
+                                    className={`w-4 h-4 rounded-full border-2 flex items-center justify-center cursor-help
+                                        ${theme === "dark" ? "border-gray-400 text-gray-400" : "border-gray-500 text-gray-500"}
+                                        hover:${theme === "dark" ? "border-white text-white" : "border-black text-black"} 
+                                        transition-colors duration-200`}
+                                    onMouseEnter={() => setShowTooltip(true)}
+                                    onMouseLeave={() => setShowTooltip(false)}
+                                >
+                                    <span className="text-xs font-bold leading-none">?</span>
+                                </div>
+                                
+                                {/* Tooltip */}
+                                {showTooltip && (
+                                    <div className={`absolute left-6 top-0 z-10 px-3 py-2 rounded-lg shadow-lg min-w-[200px]
+                                        ${theme === "dark" 
+                                            ? "bg-gray-800 text-white border border-gray-600" 
+                                            : "bg-white text-black border border-gray-200 shadow-md"
+                                        }`}>
+                                        <p className="text-sm">
+                                            {maintenanceRecord.status === "0" 
+                                                ? t("This maintenance record has not been verified by the authorized dealer or service center.")
+                                                : t("This maintenance record has been verified and authenticated by the authorized dealer or service center.")
+                                            }
+                                        </p>
+                                        {/* Arrow pointer */}
+                                        <div className={`absolute left-[-6px] top-3 w-0 h-0 border-t-[6px] border-b-[6px] border-r-[6px]
+                                            ${theme === "dark" 
+                                                ? "border-t-transparent border-b-transparent border-r-gray-800"
+                                                : "border-t-transparent border-b-transparent border-r-white"
+                                            }`}>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                         <div className="flex items-center gap-3 p-3 rounded-lg bg-opacity-10 bg-gray-500">
                             <img
                                 src={maintenanceRecord.status === "0" ? unverifiedicon : verifiedicon}
@@ -97,7 +134,6 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                             />
                             <p className={`font-semibold ${maintenanceRecord.status === "0" ? "text-red-500" : "text-green-500"}`}>
                                 {maintenanceRecord.status === "0" ? t("Unverified") : t("Verified")}
-
                             </p>
                         </div>
                     </div>
@@ -132,16 +168,7 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="flex items-center gap-3 p-3 rounded-lg bg-opacity-10 bg-gray-500">
-                                            <img
-                                                src={service.status === 0 || service.status === "0" ? unverifiedicon : verifiedicon}
-                                                alt={service.status}
-                                                className="w-6 h-6"
-                                            />
-                                            <p className={`font-semibold ${service.status === 0 || service.status === "0" ? "text-red-500" : "text-green-500"}`}>
-                                                {service.status === 0 || service.status === "0" ? t("Unverified") : t("Verified")}
-                                            </p>
-                                        </div>
+                                        
                                     </div>
                                 ))}
                             </div>
@@ -163,20 +190,6 @@ function MaintenanceOverviewModal({ open, setOpen, maintenanceRecord }) {
                             </div>
                         </div>
                     )}
-
-                    {/* Additional Information */}
-                    <div className="mt-6">
-                        <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
-                            {t("Additional Information")}
-                        </h3>
-                        <div className="space-y-1">
-                            <InfoRow label={t("VIN Number")} value={maintenanceRecord.vinNumber} />
-                            <InfoRow label={t("Created At")} value={new Date(maintenanceRecord.created_at).toLocaleString()} />
-                            <InfoRow label={t("Updated At")} value={new Date(maintenanceRecord.updated_at).toLocaleString()} />
-                        </div>
-                    </div>
-
-
                 </div>
             </motion.div>
         </motion.div>
