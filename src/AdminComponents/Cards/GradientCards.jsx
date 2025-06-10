@@ -65,20 +65,24 @@ function GradientCards({
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className={`${theme === "dark"
-            ? "border border-[#323335] bg-[#323335] rounded-xl shadow-sm"
-            : "border-2 border-[#ECECEC] rounded-xl shadow-sm"
+          ? "border border-[#323335] bg-[#323335] rounded-xl shadow-sm"
+          : "border-2 border-[#ECECEC] rounded-xl shadow-sm"
           }`}
-          onClick={() => {
-            setCompanyId(id);
-            navigate(`/Admin/Company/${id}`);
-          }}
+        onClick={() => {
+          setCompanyId(id);
+          navigate(`/Admin/Company/${id}`);
+        }}
       >
         <div
           className="m-3 h-64 bg-cover bg-center relative rounded-xl"
           style={{ backgroundImage: `url(${img})` }}
         >
           <motion.img
-            onClick={() => setOpen(!open)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(!open);
+            }}
+
             src={theme === "dark" ? ham : hamLight}
             alt="menu"
             className={`${theme === "light" && "bg-white rounded-full"

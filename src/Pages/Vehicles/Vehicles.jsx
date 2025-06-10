@@ -42,7 +42,7 @@ function Vehicles() {
         const matchesSearch = 
             vehicle?.make?.toLowerCase()?.includes(searchTerm) ||  
             vehicle?.vinNumber?.toLowerCase()?.includes(searchTerm) || 
-            vehicle?.plateNumber?.toLowerCase()?.includes(searchTerm) ||
+            vehicle?.numberPlate?.toLowerCase()?.includes(searchTerm) ||
             vehicle?.model?.toLowerCase()?.includes(searchTerm) ||
             vehicle?.mileage?.toString()?.includes(searchTerm) ||
             vehicle?.insuranceExpiry?.toString()?.includes(searchTerm) ||
