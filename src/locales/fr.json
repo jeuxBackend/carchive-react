@@ -211,5 +211,9 @@
   "Netherland": "Pays-Bas",
   "driverslog": "Journal des conducteurs",
   "Add": "Ajouter",
-  "Buying Requests": "Demandes d'achat"
+  "Buying Requests": "Demandes d'achat",
+  "driver_details": "Détails du conducteur",
+  "contact_information": "Informations de contact",
+  "Driver Documents": "Documents du conducteur",
+  "Detail": "Détail"
 }
