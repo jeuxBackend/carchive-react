@@ -3,7 +3,7 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import hamLight from "../../assets/hamLight.png";
 import ham from "../../assets/hamburger.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { activeBlock, bypassVerification } from "../../API/adminServices";
 import { toast, ToastContainer } from "react-toastify";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
@@ -23,6 +23,7 @@ function GradientCards({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bypassLoading, setBypassLoading] = useState({});
+  const navigate = useNavigate();
 
   const handleStatus = async () => {
     console.log("company id:", id);
@@ -67,6 +68,10 @@ function GradientCards({
             ? "border border-[#323335] bg-[#323335] rounded-xl shadow-sm"
             : "border-2 border-[#ECECEC] rounded-xl shadow-sm"
           }`}
+          onClick={() => {
+            setCompanyId(id);
+            navigate(`/Admin/Company/${id}`);
+          }}
       >
         <div
           className="m-3 h-64 bg-cover bg-center relative rounded-xl"

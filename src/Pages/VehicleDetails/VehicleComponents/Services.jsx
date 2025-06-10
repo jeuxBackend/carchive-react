@@ -225,10 +225,10 @@ function Services({ data, setLoading }) {
       {serviceItems.map((item, index) => (
         <motion.div
           key={index}
-          className={`w-full rounded-xl p-4 2xl:p-5 ${theme === "dark"
+          className={`w-full rounded-xl p-3 sm:p-4 2xl:p-5 ${theme === "dark"
               ? "bg-[#323335]"
               : "bg-white border border-[#ececec]"
-            } shadow-md flex items-center justify-between ${item.func || item.route ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
+            } shadow-md ${item.func || item.route ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
             } ${item.dangerous ? 'hover:border-red-300' : ''}`}
           variants={itemVariants}
           onClick={(e) => {
@@ -241,53 +241,118 @@ function Services({ data, setLoading }) {
             }
           }}
         >
-          <div className="flex items-center gap-2">
-            <p
-              className={`${theme === "dark" ? "text-white" : "text-black"
-                } text-[1.4rem] font-medium ${item.dangerous ? 'text-red-600' : ''
-                }`}
-            >
-              {item.title}
-            </p>
+          {/* Mobile Layout (screens < 640px) */}
+          <div className="sm:hidden">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <div className="flex-1 min-w-0">
+                <p
+                  className={`${theme === "dark" ? "text-white" : "text-black"
+                    } text-base font-medium truncate ${item.dangerous ? 'text-red-600' : ''
+                    }`}
+                >
+                  {item.title}
+                </p>
+              </div>
+              
+              {item.showArrow && (
+                <IoIosArrowForward
+                  className={`text-lg flex-shrink-0 ${theme === "dark" ? "text-white" : "text-black"
+                    }`}
+                />
+              )}
+            </div>
+            
             {item.subtitle && (
-              <p className="text-[#2D9BFF] text-[0.8rem] font-medium">
-                {item.subtitle}{" "}
-                <span className="text-red-500 font-semibold">{item.expired}</span>
-                <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
-              </p>
+              <div className="mb-2">
+                <p className="text-[#2D9BFF] text-xs font-medium break-words">
+                  {item.subtitle}{" "}
+                  <span className="text-red-500 font-semibold">{item.expired}</span>
+                  <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
+                </p>
+              </div>
+            )}
+
+            {item.showSwitch && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative flex items-center justify-between"
+              >
+                <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                  {t('share')}
+                </span>
+                <div className="flex items-center gap-2">
+                  <InsuranceSwitch
+                    checked={item.switchChecked}
+                    disabled={item.switchLoading}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      if (!item.switchLoading) {
+                        item.onToggle();
+                      }
+                    }}
+                  />
+                  {item.switchLoading && (
+                    <div className="absolute right-0 flex items-center justify-center">
+                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
 
-          {item.showSwitch && (
-            <div
-              onClick={(e) => e.stopPropagation()}
-              className="relative flex items-center gap-2"
-            >
-              Share
-              <InsuranceSwitch
-                checked={item.switchChecked}
-                disabled={item.switchLoading}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  if (!item.switchLoading) {
-                    item.onToggle();
-                  }
-                }}
-              />
-              {item.switchLoading && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
+          {/* Desktop Layout (screens >= 640px) */}
+          <div className="hidden sm:flex items-center justify-between">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <p
+                className={`${theme === "dark" ? "text-white" : "text-black"
+                  } text-lg lg:text-xl font-medium truncate ${item.dangerous ? 'text-red-600' : ''
+                  }`}
+              >
+                {item.title}
+              </p>
+              {item.subtitle && (
+                <p className="text-[#2D9BFF] text-sm font-medium break-words">
+                  {item.subtitle}{" "}
+                  <span className="text-red-500 font-semibold">{item.expired}</span>
+                  <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
+                </p>
               )}
             </div>
-          )}
 
-          {item.showArrow && (
-            <IoIosArrowForward
-              className={`text-[1.4rem] ${theme === "dark" ? "text-white" : "text-black"
-                }`}
-            />
-          )}
+            {item.showSwitch && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="relative flex items-center gap-2 flex-shrink-0"
+              >
+                <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                  {t('share')}
+                </span>
+                <InsuranceSwitch
+                  checked={item.switchChecked}
+                  disabled={item.switchLoading}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    if (!item.switchLoading) {
+                      item.onToggle();
+                    }
+                  }}
+                />
+                {item.switchLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {item.showArrow && (
+              <IoIosArrowForward
+                className={`text-xl flex-shrink-0 ${theme === "dark" ? "text-white" : "text-black"
+                  }`}
+              />
+            )}
+          </div>
         </motion.div>
       ))}
     </motion.div>

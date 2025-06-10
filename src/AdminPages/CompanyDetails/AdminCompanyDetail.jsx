@@ -37,6 +37,7 @@ function AdminCompanyDetail() {
       setLoading(false);
     }
   }, []);
+  
   useEffect(() => {
     fetchAdminCompanyDetailData(companyId);
   }, [fetchAdminCompanyDetailData, companyId]);
@@ -47,13 +48,9 @@ function AdminCompanyDetail() {
     email: companyDetailData?.email || "Email Not Found",
     phone: companyDetailData?.phNumber || "Phone# Not Found",
     vat: companyDetailData?.vatNum || "Vat# Not Found",
-    address:
-      companyDetailData?.company?.street &&
-        companyDetailData?.company?.city &&
-        companyDetailData?.company?.country
-        ? `${companyDetailData.company.street}, ${companyDetailData.company.city}, ${companyDetailData.company.country}`
-        : "Address Not Found",
-
+    street: companyDetailData?.company?.street || "Street Not Found",
+    city: companyDetailData?.company?.city || "City Not Found",
+    country: companyDetailData?.company?.country || "Country Not Found",
   };
 
   const cars = companyDetailData?.cars || [];
@@ -157,10 +154,9 @@ function AdminCompanyDetail() {
                         boxShadow: "0px 5px 15px rgba(0,0,0,0.2)",
                       }}
                       transition={{ duration: 0.5, ease: "easeOut" }}
-                      className={`w-full flex justify-center rounded-xl transition-all duration-300 ${theme === "dark" ? "bg-[#1B1C1E]" : "bg-[#F7F7F7]"
+                      className={`w-full flex justify-center rounded-xl transition-all duration-300 cursor-pointer ${theme === "dark" ? "bg-[#1B1C1E]" : "bg-[#F7F7F7]"
                         }`}
                       onClick={() => handleViewDetails(car)}
-
                     >
                       <img
                         src={car.image}
@@ -196,7 +192,6 @@ function AdminCompanyDetail() {
                       id={driver.id}
                       setSelectedDriverId={setSelectedDriverId}
                       setOpen={setOpen}
-                     
                     />
                   ))
                 ) : (

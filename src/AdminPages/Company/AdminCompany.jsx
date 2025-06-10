@@ -50,10 +50,10 @@ function AdminCompany() {
 
   const totalPages = Math.ceil(totalCount / take);
   const currentPage = Math.floor(skip / take) + 1;
-   const handleBypassVerification = async (id) => {
+  const handleBypassVerification = async (id) => {
     setBypassLoading(prev => ({ ...prev, [id]: true }));
     try {
-      const response = await bypassVerification({id: id});
+      const response = await bypassVerification({ id: id });
       console.log("Bypass verification response:", response);
       // Refresh the data after successful bypass
       await fetchCompanyData();
@@ -93,7 +93,7 @@ function AdminCompany() {
       ) : (allCompanyData.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
           {/* for all company */}
-       {
+          {
             allCompanyData.map((data, index) => (
               <div key={index}>
                 <GradientCards
@@ -105,24 +105,24 @@ function AdminCompany() {
                   contact={data?.phNumber || "Not Found"}
                   handleBypassVerification={handleBypassVerification}
                   bypassLoading={bypassLoading[data?.id] || false}
-                  
+
 
                 />
               </div>
             ))}
-        
-        </div>):<div className="h-[73vh] flex items-center justify-center"><NoDataFound/></div>
+
+        </div>) : <div className="h-[73vh] flex items-center justify-center"><NoDataFound /></div>
       )}
       {allCompanyData.length > 0 &&
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        setTake={setTake}
-        setSkip={setSkip}
-        take={take}
-        totalCount={totalCount}
-      />}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          setTake={setTake}
+          setSkip={setSkip}
+          take={take}
+          totalCount={totalCount}
+        />}
     </div>
   );
 }
