@@ -10,6 +10,8 @@ import { BeatLoader } from 'react-spinners'
 import AddDriver from './VehicleComponents/AddDriver'
 import Specs from './VehicleComponents/Specs'
 import { useTranslation } from 'react-i18next';
+import { useGlobalContext } from '../../Contexts/GlobalContext'
+import { toast } from 'react-toastify'
 
 
 function VehicleDetails() {
@@ -18,14 +20,23 @@ function VehicleDetails() {
   const [vehicleDetail, setVehicleDetail] = useState({})
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const {currentUserCompanyId} = useGlobalContext();
+  const navigate = useNavigate();
 
   const fetchVehicleData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getVehicleById(id);
       setVehicleDetail(response?.data?.data || {});
+      if (response?.data?.data?.companyId !== currentUserCompanyId) {
+     
+        setLoading(false);
+        navigate('/Vehicles');
+        return;
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
+      navigate('/Vehicles');
     } finally {
       setLoading(false);
     }

@@ -23,7 +23,7 @@ const Login = () => {
     const navigate = useNavigate();
     const adminToken = localStorage.getItem("CarchiveAdminToken");
     const portalToken = localStorage.getItem("CarchivePortalToken");
-    const {currentUserId, setCurrentUserId} = useGlobalContext()
+    const {currentUserId, setCurrentUserId, setCurrentUserCompanyId} = useGlobalContext()
 
     if (portalToken) {
         return <Navigate to="/Dashboard" />; 
@@ -53,6 +53,7 @@ const Login = () => {
 
                     }else{
                     localStorage.setItem("CarchivePortalToken", response?.data?.data?.token);
+                    setCurrentUserCompanyId(response?.data?.data?.companyId)
                     setCurrentUserId(response?.data?.user?.id)
                     navigate('/Dashboard')
                     }
