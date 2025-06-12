@@ -16,35 +16,42 @@ const CountryCode = ({setCountryCode}) => {
   const { theme } = useTheme();
 
   const getCodes = async () => {
-    try {
-      const response = await axios.get("https://restcountries.com/v3.1/all");
-      if (response.data) {
-        const formattedData = response.data
-          .map((country) => ({
-            name: country.name.common,
+  try {
+    const response = await axios.get(
+      "https://restcountries.com/v3.1/all?fields=name,capital,flags,idd"
+    );
+
+    if (response.data) {
+      const formattedData = response.data
+        .map((country) => {
+          const root = country.idd?.root || "";
+          const suffix = country.idd?.suffixes?.[0] || "";
+          return {
+            name: country.name?.common || "",
+            capital: country.capital?.[0] || "N/A",
             flag: country.flags?.png || "",
-            code: country.idd?.root
-              ? `${country.idd.root}${country.idd.suffixes ? country.idd.suffixes[0] : ""}`
-              : "",
-          }))
-          .filter((country) => country.code)
-          .sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+            code: root + suffix,
+          };
+        })
+        .filter((country) => country.code) 
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-        setCountryCodes(formattedData);
-        setFilteredCountries(formattedData);
+      setCountryCodes(formattedData);
+      setFilteredCountries(formattedData);
 
-        if (formattedData.length > 0) {
-          setSelectedCountry({
-            flag: formattedData[0].flag,
-            code: formattedData[0].code,
-          });
-          setCountryCode(formattedData[0].code)
-        }
+      if (formattedData.length > 0) {
+        setSelectedCountry({
+          flag: formattedData[0].flag,
+          code: formattedData[0].code,
+        });
+        setCountryCode(formattedData[0].code);
       }
-    } catch (error) {
-      console.error("Error fetching country codes:", error);
     }
-  };
+  } catch (error) {
+    console.error("Error fetching country codes:", error);
+  }
+};
+
 
   const handleSearch = (query) => {
     setSearchQuery(query);

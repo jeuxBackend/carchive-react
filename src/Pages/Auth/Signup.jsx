@@ -42,10 +42,7 @@ function Signup() {
     console.log(formData.contactNumber)
 
     const validateForm = () => {
-        if (!imageFile) {
-            toast.error("Image is required!");
-            return false;
-        }
+       
         if (formData.password.length < 8) {
             toast.error("Password must be at least 8 characters long!");
             return false;
@@ -166,12 +163,12 @@ function Signup() {
                     onSubmit={handleSignUp}
                 >
                     <div className=' py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label="User Name" />
+                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label="User Name" isRequired={true}/>
 
                     </div>
                     <div className='grid md:grid-cols-2 gap-5 py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="name" label="First Name" />
-                        <InputField value={formData} setValue={setFormData} fieldKey="lastName" label="Last Name" />
+                        <InputField value={formData} setValue={setFormData} fieldKey="name" label="First Name" isRequired={true}/>
+                        <InputField value={formData} setValue={setFormData} fieldKey="lastName" label="Last Name" isRequired={true}/>
                     </div>
                     <div className='flex lg:flex-row flex-col-reverse'>
                         <div className='w-full lg:w-[70%]'>
@@ -179,11 +176,11 @@ function Signup() {
                                 <div className='w-full sm:w-[25%]'>
                                     <CountryCode setCountryCode={setCountryCode} />
                                 </div>
-                                <InputField value={formData} setValue={setFormData} fieldKey="contactNumber" label="Contact Number" isNumber={true} />
+                                <InputField value={formData} setValue={setFormData} fieldKey="contactNumber" label="Contact Number" isNumber={true} isRequired={true}/>
                             </div>
-                            <div className='py-2'><InputField label="Email" value={formData} setValue={setFormData} fieldKey="email" /></div>
-                            <div className='py-2'><InputField label="Password" type="password" value={formData} setValue={setFormData} fieldKey="password" /></div>
-                            <div className='py-2'><InputField label="Confirm Password" type="password" value={formData} setValue={setFormData} fieldKey="confirmPassword" /></div>
+                            <div className='py-2'><InputField label="Email" value={formData} setValue={setFormData} fieldKey="email" isRequired={true}/></div>
+                            <div className='py-2'><InputField label="Password" type="password" value={formData} setValue={setFormData} fieldKey="password" isRequired={true}/></div>
+                            <div className='py-2'><InputField label="Confirm Password" type="password" value={formData} setValue={setFormData} fieldKey="confirmPassword" isRequired={true}/></div>
                         </div>
                         <div className='flex items-center justify-center lg:justify-end w-full lg:w-[30%]'>
                             <ImageUploader setImageFile={setImageFile} setImage={setImage} image={image}/>
