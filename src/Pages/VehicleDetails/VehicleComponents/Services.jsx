@@ -8,6 +8,7 @@ import { releaseVehicle, updateVehicle } from "../../../API/portalServices";
 import { toast } from "react-toastify";
 import InsuranceSwitch from "../../../Components/Buttons/InsuranceSwitch";
 import { useTranslation } from 'react-i18next';
+import DocumentModal from "./DocumentModal"; // Import the modal component
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -18,6 +19,10 @@ function Services({ data, setLoading }) {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const navigate = useNavigate();
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDocumentType, setSelectedDocumentType] = useState(null);
 
   const [localSwitchStates, setLocalSwitchStates] = useState({
     insuranceStatus: data?.insuranceStatus || 0,
@@ -92,6 +97,12 @@ function Services({ data, setLoading }) {
       [statusField]: timer
     }));
   }, [localSwitchStates, debounceTimers, updateStatusInBackground, data?.id]);
+
+  // Function to handle document click
+  const handleDocumentClick = (documentType) => {
+    setSelectedDocumentType(documentType);
+    setIsModalOpen(true);
+  };
 
   const releaseCar = async (id) => {
     if (!id) {
@@ -175,6 +186,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.insuranceStatus,
       onToggle: () => handleSwitchToggle('insuranceStatus'),
       statusField: 'insuranceStatus',
+      documentType: 'insurance', // Add document type for modal
     },
     {
       title: t('inspection_documents'),
@@ -186,6 +198,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.inspectionStatus,
       onToggle: () => handleSwitchToggle('inspectionStatus'),
       statusField: 'inspectionStatus',
+      documentType: 'inspection', // Add document type for modal
     },
     {
       title: t('additional_documents'),
@@ -199,6 +212,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.additionalStatus,
       onToggle: () => handleSwitchToggle('additionalStatus'),
       statusField: 'additionalStatus',
+      documentType: 'additional', // Add document type for modal
     },
     {
       title: t('maintenance_records'),
@@ -216,71 +230,126 @@ function Services({ data, setLoading }) {
   }, [debounceTimers]);
 
   return (
-    <motion.div
-      className="flex flex-col gap-3"
-      initial="hidden"
-      animate="visible"
-      variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
-    >
-      {serviceItems.map((item, index) => (
-        <motion.div
-          key={index}
-          className={`w-full rounded-xl p-3 sm:p-4 2xl:p-5 ${theme === "dark"
-              ? "bg-[#323335]"
-              : "bg-white border border-[#ececec]"
-            } shadow-md ${item.func || item.route ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
-            } ${item.dangerous ? 'hover:border-red-300' : ''}`}
-          variants={itemVariants}
-          onClick={(e) => {
-            if (!item.showSwitch) {
-              if (item.func) {
-                item.func();
-              } else if (item.route) {
-                navigate(item.route);
+    <>
+      <motion.div
+        className="flex flex-col gap-3"
+        initial="hidden"
+        animate="visible"
+        variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
+      >
+        {serviceItems.map((item, index) => (
+          <motion.div
+            key={index}
+            className={`w-full rounded-xl p-3 sm:p-4 2xl:p-5 ${theme === "dark"
+                ? "bg-[#323335]"
+                : "bg-white border border-[#ececec]"
+              } shadow-md ${item.func || item.route || item.documentType ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
+              } ${item.dangerous ? 'hover:border-red-300' : ''}`}
+            variants={itemVariants}
+            onClick={(e) => {
+              if (!item.showSwitch) {
+                if (item.func) {
+                  item.func();
+                } else if (item.route) {
+                  navigate(item.route);
+                } else if (item.documentType) {
+                  handleDocumentClick(item.documentType);
+                }
+              } else {
+                // If it has a switch but user clicks on the main area (not switch), open modal
+                if (item.documentType && !e.target.closest('.switch-container')) {
+                  handleDocumentClick(item.documentType);
+                }
               }
-            }
-          }}
-        >
-          {/* Mobile Layout (screens < 640px) */}
-          <div className="sm:hidden">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div className="flex-1 min-w-0">
+            }}
+          >
+            {/* Mobile Layout (screens < 640px) */}
+            <div className="sm:hidden">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="flex-1 min-w-0">
+                  <p
+                    className={`${theme === "dark" ? "text-white" : "text-black"
+                      } text-base font-medium truncate ${item.dangerous ? 'text-red-600' : ''
+                      }`}
+                  >
+                    {item.title}
+                  </p>
+                </div>
+                
+                {item.showArrow && (
+                  <IoIosArrowForward
+                    className={`text-lg flex-shrink-0 ${theme === "dark" ? "text-white" : "text-black"
+                      }`}
+                  />
+                )}
+              </div>
+              
+              {item.subtitle && (
+                <div className="mb-2">
+                  <p className="text-[#2D9BFF] text-xs font-medium break-words">
+                    {item.subtitle}{" "}
+                    <span className="text-red-500 font-semibold">{item.expired}</span>
+                    <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
+                  </p>
+                </div>
+              )}
+
+              {item.showSwitch && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative flex items-center justify-between switch-container"
+                >
+                  <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                    {t('share')}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <InsuranceSwitch
+                      checked={item.switchChecked}
+                      disabled={item.switchLoading}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        if (!item.switchLoading) {
+                          item.onToggle();
+                        }
+                      }}
+                    />
+                    {item.switchLoading && (
+                      <div className="absolute right-0 flex items-center justify-center">
+                        <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop Layout (screens >= 640px) */}
+            <div className="hidden sm:flex items-center justify-between">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
                 <p
                   className={`${theme === "dark" ? "text-white" : "text-black"
-                    } text-base font-medium truncate ${item.dangerous ? 'text-red-600' : ''
+                    } text-lg lg:text-xl font-medium truncate ${item.dangerous ? 'text-red-600' : ''
                     }`}
                 >
                   {item.title}
                 </p>
+                {item.subtitle && (
+                  <p className="text-[#2D9BFF] text-sm font-medium break-words">
+                    {item.subtitle}{" "}
+                    <span className="text-red-500 font-semibold">{item.expired}</span>
+                    <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
+                  </p>
+                )}
               </div>
-              
-              {item.showArrow && (
-                <IoIosArrowForward
-                  className={`text-lg flex-shrink-0 ${theme === "dark" ? "text-white" : "text-black"
-                    }`}
-                />
-              )}
-            </div>
-            
-            {item.subtitle && (
-              <div className="mb-2">
-                <p className="text-[#2D9BFF] text-xs font-medium break-words">
-                  {item.subtitle}{" "}
-                  <span className="text-red-500 font-semibold">{item.expired}</span>
-                  <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
-                </p>
-              </div>
-            )}
 
-            {item.showSwitch && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="relative flex items-center justify-between"
-              >
-                <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                  {t('share')}
-                </span>
-                <div className="flex items-center gap-2">
+              {item.showSwitch && (
+                <div
+                  onClick={(e) => e.stopPropagation()}
+                  className="relative flex items-center gap-2 flex-shrink-0 switch-container"
+                >
+                  <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
+                    {t('share')}
+                  </span>
                   <InsuranceSwitch
                     checked={item.switchChecked}
                     disabled={item.switchLoading}
@@ -292,70 +361,32 @@ function Services({ data, setLoading }) {
                     }}
                   />
                   {item.switchLoading && (
-                    <div className="absolute right-0 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center">
                       <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-          </div>
+              )}
 
-          {/* Desktop Layout (screens >= 640px) */}
-          <div className="hidden sm:flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-1 min-w-0">
-              <p
-                className={`${theme === "dark" ? "text-white" : "text-black"
-                  } text-lg lg:text-xl font-medium truncate ${item.dangerous ? 'text-red-600' : ''
-                  }`}
-              >
-                {item.title}
-              </p>
-              {item.subtitle && (
-                <p className="text-[#2D9BFF] text-sm font-medium break-words">
-                  {item.subtitle}{" "}
-                  <span className="text-red-500 font-semibold">{item.expired}</span>
-                  <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
-                </p>
+              {item.showArrow && (
+                <IoIosArrowForward
+                  className={`text-xl flex-shrink-0 ${theme === "dark" ? "text-white" : "text-black"
+                    }`}
+                />
               )}
             </div>
+          </motion.div>
+        ))}
+      </motion.div>
 
-            {item.showSwitch && (
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="relative flex items-center gap-2 flex-shrink-0"
-              >
-                <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                  {t('share')}
-                </span>
-                <InsuranceSwitch
-                  checked={item.switchChecked}
-                  disabled={item.switchLoading}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    if (!item.switchLoading) {
-                      item.onToggle();
-                    }
-                  }}
-                />
-                {item.switchLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {item.showArrow && (
-              <IoIosArrowForward
-                className={`text-xl flex-shrink-0 ${theme === "dark" ? "text-white" : "text-black"
-                  }`}
-              />
-            )}
-          </div>
-        </motion.div>
-      ))}
-    </motion.div>
+      {/* Document Modal */}
+      <DocumentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        documentType={selectedDocumentType}
+        data={data}
+      />
+    </>
   );
 }
 
