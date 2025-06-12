@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
 
-function InputField({ label, type = "text", value = "", setValue, fieldKey, isNumber }) {
+function InputField({ label, type = "text", value = "", setValue, fieldKey, isNumber, isCapital }) {
     const { theme } = useTheme();
 
     const handleChange = (e) => {
@@ -12,6 +12,11 @@ function InputField({ label, type = "text", value = "", setValue, fieldKey, isNu
             inputValue = inputValue.replace(/[^0-9]/g, '');
         }
 
+        if (isCapital) {
+            inputValue = inputValue.toUpperCase();
+        }
+
+        // If VIN logic is still needed separately from isCapital
         if (fieldKey === "vinNumber") {
             inputValue = inputValue.toUpperCase().slice(0, 17); 
         }

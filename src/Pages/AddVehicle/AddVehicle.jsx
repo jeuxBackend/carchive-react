@@ -226,16 +226,16 @@ function AddVehicle() {
                     ) : (<CiSearch />)}</div>
                         </div>
                         <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>{t("miles")}</p>
-                        <InputField label={t("miles")} value={vehicleData} setValue={setVehicleData} fieldKey="mileage" />
+                        <InputField label={t("miles")} value={vehicleData} setValue={setVehicleData} fieldKey="mileage" isNumber={true}/>
                         <p className={`${theme === "dark" ? "text-white" : "text-black"}`}>{t("Number Plate")}</p>
-                        <InputField label={t("Number Plate")} value={vehicleData} setValue={setVehicleData} fieldKey="numberPlate" />
+                        <InputField label={t("Number Plate")} value={vehicleData} setValue={setVehicleData} fieldKey="numberPlate" isCapital={true}/>
                         <div className='flex gap-6 sm:gap-3 sm:flex-row flex-col pt-3'>
                             <BasicDatePicker label={t("manufacturing_year")} value={vehicleData} setValue={setVehicleData} fieldKey="manufacturingYear" />
-                            <BasicDatePicker label={t("registration_expiry")} value={vehicleData} setValue={setVehicleData} fieldKey="registrationExpiry" />
+                            <BasicDatePicker label={t("registration_date")} value={vehicleData} setValue={setVehicleData} fieldKey="registrationExpiry" />
                         </div>
                         <div className='flex gap-6 sm:gap-3 sm:flex-row flex-col pt-3'>
                             <BasicDatePicker label={t("insurance_expiry")} value={vehicleData} setValue={setVehicleData} fieldKey="insuranceExpiry" />
-                            <BasicDatePicker label={t('vehicle_inspection')} value={vehicleData} setValue={setVehicleData} fieldKey="inspectionExpiry" />
+                            <BasicDatePicker label={t('inspection_expiry')} value={vehicleData} setValue={setVehicleData} fieldKey="inspectionExpiry" />
                         </div>
                     </div>
                 </div>

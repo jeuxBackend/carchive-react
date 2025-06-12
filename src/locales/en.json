@@ -216,6 +216,8 @@
   "driver_details": "Driver Details",
   "contact_information": "Contact Information",
   "Driver Documents": "Driver Documents",
-  "Detail": "Detail"
+  "Detail": "Detail",
+  "registration_date": "Registration Date",
+  "inspection_expiry": "Inspection Expiry"
 
 }

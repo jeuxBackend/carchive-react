@@ -382,6 +382,7 @@ function UpdateVehicle() {
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="mileage"
+              isNumber={true}
             />
 
             <p >{t("number_plate")}</p>
@@ -390,6 +391,7 @@ function UpdateVehicle() {
               value={vehicleData}
               setValue={setVehicleData}
               fieldKey="numberPlate"
+              isCapital={true}
             />
 
             <div className="flex gap-6 sm:gap-3 sm:flex-row flex-col pt-4">
@@ -400,7 +402,7 @@ function UpdateVehicle() {
                 fieldKey="manufacturingYear"
               />
               <BasicDatePicker
-                label={t("registration_expiry")}
+                label={t("registration_date")}
                 value={vehicleData}
                 setValue={setVehicleData}
                 fieldKey="registrationExpiry"
@@ -415,7 +417,7 @@ function UpdateVehicle() {
                 fieldKey="insuranceExpiry"
               />
               <BasicDatePicker
-                label={t("vehicle_inspection")}
+                label={t("inspection_expiry")}
                 value={vehicleData}
                 setValue={setVehicleData}
                 fieldKey="inspectionExpiry"

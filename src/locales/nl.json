@@ -215,5 +215,7 @@
   "driver_details": "Bestuurdersgegevens",
   "contact_information": "Contactinformatie",
   "Driver Documents": "Bestuurdersdocumenten",
-  "Detail": "Detail"
+  "Detail": "Detail",
+  "registration_date": "Registratiedatum",
+  "inspection_expiry": "Inspectie vervalt"
 }
