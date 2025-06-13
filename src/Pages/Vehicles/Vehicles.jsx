@@ -83,7 +83,7 @@ function Vehicles() {
             ) : (
                 filteredVehicles?.length > 0 ? (
                     <motion.div
-                        className='grid lg:grid-cols-2 xl:grid-cols-3 gap-3 mt-5'
+                        className='grid lg:grid-cols-2 2xl:grid-cols-3 gap-3 mt-5'
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5 }}

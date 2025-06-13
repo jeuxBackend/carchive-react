@@ -130,17 +130,28 @@ function Services({ data, setLoading }) {
     }
   };
 
+  // Updated function to check if date is valid and not empty
+  const isValidDate = (dateString) => {
+    if (!dateString || dateString.trim() === '') return false;
+    try {
+      const date = new Date(dateString);
+      return !isNaN(date.getTime());
+    } catch {
+      return false;
+    }
+  };
+
   const formatDate = (dateString) => {
-    if (!dateString) return "";
+    if (!isValidDate(dateString)) return "";
     try {
       return new Date(dateString).toLocaleDateString();
     } catch {
-      return dateString;
+      return "";
     }
   };
 
   const isExpired = (dateString) => {
-    if (!dateString) return false;
+    if (!isValidDate(dateString)) return false;
     try {
       return new Date(dateString) < new Date();
     } catch {
@@ -148,9 +159,9 @@ function Services({ data, setLoading }) {
     }
   };
 
-  // New function to check if expiry is within a month
+  // Updated function to check if expiry is within a month
   const isExpiringSoon = (dateString) => {
-    if (!dateString) return false;
+    if (!isValidDate(dateString)) return false;
     try {
       const expiryDate = new Date(dateString);
       const currentDate = new Date();
@@ -175,10 +186,17 @@ function Services({ data, setLoading }) {
     data.additionalExpiry[0] &&
     isExpiringSoon(data.additionalExpiry[0]);
 
+  // Helper function to generate subtitle with proper date formatting
+  const generateSubtitle = (dateString) => {
+    if (!isValidDate(dateString)) return "";
+    const formattedDate = formatDate(dateString);
+    return formattedDate ? `(${formattedDate})` : "";
+  };
+
   const serviceItems = [
     {
       title: t('insurance'),
-      subtitle: data?.insuranceExpiry ? `(${formatDate(data.insuranceExpiry)})` : "",
+      subtitle: generateSubtitle(data?.insuranceExpiry),
       expired: isInsuranceExpired ? t('expired') : "",
       expiringSoon: isInsuranceExpiringSoon ? t('expires_soon') || 'EXPIRES SOON' : "",
       showSwitch: true,
@@ -190,7 +208,7 @@ function Services({ data, setLoading }) {
     },
     {
       title: t('inspection_documents'),
-      subtitle: data?.inspectionExpiry ? `(${formatDate(data.inspectionExpiry)})` : "",
+      subtitle: generateSubtitle(data?.inspectionExpiry),
       expired: isInspectionExpired ? t('expired') : "",
       expiringSoon: isInspectionExpiringSoon ? t('expires_soon') || 'EXPIRES SOON' : "",
       showSwitch: true,
@@ -203,7 +221,7 @@ function Services({ data, setLoading }) {
     {
       title: t('additional_documents'),
       subtitle: Array.isArray(data?.additionalExpiry) && data.additionalExpiry[0]
-        ? `(${formatDate(data.additionalExpiry[0])})`
+        ? generateSubtitle(data.additionalExpiry[0])
         : "",
       expired: isAdditionalExpired ? t('expired') : "",
       expiringSoon: isAdditionalExpiringSoon ? t('expires_soon') || 'EXPIRES SOON' : "",
@@ -265,12 +283,18 @@ function Services({ data, setLoading }) {
           >
             {/* Mobile Layout (screens < 640px) */}
             <div className="sm:hidden">
+              {/* First Line: Title and Arrow */}
               <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 pr-2">
                   <p
                     className={`${theme === "dark" ? "text-white" : "text-black"
-                      } text-base font-medium truncate ${item.dangerous ? 'text-red-600' : ''
+                      } text-sm sm:text-base font-medium break-words leading-tight ${item.dangerous ? 'text-red-600' : ''
                       }`}
+                    style={{ 
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
+                      hyphens: 'auto'
+                    }}
                   >
                     {item.title}
                   </p>
@@ -278,101 +302,130 @@ function Services({ data, setLoading }) {
                 
                 {item.showArrow && (
                   <IoIosArrowForward
-                    className={`text-lg flex-shrink-0 ${theme === "dark" ? "text-white" : "text-black"
+                    className={`text-lg flex-shrink-0 mt-0.5 ${theme === "dark" ? "text-white" : "text-black"
                       }`}
                   />
                 )}
               </div>
               
-              {item.subtitle && (
-                <div className="mb-2">
-                  <p className="text-[#2D9BFF] text-xs font-medium break-words">
-                    {item.subtitle}{" "}
-                    <span className="text-red-500 font-semibold">{item.expired}</span>
-                    <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
-                  </p>
-                </div>
-              )}
+              {/* Second Line: Date and Status */}
+              {(item.subtitle || item.showSwitch) && (
+                <div className="flex flex-col gap-2">
+                  {item.subtitle && (
+                    <div>
+                      <p className="text-[#2D9BFF] text-xs font-medium break-words leading-relaxed">
+                        {item.subtitle}{" "}
+                        <span className="text-red-500 font-semibold">{item.expired}</span>
+                        <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
+                      </p>
+                    </div>
+                  )}
 
-              {item.showSwitch && (
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="relative flex items-center justify-between switch-container"
-                >
-                  <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                    {t('share')}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <InsuranceSwitch
-                      checked={item.switchChecked}
-                      disabled={item.switchLoading}
-                      onChange={(e) => {
-                        e.stopPropagation();
-                        if (!item.switchLoading) {
-                          item.onToggle();
-                        }
-                      }}
-                    />
-                    {item.switchLoading && (
-                      <div className="absolute right-0 flex items-center justify-center">
-                        <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  {item.showSwitch && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="relative flex items-center justify-between gap-2 switch-container"
+                    >
+                      <span 
+                        className={`text-sm flex-1 min-w-0 pr-2 leading-tight ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
+                        style={{ 
+                          wordBreak: 'break-word',
+                          overflowWrap: 'break-word'
+                        }}
+                      >
+                        {t('share')}
+                      </span>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <InsuranceSwitch
+                          checked={item.switchChecked}
+                          disabled={item.switchLoading}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            if (!item.switchLoading) {
+                              item.onToggle();
+                            }
+                          }}
+                        />
+                        {item.switchLoading && (
+                          <div className="absolute right-0 flex items-center justify-center">
+                            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
 
             {/* Desktop Layout (screens >= 640px) */}
-            <div className="hidden sm:flex items-center justify-between">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
-                <p
-                  className={`${theme === "dark" ? "text-white" : "text-black"
-                    } text-lg lg:text-xl font-medium truncate ${item.dangerous ? 'text-red-600' : ''
-                    }`}
-                >
-                  {item.title}
-                </p>
-                {item.subtitle && (
-                  <p className="text-[#2D9BFF] text-sm font-medium break-words">
-                    {item.subtitle}{" "}
-                    <span className="text-red-500 font-semibold">{item.expired}</span>
-                    <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
+            <div className="hidden sm:block">
+              {/* First Line: Title and Arrow */}
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <div className="flex-1 min-w-0">
+                  <p
+                    className={`${theme === "dark" ? "text-white" : "text-black"
+                      } text-base sm:text-lg lg:text-xl font-medium leading-tight ${item.dangerous ? 'text-red-600' : ''
+                      }`}
+                    style={{ 
+                      wordBreak: 'break-word',
+                      overflowWrap: 'break-word',
+                      hyphens: 'auto'
+                    }}
+                  >
+                    {item.title}
                   </p>
+                </div>
+
+                {item.showArrow && (
+                  <IoIosArrowForward
+                    className={`text-xl flex-shrink-0 mt-1 ${theme === "dark" ? "text-white" : "text-black"
+                      }`}
+                  />
                 )}
               </div>
 
-              {item.showSwitch && (
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="relative flex items-center gap-2 flex-shrink-0 switch-container"
-                >
-                  <span className={`text-sm ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>
-                    {t('share')}
-                  </span>
-                  <InsuranceSwitch
-                    checked={item.switchChecked}
-                    disabled={item.switchLoading}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      if (!item.switchLoading) {
-                        item.onToggle();
-                      }
-                    }}
-                  />
-                  {item.switchLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              {/* Second Line: Date and Switch */}
+              {(item.subtitle || item.showSwitch) && (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    {item.subtitle && (
+                      <p className="text-[#2D9BFF] text-sm font-medium break-words leading-relaxed">
+                        {item.subtitle}{" "}
+                        <span className="text-red-500 font-semibold">{item.expired}</span>
+                        <span className="text-yellow-500 font-semibold ml-1">{item.expiringSoon}</span>
+                      </p>
+                    )}
+                  </div>
+
+                  {item.showSwitch && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="relative flex items-center gap-2 flex-shrink-0 switch-container"
+                    >
+                      <span 
+                        className={`text-sm whitespace-nowrap ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
+                      >
+                        {t('share')}
+                      </span>
+                      <InsuranceSwitch
+                        checked={item.switchChecked}
+                        disabled={item.switchLoading}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          if (!item.switchLoading) {
+                            item.onToggle();
+                          }
+                        }}
+                      />
+                      {item.switchLoading && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
-
-              {item.showArrow && (
-                <IoIosArrowForward
-                  className={`text-xl flex-shrink-0 ${theme === "dark" ? "text-white" : "text-black"
-                    }`}
-                />
               )}
             </div>
           </motion.div>
