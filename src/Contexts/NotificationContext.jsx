@@ -102,7 +102,6 @@ export const NotificationProvider = ({ children }) => {
 
     const setupForegroundListener = async () => {
       try {
-        // Set up continuous listener for foreground messages
         unsubscribe = onMessage(messaging, (payload) => {
           console.log('Received foreground message:', payload);
           console.log('Current notification permission:', Notification.permission);
@@ -111,7 +110,6 @@ export const NotificationProvider = ({ children }) => {
           
           setNotification(payload);
           
-          // Always try to show notification if permission is granted
           if (Notification.permission === 'granted' && payload.notification) {
             console.log('Attempting to show notification:', payload.notification);
             
@@ -183,7 +181,7 @@ export const NotificationProvider = ({ children }) => {
         unsubscribe();
       }
     };
-  }, []); // Only set up once
+  }, []); 
 
   useEffect(() => {
     return () => {

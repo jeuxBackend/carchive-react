@@ -47,11 +47,10 @@ const Login = () => {
         } else {
             setLoading(true);
             try{
-                // Include FCM token in login request
                 const loginData = {
                     email,
                     password,
-                    deviceToken: fcmToken || null // Send FCM token as deviceToken
+                    deviceToken: fcmToken || null 
                 };
 
                 const response = await portalLogin(loginData);
@@ -62,7 +61,6 @@ const Login = () => {
                         localStorage.setItem("CarchivePortalToken", response?.data?.data?.token);
                         setCurrentUserId(response?.data?.user?.id);
                         
-                        // Show success message
                         toast.success("Login successful! Notifications are enabled.");
                         
                         navigate('/Dashboard');

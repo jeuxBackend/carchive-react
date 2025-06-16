@@ -1,4 +1,3 @@
-// firebase.js
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
@@ -21,16 +20,13 @@ const messaging = getMessaging(app);
 
 export const requestNotificationPermission = async () => {
   try {
-    // Register service worker first
     if ('serviceWorker' in navigator) {
       const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       console.log('Service Worker registered:', registration);
       
-      // Wait for service worker to be ready
       await navigator.serviceWorker.ready;
     }
 
-    // Request notification permission
     const permission = await Notification.requestPermission();
     console.log('Notification permission:', permission);
     
@@ -63,17 +59,15 @@ export const requestNotificationPermission = async () => {
   }
 };
 
-// Fixed: Return a Promise that resolves when a message is received
+
 export const onMessageListener = () => {
   return new Promise((resolve) => {
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log('Message received in foreground:', payload);
       resolve(payload);
-      // Note: This will only resolve once. If you need to listen continuously,
-      // you might want to modify this approach
+      
     });
-    
-    // Store unsubscribe function if needed
+  
     return unsubscribe;
   });
 };
