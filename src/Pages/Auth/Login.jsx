@@ -119,14 +119,7 @@ const Login = () => {
                     <h1 className="text-3xl font-semibold text-white">Welcome</h1>
                     <p className="text-lg text-white/80">Sign in with your email</p>
 
-                    {/* Show notification status */}
-                    {fcmToken && (
-                        <div className="w-full mt-2 p-2 bg-green-500/20 border border-green-500/50 rounded-lg">
-                            <p className="text-sm text-green-300 text-center">
-                                🔔 Notifications enabled
-                            </p>
-                        </div>
-                    )}
+                   
 
                   
                     <motion.div
