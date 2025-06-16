@@ -12,6 +12,7 @@ import ConfirmPassword from "./ForgotPassword/ConfirmPassword";
 import { portalLogin } from "../../API/portalServices";
 import { toast, ToastContainer } from "react-toastify";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
+import { useNotification } from "../../Contexts/NotificationContext";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -23,7 +24,8 @@ const Login = () => {
     const navigate = useNavigate();
     const adminToken = localStorage.getItem("CarchiveAdminToken");
     const portalToken = localStorage.getItem("CarchivePortalToken");
-    const {currentUserId, setCurrentUserId, setCurrentUserCompanyId} = useGlobalContext()
+    const {currentUserId, setCurrentUserId} = useGlobalContext();
+    const { fcmToken } = useNotification();
 
     if (portalToken) {
         return <Navigate to="/Dashboard" />; 
@@ -32,7 +34,6 @@ const Login = () => {
     if (adminToken) {
         return <Navigate to="/Admin" />; 
     }
-
 
     const togglePasswordVisibility = () => {
         setIsPasswordVisible(!isPasswordVisible);
@@ -46,18 +47,26 @@ const Login = () => {
         } else {
             setLoading(true);
             try{
-                const response = await portalLogin({ email, password });
+                // Include FCM token in login request
+                const loginData = {
+                    email,
+                    password,
+                    deviceToken: fcmToken || null // Send FCM token as deviceToken
+                };
+
+                const response = await portalLogin(loginData);
                 if(response?.data){ 
                     if(response?.data?.user?.userType === "Admin"){
                         toast.warn("Admin Can't Login on Portal!")
-
                     }else{
-                    localStorage.setItem("CarchivePortalToken", response?.data?.data?.token);
-                    setCurrentUserCompanyId(response?.data?.data?.companyId)
-                    setCurrentUserId(response?.data?.user?.id)
-                    navigate('/Dashboard')
+                        localStorage.setItem("CarchivePortalToken", response?.data?.data?.token);
+                        setCurrentUserId(response?.data?.user?.id);
+                        
+                        // Show success message
+                        toast.success("Login successful! Notifications are enabled.");
+                        
+                        navigate('/Dashboard');
                     }
-
                 }
                 
             }catch(error){
@@ -109,6 +118,15 @@ const Login = () => {
                 >
                     <h1 className="text-3xl font-semibold text-white">Welcome</h1>
                     <p className="text-lg text-white/80">Sign in with your email</p>
+
+                    {/* Show notification status */}
+                    {fcmToken && (
+                        <div className="w-full mt-2 p-2 bg-green-500/20 border border-green-500/50 rounded-lg">
+                            <p className="text-sm text-green-300 text-center">
+                                🔔 Notifications enabled
+                            </p>
+                        </div>
+                    )}
 
                   
                     <motion.div

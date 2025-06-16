@@ -37,6 +37,7 @@ import UpdateVehicle from "./Pages/UpdateVehicle/UpdateVehicle";
 import VehicleRequests from "./Pages/VehicleRequests/VehicleRequests";
 import TermsConditions from "./Pages/TermsAndConditions/TermsConditions";
 import AdminVehicles from "./AdminPages/Vehicles/AdminVehicles";
+import { NotificationProvider } from "./Contexts/NotificationContext";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
       <Routes>
         <Route path="/PublicPage/:id" element={<PublicPage />} />
       </Routes>
+       <NotificationProvider>
       <Routes>
         <Route path="/Portal" element={<Navigate to="/" />} />
         <Route path="/" element={<Login />} />
@@ -89,7 +91,7 @@ function App() {
           <Route path="TermsCondition" element={<TermsCondition />} />
         </Route>
       </Routes>
-      
+    </NotificationProvider>  
     </>
   );
 }
