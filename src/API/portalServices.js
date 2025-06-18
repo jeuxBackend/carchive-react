@@ -49,3 +49,6 @@ export const getSettings = () => API.get("/getSettings");
 export const getProfile = () => API.get("/user");
 export const updateProfile = (data) => API.post("/portal/updateProfile",data);
 
+// Send Notification
+export const sendChatNotification = (data) => API.post("/portal/message-notification", data)
+

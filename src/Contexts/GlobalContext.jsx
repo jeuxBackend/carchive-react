@@ -61,6 +61,16 @@ export const GlobalContextProvider = ({ children }) => {
       localStorage.setItem("currentUserCompanyId", JSON.stringify(currentUserCompanyId));
     }
   }, [currentUserCompanyId]);
+  const [currentUserCompanyName, setCurrentUserCompanyName] = useState(() => {
+    const savedcurrentUserCompanyName = localStorage.getItem("currentUserCompanyName");
+    return savedcurrentUserCompanyName ? JSON.parse(savedcurrentUserCompanyName) : {};
+  });
+
+  useEffect(() => {
+    if (currentUserCompanyName !== null) {
+      localStorage.setItem("currentUserCompanyName", JSON.stringify(currentUserCompanyName));
+    }
+  }, [currentUserCompanyName]);
   const [addRecord, setAddRecord] = useState(false);
   return (
     <GlobalContext.Provider
@@ -89,7 +99,7 @@ export const GlobalContextProvider = ({ children }) => {
         vehicleData,
         setSearchVehicleData,
         addTerm,
-        setAddTerm, currentUserCompanyId, setCurrentUserCompanyId
+        setAddTerm, currentUserCompanyId, setCurrentUserCompanyId, currentUserCompanyName, setCurrentUserCompanyName
       }}
     >
       {children}

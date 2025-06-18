@@ -16,16 +16,17 @@ import {
   getChatId
 } from '../../utils/ChatUtils';
 import { useGlobalContext } from '../../Contexts/GlobalContext';
-import { getDrivers, getGaragesList } from '../../API/portalServices';
+import { getDrivers, getGaragesList, sendChatNotification } from '../../API/portalServices';
 import CarsModal from './CarsModal';
 import { useTranslation } from 'react-i18next';
 
 const Chat = () => {
   const { theme } = useTheme();
-  const { currentUserId } = useGlobalContext();
+  const { currentUserId, currentUserCompanyName } = useGlobalContext();
 
   const [selectedChat, setSelectedChat] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userNotificationId, setUserNotificationId] = useState(null)
   const [users, setUsers] = useState([]);
   const [garages, setGarages] = useState([]);
   const [messageInput, setMessageInput] = useState("");
@@ -156,6 +157,7 @@ const Chat = () => {
 
     try {
       setSendingMessage(true);
+      console.log(selectedChat)
 
 
       const optimisticMessage = {
@@ -182,8 +184,8 @@ const Chat = () => {
         selectedChat.isGarage
       );
 
+      const response = await sendChatNotification({user_id: userNotificationId, title:`New Message From ${currentUserCompanyName}`, body:messageInput })
       if (!success) {
-
         setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
         setError("Failed to send message. Please try again.");
         setMessageInput(inputCopy);
@@ -209,6 +211,7 @@ const Chat = () => {
 
   const handleSelectUser = async (user) => {
     setSelectedUserId(user.driverId);
+    setUserNotificationId(user.id)
     setIsSidebarOpen(false);
     setError(null);
     setIsModalOpen(true);
@@ -262,6 +265,8 @@ const Chat = () => {
         "Hello, I'd like to chat with your garage.",
         true
       );
+      setUserNotificationId(garage.garageUserId)
+      
 
       setSelectedChat({
         id: garage.garageUserId,

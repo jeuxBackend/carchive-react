@@ -24,7 +24,7 @@ const Login = () => {
     const navigate = useNavigate();
     const adminToken = localStorage.getItem("CarchiveAdminToken");
     const portalToken = localStorage.getItem("CarchivePortalToken");
-    const {currentUserId, setCurrentUserId, setCurrentUserCompanyId} = useGlobalContext();
+    const {currentUserId, setCurrentUserId, setCurrentUserCompanyId, setCurrentUserCompanyName} = useGlobalContext();
     const { fcmToken } = useNotification();
 
     if (portalToken) {
@@ -61,6 +61,7 @@ const Login = () => {
                         localStorage.setItem("CarchivePortalToken", response?.data?.data?.token);
                         setCurrentUserId(response?.data?.user?.id);
                         setCurrentUserCompanyId(response?.data?.data?.companyId)
+                        setCurrentUserCompanyName(response?.data?.user?.name)
                         
                         toast.success("Login successful! Notifications are enabled.");
                         
