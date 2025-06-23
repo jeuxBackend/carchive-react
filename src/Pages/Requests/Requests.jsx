@@ -203,7 +203,7 @@ const Requests = () => {
             <p
               className={`${
                 theme === "dark" ? "text-white" : "text-black"
-              } font-medium text-[2rem] my-4`}
+              } font-medium text-[1.3rem] sm:text-[2rem] my-4`}
             >
               {t("Garage Requests")}
             </p>

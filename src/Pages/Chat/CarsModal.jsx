@@ -40,14 +40,12 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
 
     const handleChatWithCar = async (car) => {
         try {
-       
             const chatId = await initializeChat(
                 currentUserId?.toString(), 
                 id?.toString(), 
                 car?.id?.toString(), 
                 "Hello, I'd like to chat about this car."
             );
-      
       
             onSelectCar({
                 carId: car?.id?.toString(),
@@ -72,9 +70,10 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
         >
-            <div className="flex items-center justify-center py-10 w-full min-h-screen">
+            <div className="flex items-center justify-center p-2 xs:p-4 sm:p-6 lg:p-10 w-full min-h-screen">
                 <motion.div
-                    className={`rounded-xl w-[90%] p-6 sm:w-[40rem] shadow flex flex-col items-center justify-center gap-4
+                    className={`rounded-xl w-full max-w-xs xs:max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-3xl 
+                        p-3 xs:p-4 sm:p-5 md:p-6 shadow-lg flex flex-col items-center justify-center gap-3 sm:gap-4
                         ${theme === "dark"
                             ? "bg-[#1b1c1e] border-2 border-[#323335]"
                             : "bg-white border-2 border-[#ECECEC]"
@@ -84,16 +83,17 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                     exit={{ scale: 0.8 }}
                     transition={{ duration: 0.3 }}
                 >
+                    {/* Header */}
                     <div className="flex items-center w-full gap-2 justify-center relative">
                         <img
                             src={theme === "dark" ? back : backLight}
                             alt=""
-                            className="w-[1.8rem] cursor-pointer absolute left-2"
+                            className="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 cursor-pointer absolute left-0 xs:left-2"
                             onClick={() => setOpen(false)}
                         />
                         <p
                             className={`${theme === "dark" ? "text-white" : "text-black"} 
-                                text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium`}
+                                text-base xs:text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-center px-8`}
                         >
                             {t("Select a Car")}
                         </p>
@@ -101,7 +101,7 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
 
                     {/* Error display */}
                     {error && (
-                        <div className="w-full px-4 py-3 text-center text-red-500 bg-red-100 rounded-lg">
+                        <div className="w-full px-3 py-2 sm:px-4 sm:py-3 text-center text-sm sm:text-base text-red-500 bg-red-100 rounded-lg">
                             {error}
                         </div>
                     )}
@@ -109,27 +109,27 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                     {/* Cars listing */}
                     <div className="w-full">
                         {isLoading ? (
-                            <div className={`text-center py-6 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                            <div className={`text-center py-6 text-sm sm:text-base ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
                                 Loading cars...
                             </div>
                         ) : cars.length === 0 ? (
-                            <div className={`text-center py-6 ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
+                            <div className={`text-center py-6 text-sm sm:text-base ${theme === "dark" ? "text-gray-300" : "text-gray-700"}`}>
                                 No cars found for this driver.
                             </div>
                         ) : (
-                            <div className="space-y-3 max-h-[60vh] overflow-y-auto p-2">
+                            <div className="space-y-2 sm:space-y-3 max-h-[50vh] xs:max-h-[55vh] sm:max-h-[60vh] lg:max-h-[65vh] overflow-y-auto p-1 sm:p-2">
                                 {cars.map((car) => (
                                     <div
                                         key={car.id}
-                                        className={`rounded-lg p-3 ${theme === "dark" ? "bg-[#282a2d] hover:bg-[#323335]" : "bg-gray-50 hover:bg-gray-100"
-                                            } transition-all duration-200 flex items-center justify-between`}
+                                        className={`rounded-lg p-2 xs:p-3 sm:p-4 ${theme === "dark" ? "bg-[#282a2d] hover:bg-[#323335]" : "bg-gray-50 hover:bg-gray-100"
+                                            } transition-all duration-200 flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3 xs:gap-0`}
                                     >
                                         {/* Left side with car image and details */}
-                                        <div className="flex items-center">
+                                        <div className="flex items-start xs:items-center w-full xs:w-auto">
                                             {/* Circular image */}
-                                            <div className="mr-4">
+                                            <div className="mr-3 sm:mr-4 flex-shrink-0">
                                                 {car.image && car.image[0] ? (
-                                                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-500">
+                                                    <div className="w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden border-2 border-blue-500">
                                                         <img
                                                             src={car.image[0]}
                                                             alt={car.make || "Car"}
@@ -141,8 +141,8 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                                                         />
                                                     </div>
                                                 ) : (
-                                                    <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center border-2 border-blue-500">
-                                                        <span className="text-blue-500 text-lg font-bold">
+                                                    <div className="w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 rounded-full bg-blue-100 flex items-center justify-center border-2 border-blue-500">
+                                                        <span className="text-blue-500 text-sm sm:text-lg font-bold">
                                                             {car.make ? car.make.charAt(0).toUpperCase() : "C"}
                                                         </span>
                                                     </div>
@@ -150,38 +150,41 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
                                             </div>
 
                                             {/* Car details */}
-                                            <div>
-                                                <div className="flex items-center">
-                                                    <h3 className={`font-medium text-lg ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center flex-wrap">
+                                                    <h3 className={`font-medium text-sm xs:text-base sm:text-lg ${theme === "dark" ? "text-white" : "text-gray-900"} truncate`}>
                                                         {car.make || "Unnamed Car"}
                                                     </h3>
-                                                    <Car size={16} className="ml-2 text-blue-500" />
+                                                    <Car size={14} className="ml-2 text-blue-500 flex-shrink-0 xs:inline hidden" />
                                                 </div>
-                                                <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                                                    {t("model")}: {car.model || "N/A"}
-                                                </p>
-                                                {car.vinNumber && (
-                                                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                                                        {t("Vin Number")}: {car.vinNumber}
+                                                <div className="space-y-0.5 xs:space-y-1">
+                                                    <p className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate`}>
+                                                        {t("model")}: {car.model || "N/A"}
                                                     </p>
-                                                )}
-                                                {car.numberPlate && (
-                                                    <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
-                                                        {t("number_plate")}: {car.numberPlate}
-                                                    </p>
-                                                )}
+                                                    {car.vinNumber && (
+                                                        <p className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate`}>
+                                                            {t("Vin Number")}: {car.vinNumber}
+                                                        </p>
+                                                    )}
+                                                    {car.numberPlate && (
+                                                        <p className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate`}>
+                                                            {t("number_plate")}: {car.numberPlate}
+                                                        </p>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
 
                                         {/* Chat button */}
                                         <button
                                             onClick={() => handleChatWithCar(car)}
-                                            className={`flex items-center gap-2 px-3 py-2 cursor-pointer rounded-lg ${theme === "dark"
-                                                ? "bg-[#479cff] text-white"
-                                                : "bg-[#479cff] text-white"
-                                                } transition-colors`}
+                                            className={`flex items-center justify-center gap-2 px-3 py-2 xs:px-4 xs:py-2 cursor-pointer rounded-lg 
+                                                w-full xs:w-auto min-w-[80px] text-sm xs:text-base ${theme === "dark"
+                                                ? "bg-[#479cff] hover:bg-[#3a8ae6] text-white"
+                                                : "bg-[#479cff] hover:bg-[#3a8ae6] text-white"
+                                                } transition-colors flex-shrink-0`}
                                         >
-                                            <MessageCircle size={18} />
+                                            <MessageCircle size={16} className="xs:size-[18px]" />
                                             <span>Chat</span>
                                         </button>
                                     </div>

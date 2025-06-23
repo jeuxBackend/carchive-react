@@ -3,6 +3,7 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { CiClock2, CiSearch } from "react-icons/ci";
 import { LuSend } from "react-icons/lu";
 import { MessageCircle, Car, Home } from 'lucide-react';
+import { FiDownload, FiFile, FiImage, FiVideo } from 'react-icons/fi';
 
 import ham from "../../assets/hamburger.png";
 import hamLight from "../../assets/hamLight.png";
@@ -184,7 +185,7 @@ const Chat = () => {
         selectedChat.isGarage
       );
 
-      const response = await sendChatNotification({user_id: userNotificationId, title:`New Message From ${currentUserCompanyName}`, body:messageInput })
+      const response = await sendChatNotification({ user_id: userNotificationId, title: `New Message From ${currentUserCompanyName}`, body: messageInput })
       if (!success) {
         setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
         setError("Failed to send message. Please try again.");
@@ -254,10 +255,12 @@ const Chat = () => {
     }
   };
 
+  console.log("messages", messages);
+
   const handleSelectGarage = async (garage) => {
     try {
       setIsLoading(true);
-
+      console.log("Selected Garage:", garage);
       const actualChatId = await initializeChat(
         currentUserId?.toString(),
         garage.garageUserId.toString(),
@@ -266,7 +269,7 @@ const Chat = () => {
         true
       );
       setUserNotificationId(garage.garageUserId)
-      
+
 
       setSelectedChat({
         id: garage.garageUserId,
@@ -295,10 +298,86 @@ const Chat = () => {
   );
 
   const filteredGarages = Object.values(garages || {})?.filter(garage =>
-  garage?.garageName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  garage?.numberPlate?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-  garage?.carVin?.toLowerCase().includes(searchQuery.toLowerCase())
-);
+    garage?.garageName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    garage?.numberPlate?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    garage?.carVin?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const getFileType = (extension) => {
+    if (!extension) return 'unknown';
+    const ext = extension.toLowerCase();
+    if (['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'].includes(ext)) return 'image';
+    if (['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm'].includes(ext)) return 'video';
+    if (['.pdf', '.doc', '.docx', '.txt', '.xlsx', '.ppt'].includes(ext)) return 'document';
+    return 'file';
+  };
+
+  const renderFileContent = (msg, theme) => {
+    const fileType = getFileType(msg.messageFileExtension);
+    const hasFile = msg.massageFileUrl && msg.messageFileExtension;
+
+    if (!hasFile) return null;
+
+    const handleDownload = () => {
+      window.open(msg.massageFileUrl, '_blank');
+    };
+
+    switch (fileType) {
+      case 'image':
+        return (
+          <div className="mt-2">
+            <img
+              src={msg.massageFileUrl}
+              alt="Shared image"
+              className="max-w-full max-h-64 rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => window.open(msg.massageFileUrl, '_blank')}
+            />
+          </div>
+        );
+
+      case 'video':
+        return (
+          <div className="mt-2">
+            <video
+              controls
+              className="max-w-full max-h-64 rounded-lg"
+              preload="metadata"
+            >
+              <source src={msg.massageFileUrl} type={`video/${msg.messageFileExtension.substring(1)}`} />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        );
+
+      default:
+        return (
+          <div className={`mt-2 flex items-center space-x-2 p-2 border rounded-lg bg-opacity-50 ${theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}>
+            <FiFile className="text-blue-500" size={20} />
+            <span className="flex-1 text-sm truncate">
+              File{msg.messageFileExtension}
+            </span>
+            <button
+              onClick={handleDownload}
+              className={`p-1 rounded ${theme === "dark" ? "hover:bg-gray-600" : "hover:bg-gray-200"
+                }`}
+              title="Download file"
+            >
+              <FiDownload size={16} />
+            </button>
+          </div>
+        );
+    }
+  };
+
+  const getFileIcon = (extension) => {
+    const fileType = getFileType(extension);
+    switch (fileType) {
+      case 'image': return <FiImage className="text-green-500" size={16} />;
+      case 'video': return <FiVideo className="text-red-500" size={16} />;
+      default: return <FiFile className="text-blue-500" size={16} />;
+    }
+  };
 
 
 
@@ -323,144 +402,165 @@ const Chat = () => {
           )}
 
           {/* Users Sidebar */}
-          <div className={`absolute lg:relative z-30 flex-col lg:w-[40%] h-[82vh] sm:h-[88vh] lg:h-full ${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#dfdfdf]"} rounded-xl p-3 transition-transform duration-300 ease-in-out lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-[150%]"}`}>
+          <div className={`absolute lg:relative z-30 flex-col w-full xs:w-[85%] sm:w-[75%] md:w-[65%] lg:w-[40%] 
+  h-[82vh] sm:h-[85vh] md:h-[88vh] lg:h-full 
+  ${theme === "dark" ? "bg-[#323335]" : "bg-white border border-[#dfdfdf]"} 
+  rounded-xl p-2 xs:p-3 sm:p-4 lg:p-3 
+  transition-transform duration-300 ease-in-out lg:translate-x-0 
+  ${isSidebarOpen ? "translate-x-0" : "-translate-x-[150%]"}`}>
 
+            {/* Close Button */}
             <button
-              className="lg:hidden p-2 bg-gray-300 rounded-full mb-2 self-end"
+              className="lg:hidden p-1.5 xs:p-2 bg-gray-300 hover:bg-gray-400 rounded-full mb-2 xs:mb-3 self-end transition-colors"
               onClick={() => setIsSidebarOpen(false)}
             >
-              <FiX size={24} />
+              <FiX size={20} className="xs:w-6 xs:h-6" />
             </button>
 
             {/* Tab Selector */}
-            <div className="flex mb-4 border-b">
+            <div className="flex mb-3 xs:mb-4 border-b">
               <button
                 onClick={() => setActiveTab("drivers")}
-                className={`flex-1 py-2 ${activeTab === "drivers" ?
-                  theme === "dark" ? "border-b-2 border-blue-400 text-blue-400" : "border-b-2 border-blue-500 text-blue-500" :
-                  ""}`}
+                className={`flex-1 py-2 xs:py-2.5 sm:py-3 text-sm xs:text-base font-medium transition-colors
+        ${activeTab === "drivers" ?
+                    theme === "dark" ? "border-b-2 border-blue-400 text-blue-400" : "border-b-2 border-blue-500 text-blue-500" :
+                    theme === "dark" ? "text-gray-300 hover:text-blue-400" : "text-gray-600 hover:text-blue-500"}`}
               >
                 {t("drivers")}
               </button>
               <button
                 onClick={() => setActiveTab("garages")}
-                className={`flex-1 py-2 ${activeTab === "garages" ?
-                  theme === "dark" ? "border-b-2 border-blue-400 text-blue-400" : "border-b-2 border-blue-500 text-blue-500" :
-                  ""}`}
+                className={`flex-1 py-2 xs:py-2.5 sm:py-3 text-sm xs:text-base font-medium transition-colors
+        ${activeTab === "garages" ?
+                    theme === "dark" ? "border-b-2 border-blue-400 text-blue-400" : "border-b-2 border-blue-500 text-blue-500" :
+                    theme === "dark" ? "text-gray-300 hover:text-blue-400" : "text-gray-600 hover:text-blue-500"}`}
               >
                 {t("garages")}
               </button>
             </div>
 
-            <div className="relative w-full my-3">
+            {/* Search Input */}
+            <div className="relative w-full mb-3 xs:mb-4">
               <input
                 type="text"
                 placeholder={`Search for ${activeTab === "drivers" ? "a user" : "a garage"}...`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full p-3 pl-4 pr-10 rounded-3xl ${theme === "dark" ? "bg-[#292A2C] text-white border border-white/30 " : "bg-white text-black border-gray-300"} focus:outline-none shadow`}
+                className={`w-full p-2.5 xs:p-3 sm:p-3.5 pl-3 xs:pl-4 pr-9 xs:pr-10 rounded-2xl xs:rounded-3xl text-sm xs:text-base
+        ${theme === "dark" ? "bg-[#292A2C] text-white border border-white/30 placeholder-gray-400" : "bg-white text-black border-gray-300 placeholder-gray-500"} 
+        focus:outline-none focus:ring-2 focus:ring-blue-500 shadow transition-all`}
               />
-              <CiSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl cursor-pointer" />
+              <CiSearch className="absolute right-2.5 xs:right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-lg xs:text-xl cursor-pointer" />
             </div>
 
-            <div className="space-y-2 overflow-y-auto max-h-[calc(100%-80px)]">
+            {/* Content Area */}
+            <div className="space-y-1.5 xs:space-y-2 overflow-y-auto flex-1 max-h-[calc(100%-120px)] xs:max-h-[calc(100%-130px)] sm:max-h-[calc(100%-140px)]">
               {isLoading && (activeTab === "drivers" ? users.length === 0 : garages.length === 0) ? (
-                <div className="flex justify-center items-center h-32">
-                  <p className="text-gray-500">Loading {activeTab}...</p>
+                <div className="flex justify-center items-center h-24 xs:h-32">
+                  <p className="text-gray-500 text-sm xs:text-base">Loading {activeTab}...</p>
                 </div>
               ) : error && (activeTab === "drivers" ? users.length === 0 : garages.length === 0) ? (
-                <div className="flex justify-center items-center h-32">
-                  <p className="text-red-500">{error}</p>
+                <div className="flex justify-center items-center h-24 xs:h-32">
+                  <p className="text-red-500 text-sm xs:text-base text-center px-4">{error}</p>
                 </div>
               ) : activeTab === "drivers" ? (
                 filteredUsers.length === 0 ? (
-                  <div className="flex justify-center items-center h-32">
-                    <p className="text-gray-500">{t("No drivers found")}</p>
+                  <div className="flex justify-center items-center h-24 xs:h-32">
+                    <p className="text-gray-500 text-sm xs:text-base">{t("No drivers found")}</p>
                   </div>
                 ) : (
                   filteredUsers.map((user) => (
                     <div key={user.id || user.driverId}>
                       <div
-                        className={`flex items-center p-3 cursor-pointer border-b border-dashed 
-                        ${theme === "dark" ? "border-[#464749]" : "border-[#e8e8e8]"} 
-                        ${selectedChat.id === user.driverId && selectedChat.isDriver ?
-                            (theme === "dark" ? "bg-gray-700 " : "bg-gray-300 ") : ""}`}
+                        className={`flex items-center p-2 xs:p-3 cursor-pointer border-b border-dashed rounded-lg hover:bg-opacity-50 transition-all
+              ${theme === "dark" ? "border-[#464749] hover:bg-gray-600" : "border-[#e8e8e8] hover:bg-gray-100"} 
+              ${selectedChat.id === user.driverId && selectedChat.isDriver ?
+                            (theme === "dark" ? "bg-gray-700" : "bg-gray-300") : ""}`}
                       >
+                        {/* User Avatar */}
                         <img
                           src={user.image}
                           alt={user.name}
-                          className="w-10 h-10 rounded-full object-cover"
-                          onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
+                          className="w-8 h-8 xs:w-10 xs:h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
+                         
                         />
-                        <div className="ml-3 flex-grow">
+
+                        {/* User Info */}
+                        <div className="ml-2 xs:ml-3 flex-grow min-w-0">
                           <div className='flex items-center justify-between w-full'>
-                            <h3 className="font-semibold">{user.name} {user.lastName}</h3>
+                            <h3 className="font-semibold text-sm xs:text-base truncate pr-2">
+                              {user.name} {user.lastName}
+                            </h3>
                           </div>
                           <div className="flex justify-between items-center">
-                            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate max-w-[70%]`}>
+                            <p className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate max-w-[60%] xs:max-w-[70%]`}>
                               {user.email}
                             </p>
                           </div>
                         </div>
 
-                        {/* Chat with user button */}
                         <div
                           onClick={() => handleSelectUser(user)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
-                          ${theme === "dark" ? "bg-[#479cff] text-white"
-                              : "bg-[#479cff] text-white"} transition-colors`}
+                          className={`flex items-center gap-1 xs:gap-2 px-2 xs:px-3 py-1.5 xs:py-2 rounded-lg cursor-pointer flex-shrink-0
+                ${theme === "dark" ? "bg-[#479cff] hover:bg-[#3a8ae6] text-white" : "bg-[#479cff] hover:bg-[#3a8ae6] text-white"} 
+                transition-colors`}
                         >
-                          <MessageCircle size={18} />
-                          <span>{t("chat")}</span>
+                          <MessageCircle size={14} className="xs:w-[18px] xs:h-[18px]" />
+                          <span className="text-xs xs:text-sm font-medium">{t("chat")}</span>
                         </div>
                       </div>
                     </div>
                   ))
                 )
               ) : (
-                // Garages Tab Content
+                
                 filteredGarages.length === 0 ? (
-                  <div className="flex justify-center items-center h-32">
-                    <p className="text-gray-500">{t("No garages found")}</p>
+                  <div className="flex justify-center items-center h-24 xs:h-32">
+                    <p className="text-gray-500 text-sm xs:text-base">{t("No garages found")}</p>
                   </div>
                 ) : (
                   filteredGarages.map((garage) => (
                     <div key={garage.garageId}>
                       <div
-                        className={`flex items-center p-3 cursor-pointer border-b border-dashed 
-                        ${theme === "dark" ? "border-[#464749]" : "border-[#e8e8e8]"} 
-                        ${selectedChat.id === garage.garageUserId && selectedChat.isGarage ?
-                            (theme === "dark" ? "bg-gray-700 " : "bg-gray-300 ") : ""}`}
+                        className={`flex items-center p-2 xs:p-3 cursor-pointer border-b border-dashed rounded-lg hover:bg-opacity-50 transition-all
+              ${theme === "dark" ? "border-[#464749] hover:bg-gray-600" : "border-[#e8e8e8] hover:bg-gray-100"} 
+              ${selectedChat.id === garage.garageUserId && selectedChat.isGarage ?
+                            (theme === "dark" ? "bg-gray-700" : "bg-gray-300") : ""}`}
                       >
+                        {/* Garage Avatar */}
                         <img
                           src={garage.image}
                           alt={garage.garageName}
-                          className="w-10 h-10 rounded-full object-cover"
-                          onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
+                          className="w-8 h-8 xs:w-10 xs:h-10 sm:w-12 sm:h-12 rounded-full object-cover flex-shrink-0"
+                         
                         />
-                        <div className="ml-3 flex-grow">
+
+                        {/* Garage Info */}
+                        <div className="ml-2 xs:ml-3 flex-grow min-w-0">
                           <div className='flex items-center justify-between w-full'>
-                            <h3 className="font-semibold">{garage.garageName}</h3>
+                            <h3 className="font-semibold text-sm xs:text-base truncate pr-2">
+                              {garage.garageName}
+                            </h3>
                           </div>
-                          <div className="">
-                            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate max-w-[70%]`}>
-                             {t("Vin Number")}: {garage.carVin || "No VIN"}
+                          <div className="space-y-0.5 xs:space-y-1">
+                            <p className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate`}>
+                              {t("Vin Number")}: {garage.carVin || "No VIN"}
                             </p>
-                            <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate max-w-[70%]`}>
-                            {t("number_plate")}:  {garage.numberPlate || "No Number Plate"}
+                            <p className={`text-xs xs:text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"} truncate`}>
+                              {t("number_plate")}: {garage.numberPlate || "No Number Plate"}
                             </p>
                           </div>
                         </div>
 
-                        {/* Chat with garage button */}
+                        {/* Chat Button */}
                         <div
                           onClick={() => handleSelectGarage(garage)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer
-                          ${theme === "dark" ? "bg-[#479cff] text-white"
-                              : "bg-[#479cff] text-white"} transition-colors`}
+                          className={`flex items-center gap-1 xs:gap-2 px-2 xs:px-3 py-1.5 xs:py-2 rounded-lg cursor-pointer flex-shrink-0
+                ${theme === "dark" ? "bg-[#479cff] hover:bg-[#3a8ae6] text-white" : "bg-[#479cff] hover:bg-[#3a8ae6] text-white"} 
+                transition-colors`}
                         >
-                          <MessageCircle size={18} />
-                          <span>{t("chat")}</span>
+                          <MessageCircle size={14} className="xs:w-[18px] xs:h-[18px]" />
+                          <span className="text-xs xs:text-sm font-medium">{t("chat")}</span>
                         </div>
                       </div>
                     </div>
@@ -486,7 +586,7 @@ const Chat = () => {
                   src={selectedChat.image}
                   alt={selectedChat.name}
                   className="w-10 h-10 rounded-full object-cover"
-                  onError={(e) => { e.target.src = "https://via.placeholder.com/150"; }}
+                  
                 />
               ) : (
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${theme === "dark" ? "bg-gray-600" : "bg-gray-300"}`}>
@@ -538,23 +638,46 @@ const Chat = () => {
                   <p className="text-gray-500">{t("No messages yet. Start a conversation!")}</p>
                 </div>
               ) : (
-                messages.map((msg) => (
-                  <div key={msg.id} className={`flex ${msg.senderId === currentUserId.toString() ? "justify-end" : "justify-start"} mb-2`}>
-                    <div className={`p-3 max-w-[70%] break-words rounded-lg ${msg.senderId === currentUserId.toString()
-                      ? (theme === "dark" ? "bg-[#464749] text-white" : "bg-[#f0f7ff] text-black")
-                      : (theme === "dark" ? "bg-[#323335] text-white" : "bg-[#f5f5f5] text-black")
-                      }`}>
-                      <p>{msg.messageBody}</p>
-                      <div className={`text-xs ${theme === "dark" ? "text-gray-400" : "text-gray-500"} flex justify-between items-center mt-1`}>
-                        <span>{formatMessageTime(msg.serverTime)}</span>
-                        {msg.isOptimistic && (
-                          <span className="ml-2"><CiClock2 />
-                          </span>
-                        )}
+                messages.map((msg) => {
+                  const hasFile = msg.massageFileUrl && msg.messageFileExtension;
+                  const hasText = msg.messageBody && msg.messageBody.trim() !== '';
+
+                  return (
+                    <div key={msg.id} className={`flex ${msg.senderId === currentUserId.toString() ? "justify-end" : "justify-start"} mb-4`}>
+                      <div className={`p-3 max-w-[70%] break-words rounded-lg ${msg.senderId === currentUserId.toString()
+                        ? (theme === "dark" ? "bg-[#464749] text-white" : "bg-[#f0f7ff] text-black")
+                        : (theme === "dark" ? "bg-[#323335] text-white" : "bg-[#f5f5f5] text-black")
+                        }`}>
+
+                        {/* Text Message */}
+                        {hasText && <p className="mb-1">{msg.messageBody}</p>}
+
+                        {/* File Content */}
+                        {hasFile && renderFileContent(msg, theme)}
+
+                        {/* Message Footer */}
+                        <div className={`text-xs ${theme === "dark" ? "text-gray-400" : "text-gray-500"} flex justify-between items-center mt-2`}>
+                          <div className="flex items-center space-x-2">
+                            <span>{formatMessageTime(msg.serverTime)}</span>
+                            {hasFile && (
+                              <div className="flex items-center space-x-1">
+                                {getFileIcon(msg.messageFileExtension)}
+                                <span className="text-xs opacity-75">
+                                  {msg.messageFileExtension.toUpperCase().substring(1)}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          {msg.isOptimistic && (
+                            <span className="ml-2">
+                              <CiClock2 />
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
               <div ref={messagesEndRef} />
             </div>
