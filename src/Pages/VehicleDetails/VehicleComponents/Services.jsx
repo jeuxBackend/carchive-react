@@ -28,12 +28,14 @@ function Services({ data, setLoading }) {
     insuranceStatus: data?.insuranceStatus || 0,
     inspectionStatus: data?.inspectionStatus || 0,
     additionalStatus: data?.additionalStatus || 0,
+    registrationStatus: data?.registrationStatus || 0,
   });
 
   const [switchLoading, setSwitchLoading] = useState({
     insuranceStatus: false,
     inspectionStatus: false,
     additionalStatus: false,
+    registrationStatus: false
   });
 
   const [debounceTimers, setDebounceTimers] = useState({});
@@ -50,6 +52,7 @@ function Services({ data, setLoading }) {
         insuranceStatus: currentStates.insuranceStatus,
         inspectionStatus: currentStates.inspectionStatus,
         additionalStatus: currentStates.additionalStatus,
+        registrationStatus: currentStates.registrationStatus,
       };
 
       const response = await updateVehicle(updatePayload);
@@ -130,7 +133,6 @@ function Services({ data, setLoading }) {
     }
   };
 
-  // Updated function to check if date is valid and not empty
   const isValidDate = (dateString) => {
     if (!dateString || dateString.trim() === '') return false;
     try {
@@ -176,12 +178,14 @@ function Services({ data, setLoading }) {
 
   const isInsuranceExpired = isExpired(data?.insuranceExpiry);
   const isInspectionExpired = isExpired(data?.inspectionExpiry);
+  const isRegistrationExpired = isExpired(data?.registrationExpiry);
   const isAdditionalExpired = Array.isArray(data?.additionalExpiry) &&
     data.additionalExpiry[0] &&
     isExpired(data.additionalExpiry[0]);
 
   const isInsuranceExpiringSoon = isExpiringSoon(data?.insuranceExpiry);
   const isInspectionExpiringSoon = isExpiringSoon(data?.inspectionExpiry);
+  const isRegistrationExpiringSoon = isExpiringSoon(data?.registrationExpiry);
   const isAdditionalExpiringSoon = Array.isArray(data?.additionalExpiry) &&
     data.additionalExpiry[0] &&
     isExpiringSoon(data.additionalExpiry[0]);
@@ -216,7 +220,19 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.inspectionStatus,
       onToggle: () => handleSwitchToggle('inspectionStatus'),
       statusField: 'inspectionStatus',
-      documentType: 'inspection', // Add document type for modal
+      documentType: 'inspection', 
+    },
+    {
+      title: t('registration_documents'),
+      subtitle: generateSubtitle(data?.registrationExpiry),
+      expired: isRegistrationExpired ? t('expired') : "",
+      expiringSoon: isRegistrationExpiringSoon ? t('expires_soon') || 'EXPIRES SOON' : "",
+      showSwitch: true,
+      switchChecked: localSwitchStates.registrationStatus === 1,
+      switchLoading: switchLoading.registrationStatus,
+      onToggle: () => handleSwitchToggle('registrationStatus'),
+      statusField: 'registrationStatus',
+      documentType: 'registration', 
     },
     {
       title: t('additional_documents'),
@@ -230,7 +246,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.additionalStatus,
       onToggle: () => handleSwitchToggle('additionalStatus'),
       statusField: 'additionalStatus',
-      documentType: 'additional', // Add document type for modal
+      documentType: 'additional', 
     },
     {
       title: t('maintenance_records'),

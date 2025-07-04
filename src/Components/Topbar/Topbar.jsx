@@ -58,7 +58,7 @@ const Topbar = ({ setSide }) => {
     "/Chat": t("Chat"),
     "/Invoices": t("Invoices"),
     "/Drivers": t("Drivers"),
-    "/Requests": t("Requests"),
+    "/Requests": t("Buying Requests"),
   };
 
   const [loadingArchive, setLoadingArchive] = useState(false);

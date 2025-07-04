@@ -188,8 +188,8 @@ const Requests = () => {
               ))}
             </motion.div>
           ) : (
-            <div className="h-[40vh] flex items-center justify-center">
-              <NoDataFound />
+            <div className="min-h-[45vh] flex items-center justify-center">
+              <NoDataFound data={true}/>
             </div>
           )}
 
@@ -236,8 +236,8 @@ const Requests = () => {
                 ))}
               </motion.div>
             ) : (
-              <div className="h-[40vh] flex items-center justify-center">
-                <NoDataFound />
+              <div className="min-h-[45vh] flex items-center justify-center">
+                <NoDataFound data={true}/>
               </div>
             )}
           </motion.div>
