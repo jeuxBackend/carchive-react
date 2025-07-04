@@ -161,7 +161,6 @@ function Services({ data, setLoading }) {
     }
   };
 
-  // Updated function to check if expiry is within a month
   const isExpiringSoon = (dateString) => {
     if (!isValidDate(dateString)) return false;
     try {
@@ -190,7 +189,6 @@ function Services({ data, setLoading }) {
     data.additionalExpiry[0] &&
     isExpiringSoon(data.additionalExpiry[0]);
 
-  // Helper function to generate subtitle with proper date formatting
   const generateSubtitle = (dateString) => {
     if (!isValidDate(dateString)) return "";
     const formattedDate = formatDate(dateString);
@@ -208,7 +206,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.insuranceStatus,
       onToggle: () => handleSwitchToggle('insuranceStatus'),
       statusField: 'insuranceStatus',
-      documentType: 'insurance', // Add document type for modal
+      documentType: 'insurance', 
     },
     {
       title: t('inspection_documents'),
@@ -225,8 +223,6 @@ function Services({ data, setLoading }) {
     {
       title: t('registration_documents'),
       subtitle: generateSubtitle(data?.registrationExpiry),
-      expired: isRegistrationExpired ? t('expired') : "",
-      expiringSoon: isRegistrationExpiringSoon ? t('expires_soon') || 'EXPIRES SOON' : "",
       showSwitch: true,
       switchChecked: localSwitchStates.registrationStatus === 1,
       switchLoading: switchLoading.registrationStatus,
