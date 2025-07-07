@@ -220,6 +220,7 @@
   "registration_date": "Registration Date",
   "inspection_expiry": "Inspection Expiry",
   "no_vehicle_found":"In this tab, you’ll see any new requests when: An owner wants to share a vehicle with you. Someone wants to take over ownership of a vehicle you're no longer actively managing. A garage requests access to your car documents.",
-  "no_vehicle_title": "No Incoming Requests Yet"
+  "no_vehicle_title": "No Incoming Requests Yet",
+  "notifications": "Notifications"
 
 }

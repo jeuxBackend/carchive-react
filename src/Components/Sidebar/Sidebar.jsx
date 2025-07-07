@@ -11,6 +11,8 @@ import settings from "./assets/settings.png"
 import logout from "./assets/logout.png"
 import logoDark from "./assets/logo-dark.png"
 import logoLight from "./assets/logo-light.png"
+import notify from "./assets/notify.png"
+import notifyDark from "./assets/notifyDark.png"
 import { IoMdClose } from "react-icons/io";
 import { useTheme } from '../../Contexts/ThemeContext';
 import { useTranslation } from "react-i18next";
@@ -68,6 +70,12 @@ function Sidebar({ side, setSide, setLogout }) {
             icon: requests,
             name: t("requests"),
             path: "/Requests",
+            subPath: null
+        },
+        {
+            icon: notify,
+            name: t("notifications"),
+            path: "/Notifications",
             subPath: null
         },
         {

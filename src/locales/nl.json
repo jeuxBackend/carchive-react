@@ -219,5 +219,6 @@
   "registration_date": "Registratiedatum",
   "inspection_expiry": "Inspectie vervalt",
   "no_vehicle_title": "Er zijn momenteel geen inkomende verzoeken.",
-  "no_vehicle_found": "In dit tabblad verschijnen aanvragen wanneer: Een eigenaar een voertuig met jou wil delen. Iemand het eigenaarschap wil overnemen van een voertuig dat jij niet meer actief beheert. Een garage toegang vraagt tot jouw voertuigdossiers"
+  "no_vehicle_found": "In dit tabblad verschijnen aanvragen wanneer: Een eigenaar een voertuig met jou wil delen. Iemand het eigenaarschap wil overnemen van een voertuig dat jij niet meer actief beheert. Een garage toegang vraagt tot jouw voertuigdossiers",
+  "notifications": "Meldingen"
 }

@@ -38,8 +38,7 @@ const DocumentModal = ({ isOpen, onClose, documentType, data }) => {
         return {
           title: 'Registration Documents',
           documents: data.registrationDocument || [],
-          expiry: data.registrationExpiry,
-          status: data.registrationStatus
+      
         };
       default:
         return {
