@@ -45,6 +45,22 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
         return null;
     };
 
+    const renderActiveStatusBadge = () => {
+        const isActive = data?.isLogged === '1';
+        const hasExpiryBadge = (hasValue(data?.expired) && data.expired === '1') || 
+                              (hasValue(data?.month_expiry) && data.month_expiry === '1');
+        
+        return (
+            <div className={`absolute ${hasExpiryBadge ? 'top-12 right-2' : 'top-2 left-2'} px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10 ${
+                isActive 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-gray-500 text-white'
+            }`}>
+                {isActive ? t('active') || 'Active' : t('inactive') || 'Inactive'}
+            </div>
+        );
+    };
+
     const handleCardClick = () => {
         setVehicle(data);
         if (!navigable && typeof onCardClick === 'function') {
@@ -65,6 +81,7 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
                     : "bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/60"
             } rounded-xl shadow-lg hover:shadow-xl p-4 h-[20rem] md:h-[16rem] flex flex-col gap-2 relative transition-all duration-300 cursor-pointer backdrop-blur-sm`}
         >
+            {renderActiveStatusBadge()}
             {renderExpiryBadge()}
             
             {/* Vehicle Title */}

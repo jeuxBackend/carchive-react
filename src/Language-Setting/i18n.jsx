@@ -6,12 +6,12 @@ import nl from "../locales/nl.json";
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: en },
-    fr: { translation: fr },
-    nl: { translation: nl }
+    ENG: { translation: en },
+    FR: { translation: fr },
+    DU: { translation: nl }
   },
-  lng: localStorage.getItem('language') || 'en', 
-  fallbackLng: 'en',
+  lng: localStorage.getItem('language') || 'ENG', 
+  fallbackLng: 'ENG',
   interpolation: {
     escapeValue: false 
   }

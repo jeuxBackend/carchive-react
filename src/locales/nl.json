@@ -9,7 +9,7 @@
   "vehicles": "Voertuigen",
   "drivers": "Bestuurders",
   "invoices": "Facturen",
-  "chat": "Chat",
+  "chat": "Kletsen",
   "requests": "Verzoeken",
   "settings": "Instellingen",
   "all_vehicles": "Alle voertuigen",
@@ -220,5 +220,7 @@
   "inspection_expiry": "Inspectie vervalt",
   "no_vehicle_title": "Er zijn momenteel geen inkomende verzoeken.",
   "no_vehicle_found": "In dit tabblad verschijnen aanvragen wanneer: Een eigenaar een voertuig met jou wil delen. Iemand het eigenaarschap wil overnemen van een voertuig dat jij niet meer actief beheert. Een garage toegang vraagt tot jouw voertuigdossiers",
-  "notifications": "Meldingen"
+  "notifications": "Meldingen",
+  "active": "Actief",
+  "inactive":"Inactief"
 }

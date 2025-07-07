@@ -73,12 +73,6 @@ function Sidebar({ side, setSide, setLogout }) {
             subPath: null
         },
         {
-            icon: notify,
-            name: t("notifications"),
-            path: "/Notifications",
-            subPath: null
-        },
-        {
             icon: settings,
             name: t("settings"),
             path: "/Settings",

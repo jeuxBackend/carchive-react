@@ -38,6 +38,7 @@ import VehicleRequests from "./Pages/VehicleRequests/VehicleRequests";
 import TermsConditions from "./Pages/TermsAndConditions/TermsConditions";
 import AdminVehicles from "./AdminPages/Vehicles/AdminVehicles";
 import { NotificationProvider } from "./Contexts/NotificationContext";
+import Notifications from "./Pages/Notifications/Notifications";
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
           <Route path="/TermsConditions" element={<TermsConditions />} />
           <Route path="/Add-Vehicle" element={<AddVehicle />} />
           <Route path="/Update-Vehicle" element={<UpdateVehicle />} />
+          {/* <Route path="/Notifications" element={<Notifications />} /> */}
         </Route>
         <Route path="/Admin/Login" element={<AdminLogin />} />
         <Route path="/Admin" element={<AdminLayout />}>
