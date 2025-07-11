@@ -152,7 +152,7 @@
   "View Details": "Details bekijken",
   "Reject": "Afwijzen",
   "Accept": "Accepteren",
-  "Garage Requests": "Garage-aanvragen",
+  "Garage Requests": "Verzoeken om documenten voor garagetoegang",
   "Update Profile": "Profiel bijwerken",
   "Language": "Taal",
   "About Us": "Over ons",
@@ -211,7 +211,7 @@
   "Netherland": "Nederlands",
   "driverslog": "Bestuurderslogboek",
   "Add": "Toevoegen",
-  "Buying Requests": "Aankoop",
+  "Buying Requests": "Overname-eigendom",
   "driver_details": "Bestuurdersgegevens",
   "contact_information": "Contactinformatie",
   "Driver Documents": "Bestuurdersdocumenten",
@@ -222,5 +222,6 @@
   "no_vehicle_found": "In dit tabblad verschijnen aanvragen wanneer: Een eigenaar een voertuig met jou wil delen. Iemand het eigenaarschap wil overnemen van een voertuig dat jij niet meer actief beheert. Een garage toegang vraagt tot jouw voertuigdossiers",
   "notifications": "Meldingen",
   "active": "Actieve Rit",
-  "inactive":"Inactieve Rit"
+  "inactive":"Inactieve Rit",
+  "car_unassigned": "Voertuig niet toegewezen"
 }

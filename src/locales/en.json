@@ -153,7 +153,7 @@
   "View Details": "View Details",
   "Reject": "Reject",
   "Accept": "Accept",
-  "Garage Requests": "Garage Requests",
+  "Garage Requests": "Garage Access Documents Requests",
   "Update Profile": "Update Profile",
   "Language": "Language",
   "About Us": "About Us",
@@ -212,7 +212,7 @@
   "Netherland": "Nederlands",
   "driverslog": "Drivers Log",
   "Add": "Add",
-  "Buying Requests": "Buying Requests",
+  "Buying Requests": "Takeover Ownership",
   "driver_details": "Driver Details",
   "contact_information": "Contact Information",
   "Driver Documents": "Driver Documents",
@@ -223,6 +223,7 @@
   "no_vehicle_title": "No Incoming Requests Yet",
   "notifications": "Notifications",
   "active": "Active Drive",
-  "inactive":"Inactive Drive"
+  "inactive":"Inactive Drive",
+  "car_unassigned": "Car Unassigned"
 
 }

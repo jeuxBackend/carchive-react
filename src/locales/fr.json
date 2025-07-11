@@ -152,7 +152,7 @@
   "View Details": "Voir les détails",
   "Reject": "Refuser",
   "Accept": "Accepter",
-  "Garage Requests": "Demandes de garage",
+  "Garage Requests": "Demandes de documents d'accès au garage",
   "Update Profile": "Mettre à jour le profil",
   "Language": "Langue",
   "About Us": "À propos de nous",
@@ -211,7 +211,7 @@
   "Netherland": "Pays-Bas",
   "driverslog": "Journal des conducteurs",
   "Add": "Ajouter",
-  "Buying Requests": "Demandes d'achat",
+  "Buying Requests": "Prise de contrôle",
   "driver_details": "Détails du conducteur",
   "contact_information": "Informations de contact",
   "Driver Documents": "Documents du conducteur",
@@ -222,5 +222,6 @@
   "no_vehicle_found": "Dans cet onglet, vous verrez les demandes lorsque: Un propriétaire souhaite partager un véhicule avec vous. Quelqu’un veut reprendre la propriété d’un véhicule que vous ne gérez plus activement. Un garage demande l’accès aux documents de votre véhicule",
   "notifications": "Notifications",
   "active": "Trajet Actif",
-  "inactive":"Trajet Inactif"
+  "inactive":"Trajet Inactif",
+  "car_unassigned": "Voiture non attribuée"
 }

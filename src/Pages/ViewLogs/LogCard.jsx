@@ -42,7 +42,13 @@ const LogCard = ({ data }) => {
     lng: startCoords[1]
   } : null;
 
-  const endPosition = endCoords && endCoords.length === 2 && !isNaN(endCoords[0]) && !isNaN(endCoords[1]) ? {
+  // Check if end coordinates are "0,0" or 0
+  const isCarUnassigned = data?.lat_long_end === "0,0" || 
+                         data?.lat_long_end === "0" || 
+                         data?.lat_long_end === 0 ||
+                         (endCoords && endCoords.length === 2 && endCoords[0] === 0 && endCoords[1] === 0);
+
+  const endPosition = endCoords && endCoords.length === 2 && !isNaN(endCoords[0]) && !isNaN(endCoords[1]) && !isCarUnassigned ? {
     lat: endCoords[0],
     lng: endCoords[1]
   } : null;
@@ -116,7 +122,16 @@ const LogCard = ({ data }) => {
         <p className={theme === "dark" ? "text-white" : "text-black"}>{data?.total_distance}</p>
       </div>
 
-      {hasValidCoordinates && isLoaded && (
+      {/* Show Car Unassigned message if end coordinates are 0,0 or 0 */}
+      {isCarUnassigned && (
+        <div className="mt-4 p-3 rounded-lg bg-orange-100 border border-orange-200">
+          <p className="text-orange-800 font-medium text-center">
+            {t('car_unassigned') || 'Car Unassigned'}
+          </p>
+        </div>
+      )}
+
+      {hasValidCoordinates && isLoaded && !isCarUnassigned && (
         <div className="mt-2">
           <p className="text-[#777e90] font-medium mb-2">{t('map')}</p>
           <GoogleMap
@@ -139,7 +154,7 @@ const LogCard = ({ data }) => {
         </div>
       )}
 
-      {hasValidCoordinates && !isLoaded && (
+      {hasValidCoordinates && !isLoaded && !isCarUnassigned && (
         <div className="mt-2">
           <p className="text-[#777e90] font-medium mb-2">{t('loading_map')}</p>
         </div>
