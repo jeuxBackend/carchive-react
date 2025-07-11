@@ -135,7 +135,7 @@
   "Drivers": "Chauffeurs",
   "Requests": "Demandes",
   "Settings": "Paramètres",
-  "Chat": "Chatte",
+  "Chat": "Boîte De Message",
   "Message": "Message",
   "Driver Details": "Détails du Conducteur",
   "Email": "Email",
@@ -221,6 +221,6 @@
   "no_vehicle_title": "Il n’y a actuellement aucune demande entrante.",
   "no_vehicle_found": "Dans cet onglet, vous verrez les demandes lorsque: Un propriétaire souhaite partager un véhicule avec vous. Quelqu’un veut reprendre la propriété d’un véhicule que vous ne gérez plus activement. Un garage demande l’accès aux documents de votre véhicule",
   "notifications": "Notifications",
-  "active": "actif",
-  "inactive":"Inactif"
+  "active": "Trajet Actif",
+  "inactive":"Trajet Inactif"
 }

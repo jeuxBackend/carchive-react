@@ -51,7 +51,7 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
                               (hasValue(data?.month_expiry) && data.month_expiry === '1');
         
         return (
-            <div className={`absolute ${hasExpiryBadge ? 'top-12 right-2' : 'top-2 left-2'} px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10 ${
+            <div className={`absolute ${hasExpiryBadge ? 'top-12 right-2' : 'top-2 right-2'} px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10 ${
                 isActive 
                     ? 'bg-green-500 text-white' 
                     : 'bg-gray-500 text-white'

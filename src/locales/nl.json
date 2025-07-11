@@ -135,7 +135,7 @@
   "Drivers": "Bestuurders",
   "Requests": "Verzoeken",
   "Settings": "Instellingen",
-  "Chat": "Chat",
+  "Chat": "Berichten",
   "Message": "Bericht",
   "Driver Details": "Bestuurdersgegevens",
   "Email": "E-mail",
@@ -221,6 +221,6 @@
   "no_vehicle_title": "Er zijn momenteel geen inkomende verzoeken.",
   "no_vehicle_found": "In dit tabblad verschijnen aanvragen wanneer: Een eigenaar een voertuig met jou wil delen. Iemand het eigenaarschap wil overnemen van een voertuig dat jij niet meer actief beheert. Een garage toegang vraagt tot jouw voertuigdossiers",
   "notifications": "Meldingen",
-  "active": "Actief",
-  "inactive":"Inactief"
+  "active": "Actieve Rit",
+  "inactive":"Inactieve Rit"
 }
