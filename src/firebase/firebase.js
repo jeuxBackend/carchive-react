@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDCNd4pecsQQGTIFg-sRh-PynJtkr4Up6w",
@@ -17,6 +18,7 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const messaging = getMessaging(app);
+const storage = getStorage(app);
 
 export const requestNotificationPermission = async () => {
   try {
@@ -72,4 +74,4 @@ export const onMessageListener = () => {
   });
 };
 
-export { db, messaging, onMessage  };
+export { db, messaging, onMessage, storage  };

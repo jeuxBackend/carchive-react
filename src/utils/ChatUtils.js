@@ -15,7 +15,15 @@ import {
   writeBatch
 } from "firebase/firestore";
 
+import { 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from "firebase/storage";
+
 import { db } from "../firebase/firebase";
+import { storage } from "../firebase/firebase";
+
 
 const fetchMessages = (chatId, callback, errorCallback) => {
   if (!chatId) {
@@ -41,19 +49,24 @@ const fetchMessages = (chatId, callback, errorCallback) => {
   });
 };
 
-const sendMessage = async (chatId, receiverId, senderId, messageBody, isGarageChat = false) => {
+const sendMessage = async (
+  chatId, 
+  receiverId, 
+  senderId, 
+  messageBody, 
+  isGarageChat = false,
+  file = null
+) => {
   try {
-    if (!chatId || !receiverId || !messageBody.trim()) {
-      console.error("Missing chatId, senderId, receiverId, or messageBody");
+    if (!chatId || !receiverId || (!messageBody.trim() && !file)) {
+      console.error("Missing chatId, receiverId, or messageBody/file");
       return false;
     }
 
-    
     const chatBoxRef = doc(db, `UsersChatBox`, chatId);
     const chatBoxSnap = await getDoc(chatBoxRef);
     
     if (!chatBoxSnap.exists()) {
-    
       const newChatId = await initializeChat(
         senderId, 
         receiverId, 
@@ -89,15 +102,41 @@ const sendMessage = async (chatId, receiverId, senderId, messageBody, isGarageCh
     const extraDigits = Math.floor(Math.random() * 900) + 100;
     const messageId = timestamp + extraDigits.toString();
 
+ 
+    let fileUrl = '';
+    let fileExtension = '';
+    
+    if (file) {
+      try {
+        // Get file extension
+        const fileName = file.name;
+        fileExtension = fileName.split('.').pop() || '';
+        
+        // Create storage reference
+        const storageRef = ref(storage, `UserChatFiles/${chatId}/${messageId}`);
+        
+        // Upload file
+        const snapshot = await uploadBytes(storageRef, file);
+        
+        // Get download URL
+        fileUrl = await getDownloadURL(snapshot.ref);
+        
+        console.log("File uploaded successfully:", fileUrl);
+      } catch (uploadError) {
+        console.error("Error uploading file:", uploadError);
+        throw new Error("Failed to upload file");
+      }
+    }
+
     const messageRef = doc(db, `UsersChatBox/${chatId}/chats`, messageId);
     const updatedChatBoxRef = doc(db, `UsersChatBox/${chatId}`);
 
     const messageData = {
-      messageBody,
+      messageBody: messageBody || '',
       senderId,
       receiverId,
-      massageFileUrl: '',
-      messageFileExtension: '',
+      massageFileUrl: fileUrl, // Note: keeping your original typo "massageFileUrl"
+      messageFileExtension: fileExtension,
       messageId,
       readStatus: "unread",
       serverTime: serverTimestamp(),
@@ -109,8 +148,11 @@ const sendMessage = async (chatId, receiverId, senderId, messageBody, isGarageCh
     
     await setDoc(messageRef, messageData);
 
+    // Update last message text for chat list
+    const lastMessageText = messageBody.trim() || (file ? 'File' : 'Message');
+    
     await updateDoc(updatedChatBoxRef, {
-      lastMessage: messageBody,
+      lastMessage: lastMessageText,
       lastMessageTime: serverTimestamp(),
     });
 
@@ -213,7 +255,7 @@ const initializeChat = async (senderId, receiverId, carId, initialMessage = "", 
         return existingChatId;
       }
 
-      chatId = `${receiverId}_${senderId}_${carId}`;
+      chatId = `${receiverId}_${carId}_${senderId}`;
     }
 
     const chatData = {
