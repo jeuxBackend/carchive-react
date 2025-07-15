@@ -223,5 +223,14 @@
   "notifications": "Notifications",
   "active": "Trajet Actif",
   "inactive":"Trajet Inactif",
-  "car_unassigned": "Voiture non attribuée"
+  "car_unassigned": "Voiture non attribuée",
+  "Images & PDFs": "Images et PDFs",
+  "Crop Image": "Recadrer l'image",
+  "Adjust the crop area and apply changes": "Ajustez la zone de recadrement et appliquez les modifications",
+  "Skip Crop": "Passer le recadrement",
+  "Processing...": "Traitement...",
+  "Apply Crop": "Appliquer le recadrement",
+  "Document Title": "Titre du document",
+  "docs_message": "Laissez vide pour utiliser 'Pas de titre'",
+  "doc_date": "Laissez vide pour utiliser 'Pas de date'"
 }

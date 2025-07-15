@@ -224,6 +224,16 @@
   "notifications": "Notifications",
   "active": "Active Drive",
   "inactive":"Inactive Drive",
-  "car_unassigned": "Car Unassigned"
+  "car_unassigned": "Car Unassigned",
+  "Images & PDFs": "Images & PDFs",
+  "Crop Image": "Crop Image",
+  "Adjust the crop area and apply changes": "Adjust the crop area and apply changes",
+  "Skip Crop": "Skip Crop",
+  "Processing...": "Processing...",
+  "Apply Crop": "Apply Crop",
+  "Document Title": "Document Title",
+  "docs_message": "Leave empty to use 'No Title'",
+  "doc_date": "Leave empty to use 'No Date'"
+ 
 
 }

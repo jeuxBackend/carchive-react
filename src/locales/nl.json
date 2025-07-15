@@ -223,5 +223,14 @@
   "notifications": "Meldingen",
   "active": "Actieve Rit",
   "inactive":"Inactieve Rit",
-  "car_unassigned": "Voertuig niet toegewezen"
+  "car_unassigned": "Voertuig niet toegewezen",
+  "Images & PDFs": "Afbeeldingen en PDFs",
+  "Crop Image": "Afbeelding kiezen",
+  "Adjust the crop area and apply changes": "Pas de afbeeldingsgebied aan en toepassen",
+  "Skip Crop": "Overslaan",
+  "Processing...": "Verwerken...",
+  "Apply Crop": "Toepassen",
+  "Document Title": "Documenttitel",
+  "docs_message": "Laat leeg om 'Geen titel' te gebruiken",
+  "doc_date": "Laat leeg om 'Geen datum' te gebruiken"
 }
