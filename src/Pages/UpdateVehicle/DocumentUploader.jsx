@@ -444,11 +444,26 @@ const DocumentUploader = ({
     });
   };
 
+  const isPDFUrl = (url) => {
+    if (typeof url === 'string') {
+      // Check if URL ends with .pdf
+      if (url.toLowerCase().endsWith('.pdf')) return true;
+      // Check if URL contains pdf in query params or path
+      if (url.toLowerCase().includes('.pdf')) return true;
+      // Additional check for common PDF hosting patterns
+      if (url.includes('pdf') || url.includes('document')) return true;
+    }
+    return false;
+  };
+
+  // Updated isImage function
   const isImage = (doc, index) => {
     // Check if it's a blob URL (newly uploaded image)
     if (typeof doc === 'string' && doc.startsWith('blob:')) return true;
-    // Check if it's an HTTP URL (existing image)
-    if (typeof doc === 'string' && doc.startsWith('http')) return true;
+    // Check if it's an HTTP URL (existing image) - but not PDF
+    if (typeof doc === 'string' && doc.startsWith('http')) {
+      return !isPDFUrl(doc);
+    }
     // Check the actual file type if available
     if (value[index] && value[index].type) {
       return value[index].type.startsWith('image/');
@@ -456,13 +471,18 @@ const DocumentUploader = ({
     return false;
   };
 
+  // Updated isPDF function
   const isPDF = (doc, index) => {
+    // Check if it's a PDF URL
+    if (typeof doc === 'string' && doc.startsWith('http')) {
+      return isPDFUrl(doc);
+    }
     // Check the actual file type if available
     if (value[index] && value[index].type) {
       return value[index].type === 'application/pdf';
     }
     // Check if it's a filename ending with .pdf
-    return typeof doc === 'string' && doc.endsWith('.pdf');
+    return typeof doc === 'string' && doc.toLowerCase().endsWith('.pdf');
   };
 
   return (
@@ -493,11 +513,17 @@ const DocumentUploader = ({
                   />
                 ) : isPDF(doc, index) ? (
                   <div className="w-full h-full flex flex-col items-center justify-center p-3">
-                    <FileText size={24} className={theme === "dark" ? "text-gray-300" : "text-gray-600"} />
+                    <FileText size={24} className={theme === "dark" ? "text-blue-400" : "text-blue-500"} />
                     <span className={`text-xs mt-2 text-center truncate w-full ${theme === "dark" ? "text-gray-300" : "text-gray-600"
                       }`}>
                       PDF File
                     </span>
+                    {/* Add a small link indicator for URL PDFs */}
+                    {typeof doc === 'string' && doc.startsWith('http') && (
+                      <div className="mt-1 text-xs text-blue-400 opacity-75">
+                        📎 Link
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center p-3">
@@ -537,6 +563,16 @@ const DocumentUploader = ({
                     <Crop size={12} />
                   </button>
                 )}
+                {/* View PDF button for PDF URLs */}
+                {isPDF(doc, index) && typeof doc === 'string' && doc.startsWith('http') && (
+                  <button
+                    onClick={() => window.open(doc, '_blank')}
+                    className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-full shadow-lg transition-colors"
+                    title="View PDF"
+                  >
+                    <FileText size={12} />
+                  </button>
+                )}
                 {type === "additional" && (
                   <button
                     onClick={() => handleEdit(index)}
@@ -555,6 +591,7 @@ const DocumentUploader = ({
             </div>
           ))}
 
+          {/* Add new document button */}
           <motion.div
             className={`w-40 h-32 flex flex-col items-center justify-center rounded-xl cursor-pointer border-2 border-dashed flex-shrink-0 transition-colors hover:border-blue-400 ${
               isCompressing 
@@ -580,6 +617,7 @@ const DocumentUploader = ({
         </div>
       </div>
 
+      {/* Rest of the component remains the same */}
       <input
         type="file"
         accept="image/*,.pdf"
