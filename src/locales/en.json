@@ -233,7 +233,9 @@
   "Apply Crop": "Apply Crop",
   "Document Title": "Document Title",
   "docs_message": "Leave empty to use 'No Title'",
-  "doc_date": "Leave empty to use 'No Date'"
+  "doc_date": "Leave empty to use 'No Date'",
+  "driver_name": "Driver Name",
+  "Start_Coordinates": "Start Coordinates"
  
 
 }

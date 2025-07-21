@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../Contexts/ThemeContext';
 import { GoogleMap, useLoadScript, Marker, Polyline } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
+import { DirectionsService, DirectionsRenderer } from '@react-google-maps/api';
+
 
 
 const mapContainerStyle = {
   width: '100%',
-  height: '200px',
+  height: '250px',
 };
+
 
 const LogCard = ({ data }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const [directions, setDirections] = useState(null);
 
   // Load Google Maps API
   const { isLoaded, loadError } = useLoadScript({
@@ -43,10 +47,10 @@ const LogCard = ({ data }) => {
   } : null;
 
   // Check if end coordinates are "0,0" or 0
-  const isCarUnassigned = data?.lat_long_end === "0,0" || 
-                         data?.lat_long_end === "0" || 
-                         data?.lat_long_end === 0 ||
-                         (endCoords && endCoords.length === 2 && endCoords[0] === 0 && endCoords[1] === 0);
+  const isCarUnassigned = data?.lat_long_end === "0,0" ||
+    data?.lat_long_end === "0" ||
+    data?.lat_long_end === 0 ||
+    (endCoords && endCoords.length === 2 && endCoords[0] === 0 && endCoords[1] === 0);
 
   const endPosition = endCoords && endCoords.length === 2 && !isNaN(endCoords[0]) && !isNaN(endCoords[1]) && !isCarUnassigned ? {
     lat: endCoords[0],
@@ -115,7 +119,35 @@ const LogCard = ({ data }) => {
             <p className={theme === "dark" ? "text-white" : "text-black"}>{data?.end_mileage}</p>
           </div>
         </div>
+
       </div>
+      <div className="flex flex-col md:flex-row justify-between gap-4 mt-2">
+        {/* Start Coordinates */}
+        <div className="flex flex-col">
+          <p className="text-[#777e90] font-medium">{t('Start_Coordinates')}:</p>
+          {data?.lat_long_start ? (
+            <div className="flex gap-2">
+              <p className={theme === "dark" ? "text-white" : "text-black"}>
+                Lat: {data.lat_long_start.split(',')[0]}
+              </p>
+              <p className={theme === "dark" ? "text-white" : "text-black"}>
+                Long: {data.lat_long_start.split(',')[1]}
+              </p>
+            </div>
+          ) : (
+            <p className={theme === "dark" ? "text-white" : "text-black"}>N/A</p>
+          )}
+        </div>
+
+        {/* Driver Name */}
+        <div className="flex flex-col">
+          <p className="text-[#777e90] font-medium">{t('driver_name') || 'Driver Name'}:</p>
+          <p className={theme === "dark" ? "text-white" : "text-black"}>
+            {data?.driverName || 'N/A'}
+          </p>
+        </div>
+      </div>
+
 
       <div className="flex items-center gap-1 mt-2">
         <p className="text-[#777e90] font-medium">{t('total_distance_driven')}</p>
@@ -138,18 +170,37 @@ const LogCard = ({ data }) => {
             mapContainerStyle={mapContainerStyle}
             options={mapOptions}
           >
-            {startPosition && (
-              <Marker position={startPosition} />
-            )}
-            {endPosition && (
-              <Marker position={endPosition} />
-            )}
-            {path && (
-              <Polyline
-                path={path}
-                options={polylineOptions}
+            {startPosition && endPosition && !directions && (
+              <DirectionsService
+                options={{
+                  origin: startPosition,
+                  destination: endPosition,
+                  travelMode: window.google.maps.TravelMode.DRIVING,
+                }}
+                callback={(result, status) => {
+                  if (status === 'OK') {
+                    setDirections(result);
+                  } else {
+                    console.error('Directions request failed:', status);
+                  }
+                }}
               />
             )}
+
+            {directions && (
+              <DirectionsRenderer
+                options={{
+                  directions,
+                  suppressMarkers: false,
+                  polylineOptions: {
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 1,
+                    strokeWeight: 3,
+                  }
+                }}
+              />
+            )}
+
           </GoogleMap>
         </div>
       )}
