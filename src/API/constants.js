@@ -1,1 +1,1 @@
-export const BASE_URL = "https://carchive.jeuxtesting.com/api/";
+export const BASE_URL = "https://api.carchive.be/api/";
