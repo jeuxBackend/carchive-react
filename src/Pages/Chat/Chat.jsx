@@ -41,7 +41,7 @@ import { useTranslation } from 'react-i18next';
 
 const Chat = () => {
   const { theme } = useTheme();
-  const { currentUserId, currentUserCompanyName } = useGlobalContext();
+  const {currentUserCompanyName, currentUserCompanyId } = useGlobalContext();
 
   const [selectedChat, setSelectedChat] = useState({});
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -64,6 +64,10 @@ const Chat = () => {
   const [filePreview, setFilePreview] = useState(null);
   const fileInputRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const [previousMessageCount, setPreviousMessageCount] = useState(0);
+  const messagesContainerRef = useRef(null);
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -96,7 +100,7 @@ const Chat = () => {
           if (selectedChat.isGarage) {
 
             const existingChatId = await getChatId(
-              currentUserId.toString(),
+              currentUserCompanyId.toString(),
               selectedChat.id.toString(),
               null,
               true
@@ -106,14 +110,14 @@ const Chat = () => {
               setActiveChatId(existingChatId);
             } else {
 
-              setActiveChatId(`${currentUserId}_${selectedChat.id}`);
+              setActiveChatId(`${currentUserCompanyId}_${selectedChat.id}`);
             }
           } else {
 
             const carId = selectedChat.carId || selectedChat.id;
 
             const existingChatId = await getChatId(
-              currentUserId.toString(),
+              currentUserCompanyId.toString(),
               selectedChat.id.toString(),
               carId.toString()
             );
@@ -121,24 +125,24 @@ const Chat = () => {
             if (existingChatId) {
               setActiveChatId(existingChatId);
             } else {
-              setActiveChatId(`${currentUserId}_${carId}_${selectedChat.id}`);
+              setActiveChatId(`${currentUserCompanyId}_${carId}_${selectedChat.id}`);
             }
           }
         } catch (err) {
           console.error("Error setting up chat ID:", err);
 
           if (selectedChat.isGarage) {
-            setActiveChatId(`${currentUserId}_${selectedChat.id}`);
+            setActiveChatId(`${currentUserCompanyId}_${selectedChat.id}`);
           } else {
             const carId = selectedChat.carId || selectedChat.id;
-            setActiveChatId(`${currentUserId}_${carId}_${selectedChat.id}`);
+            setActiveChatId(`${currentUserCompanyId}_${carId}_${selectedChat.id}`);
           }
         }
       };
 
       setupChatId();
     }
-  }, [selectedChat, currentUserId]);
+  }, [selectedChat, currentUserCompanyId]);
 
   useEffect(() => {
     let unsubscribe = () => { };
@@ -169,24 +173,54 @@ const Chat = () => {
     return () => unsubscribe();
   }, [activeChatId]);
 
+  // Enhanced auto-scroll logic
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesContainerRef.current;
+    if (!container || !messagesEndRef.current) return;
+
+    const messageCount = messages.length;
+    const isNewMessage = messageCount > previousMessageCount;
+    
+    // Always scroll when new messages arrive if user is near bottom or sent the message
+    if (isNewMessage && shouldAutoScroll && !isUserScrolling) {
+      const isNearBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+      const lastMessage = messages[messages.length - 1];
+      const isUserMessage = lastMessage?.senderId === `company_${currentUserCompanyId.toString()}`;
+      
+      if (isNearBottom || isUserMessage) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
     }
-  }, [messages]);
+    
+    setPreviousMessageCount(messageCount);
+  }, [messages, shouldAutoScroll, isUserScrolling, currentUserCompanyId, previousMessageCount]);
+
+  // Handle scroll events to detect user scrolling
+  const handleScroll = useCallback(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+    setShouldAutoScroll(isAtBottom);
+    
+    // Clear user scrolling flag after a delay
+    setIsUserScrolling(true);
+    setTimeout(() => setIsUserScrolling(false), 150);
+  }, []);
 
   const handleSendMessage = async () => {
     if ((!messageInput.trim() && !selectedFile) || !selectedChat?.id || sendingMessage) return;
 
     try {
       setSendingMessage(true);
+      setShouldAutoScroll(true); // Force scroll when user sends message
       console.log(selectedChat);
 
       const optimisticMessage = {
         id: Date.now().toString(),
         messageBody: messageInput,
-        senderId: currentUserId.toString(),
-        receiverId: selectedChat.id.toString(),
+        senderId: `company_${currentUserCompanyId.toString()}`,
+        receiverId: selectedChat.isGarage ? `garage_${selectedChat.id.toString()}` : `driver_${selectedChat.id.toString()}`,
         carId: selectedChat.isGarage ? null : (selectedChat.carId || selectedChat.id),
         serverTime: new Date().toISOString(),
         isOptimistic: true,
@@ -206,8 +240,8 @@ const Chat = () => {
 
       const success = await sendMessage(
         activeChatId,
-        selectedChat.id.toString(),
-        currentUserId.toString(),
+        selectedChat.isGarage ? `garage_${selectedChat.id.toString()}` : `driver_${selectedChat.id.toString()}`,
+        `company_${currentUserCompanyId.toString()}`,
         inputCopy,
         selectedChat.isGarage,
         fileCopy // Pass the file to sendMessage
@@ -303,7 +337,7 @@ const Chat = () => {
 
 
       const actualChatId = await initializeChat(
-        currentUserId?.toString(),
+        currentUserCompanyId?.toString(),
         selectedUserId.toString(),
         car?.carId?.toString(),
         "Hello, I'd like to chat about this car."
@@ -340,8 +374,9 @@ const Chat = () => {
     try {
       setIsLoading(true);
       console.log("Selected Garage:", garage);
+      console.log("Current User:", currentUserCompanyId);
       const actualChatId = await initializeChat(
-        currentUserId?.toString(),
+        currentUserCompanyId?.toString(),
         garage.garageUserId.toString(),
         null,
         "Hello, I'd like to chat with your garage.",
@@ -392,7 +427,7 @@ const Chat = () => {
     if (['.pdf', '.doc', '.docx', '.txt', '.xlsx', '.ppt'].includes(ext)) return 'document';
     return 'file';
   };
-
+  console.log("messages", messages);
   const getFileIcon = (extension) => {
     if (!extension) return null;
 
@@ -830,14 +865,19 @@ const Chat = () => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 p-4 overflow-y-auto">
+            <div 
+              ref={messagesContainerRef}
+              className="flex-1 p-4 overflow-y-auto"
+              onScroll={handleScroll}
+            >
               {messages.map((msg) => {
                 const hasFile = msg.massageFileUrl && msg.messageFileExtension;
                 const hasText = msg.messageBody && msg.messageBody.trim() !== '';
+                
 
                 return (
-                  <div key={msg.id} className={`flex ${msg.senderId === currentUserId.toString() ? "justify-end" : "justify-start"} mb-4`}>
-                    <div className={`p-3 max-w-[70%] break-words rounded-lg ${msg.senderId === currentUserId.toString()
+                  <div key={msg.id} className={`flex ${msg.senderId === `company_${currentUserCompanyId.toString()}` ? "justify-end" : "justify-start"} mb-4`}>
+                    <div className={`p-3 max-w-[70%] break-words rounded-lg ${msg.senderId === `company_${currentUserCompanyId.toString()}`
                       ? (theme === "dark" ? "bg-[#464749] text-white" : "bg-[#f0f7ff] text-black")
                       : (theme === "dark" ? "bg-[#323335] text-white" : "bg-[#f5f5f5] text-black")
                       }`}>
@@ -871,6 +911,8 @@ const Chat = () => {
                   </div>
                 );
               })}
+              {/* Invisible element to scroll to */}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Image Modal */}

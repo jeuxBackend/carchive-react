@@ -12,7 +12,7 @@ import { useTranslation } from "react-i18next";
 function CarsModal({ open, setOpen, id, onSelectCar }) {
     if (!open) return null;
     const { theme } = useTheme();
-    const { currentUserId } = useGlobalContext();
+    const { currentUserCompanyId } = useGlobalContext();
     const [cars, setCars] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -41,7 +41,7 @@ function CarsModal({ open, setOpen, id, onSelectCar }) {
     const handleChatWithCar = async (car) => {
         try {
             const chatId = await initializeChat(
-                currentUserId?.toString(), 
+                currentUserCompanyId?.toString(), 
                 id?.toString(), 
                 car?.id?.toString(), 
                 "Hello, I'd like to chat about this car."

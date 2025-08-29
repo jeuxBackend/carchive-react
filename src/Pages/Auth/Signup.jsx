@@ -79,7 +79,7 @@ function Signup() {
               
                 await addUser({
                     fireId: Date.now().toString(), 
-                    userAppId: user.id.toString(),
+                    userAppId: `company_${user.company_id.toString()}`,
                     userEmail: user.email,
                     userName: user.name,
                     userPhone: user.phNumber,

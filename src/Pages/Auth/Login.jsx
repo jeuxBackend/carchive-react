@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { IoMdEyeOff, IoMdEye } from "react-icons/io";
 import { motion } from "framer-motion";
@@ -14,6 +15,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { useNotification } from "../../Contexts/NotificationContext";
 import { useTranslation } from "react-i18next";
+import { addUser } from "../../utils/ChatUtils";
+
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -41,7 +44,7 @@ const Login = () => {
         setIsPasswordVisible(!isPasswordVisible);
     };
 
-    const handleLogin = async (e) => {
+     const handleLogin = async (e) => {
         e.preventDefault()
         if (!email || !password) {
             setError(true);
@@ -64,6 +67,23 @@ const Login = () => {
                         setCurrentUserId(response?.data?.user?.id);
                         setCurrentUserCompanyId(response?.data?.data?.companyId)
                         setCurrentUserCompanyName(response?.data?.user?.name)
+                        
+                        // Add user to Firebase only if they don't exist
+                        const user = response?.data?.user;
+                        try {
+                            await addUser({
+                                fireId: Date.now().toString(),
+                                userAppId: `company_${response.data.data.companyId.toString()}`,
+                                userEmail: user.email,
+                                userName: user.name,
+                                userPhone: user.phNumber,
+                                profileImage: `https://carchive.jeuxtesting.com/Profile_Images/${user.image}`,
+                                status: user.status.toString(),
+                            });
+                        } catch (addUserError) {
+                            console.error("Error adding user to Firebase:", addUserError);
+                            // Continue with login even if Firebase user creation fails
+                        }
 
                         toast.success("Login successful! Notifications are enabled.");
 
@@ -81,7 +101,6 @@ const Login = () => {
             }
         }
     };
-
     return (
         <div>
             <ToastContainer />
