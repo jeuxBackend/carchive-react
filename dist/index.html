@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/fav.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carchive</title>
+    <script type="module" crossorigin src="/assets/index-CYa3ttPe.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-3XjisSwC.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/firebase-messaging-sw.js")
+          .then((registration) => {
+            console.log("Firebase SW registered: ", registration);
+          })
+          .catch((registrationError) => {
+            console.log("Firebase SW registration failed: ", registrationError);
+          });
+      }
+    </script>
+  </body>
+</html>
