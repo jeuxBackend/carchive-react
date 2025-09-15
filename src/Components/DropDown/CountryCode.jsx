@@ -4,7 +4,7 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
-const CountryCode = ({setCountryCode}) => {
+const CountryCode = ({ setCountryCode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [countryCodes, setCountryCodes] = useState([]);
   const [filteredCountries, setFilteredCountries] = useState([]);
@@ -16,41 +16,45 @@ const CountryCode = ({setCountryCode}) => {
   const { theme } = useTheme();
 
   const getCodes = async () => {
-  try {
-    const response = await axios.get(
-      "https://restcountries.com/v3.1/all?fields=name,capital,flags,idd"
-    );
+    try {
+      const response = await axios.get(
+        "https://restcountries.com/v3.1/all?fields=name,capital,flags,idd"
+      );
 
-    if (response.data) {
-      const formattedData = response.data
-        .map((country) => {
-          const root = country.idd?.root || "";
-          const suffix = country.idd?.suffixes?.[0] || "";
-          return {
-            name: country.name?.common || "",
-            capital: country.capital?.[0] || "N/A",
-            flag: country.flags?.png || "",
-            code: root + suffix,
-          };
-        })
-        .filter((country) => country.code) 
-        .sort((a, b) => a.name.localeCompare(b.name));
+      if (response.data) {
+        const formattedData = response.data
+          .map((country) => {
+            const root = country.idd?.root || "";
+            const suffix = country.idd?.suffixes?.[0] || "";
+            return {
+              name: country.name?.common || "",
+              capital: country.capital?.[0] || "N/A",
+              flag: country.flags?.png || "",
+              code: root + suffix,
+            };
+          })
+          .filter((country) => country.code)
+          .sort((a, b) => a.name.localeCompare(b.name));
 
-      setCountryCodes(formattedData);
-      setFilteredCountries(formattedData);
+        setCountryCodes(formattedData);
+        setFilteredCountries(formattedData);
 
-      if (formattedData.length > 0) {
-        setSelectedCountry({
-          flag: formattedData[0].flag,
-          code: formattedData[0].code,
-        });
-        setCountryCode(formattedData[0].code);
+        if (formattedData.length > 0) {
+          const defaultCountry =
+            formattedData.find((c) => c.code === "+32") || formattedData[0];
+
+          setSelectedCountry({
+            flag: defaultCountry.flag,
+            code: defaultCountry.code,
+          });
+          setCountryCode(defaultCountry.code);
+        }
+
       }
+    } catch (error) {
+      console.error("Error fetching country codes:", error);
     }
-  } catch (error) {
-    console.error("Error fetching country codes:", error);
-  }
-};
+  };
 
 
   const handleSearch = (query) => {
@@ -90,11 +94,10 @@ const CountryCode = ({setCountryCode}) => {
     <div className="relative w-full">
       <motion.div
         onClick={handleDropdownToggle}
-        className={`w-full py-3 px-4 flex justify-between items-center font-medium rounded-xl cursor-pointer focus:outline-none ${
-          theme === "dark"
-            ? "bg-[#323335] text-white"
-            : "bg-[#f7f7f7] text-black border border-[#e8e8e8]"
-        } `}
+        className={`w-full py-3 px-4 flex justify-between items-center font-medium rounded-xl cursor-pointer focus:outline-none ${theme === "dark"
+          ? "bg-[#323335] text-white"
+          : "bg-[#f7f7f7] text-black border border-[#e8e8e8]"
+          } `}
       >
         <div className="flex items-center gap-2">
           {selectedCountry.flag && (
@@ -112,26 +115,23 @@ const CountryCode = ({setCountryCode}) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className={`absolute w-full mt-2 rounded-md shadow-lg border border-gray-600 z-20 ${
-              theme === "dark" ? "bg-[#323334] text-white" : "bg-white text-black"
-            }`}
+            className={`absolute w-full mt-2 rounded-md shadow-lg border border-gray-600 z-20 ${theme === "dark" ? "bg-[#323334] text-white" : "bg-white text-black"
+              }`}
           >
             {/* Search Field */}
             <div className="p-3 border-b border-gray-300 dark:border-gray-600">
               <div className="relative">
-                <FaSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${
-                  theme === "dark" ? "text-gray-400" : "text-gray-500"
-                }`} />
+                <FaSearch className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme === "dark" ? "text-gray-400" : "text-gray-500"
+                  }`} />
                 <input
                   type="text"
                   placeholder="Search country..."
                   value={searchQuery}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    theme === "dark"
-                      ? "bg-[#2a2a2a] text-white placeholder-gray-400 border border-gray-600"
-                      : "bg-gray-50 text-black placeholder-gray-500 border border-gray-300"
-                  }`}
+                  className={`w-full pl-10 pr-4 py-2 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${theme === "dark"
+                    ? "bg-[#2a2a2a] text-white placeholder-gray-400 border border-gray-600"
+                    : "bg-gray-50 text-black placeholder-gray-500 border border-gray-300"
+                    }`}
                   onClick={(e) => e.stopPropagation()}
                 />
               </div>

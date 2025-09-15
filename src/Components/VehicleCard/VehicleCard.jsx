@@ -32,13 +32,13 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
         if (hasValue(data?.expired) && data.expired === '1') {
             return (
                 <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10">
-                    {t('expired')}
+                    {t('action_required')}
                 </div>
             );
         } else if (hasValue(data?.month_expiry) && data.month_expiry === '1') {
             return (
                 <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10">
-                    {t('expires_soon')}
+                    {t('action_required')}
                 </div>
             );
         }
@@ -47,15 +47,14 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
 
     const renderActiveStatusBadge = () => {
         const isActive = data?.isLogged === '1';
-        const hasExpiryBadge = (hasValue(data?.expired) && data.expired === '1') || 
-                              (hasValue(data?.month_expiry) && data.month_expiry === '1');
-        
+        const hasExpiryBadge = (hasValue(data?.expired) && data.expired === '1') ||
+            (hasValue(data?.month_expiry) && data.month_expiry === '1');
+
         return (
-            <div className={`absolute ${hasExpiryBadge ? 'top-12 right-2' : 'top-2 right-2'} px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10 ${
-                isActive 
-                    ? 'bg-green-500 text-white' 
+            <div className={`absolute ${hasExpiryBadge ? 'top-12 right-2' : 'top-2 right-2'} px-2 py-1 rounded-full text-xs font-semibold shadow-md z-10 ${isActive
+                    ? 'bg-green-500 text-white'
                     : 'bg-gray-500 text-white'
-            }`}>
+                }`}>
                 {isActive ? t('active') || 'Active' : t('inactive') || 'Inactive'}
             </div>
         );
@@ -75,15 +74,14 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
             transition={{ duration: 0.5 }}
             onClick={handleCardClick}
             whileHover={{ scale: 1.02, boxShadow: "0px 8px 25px rgba(0,0,0,0.15)" }}
-            className={`${
-                theme === "dark" 
-                    ? "bg-gradient-to-br from-[#323335] to-[#2a2b2d] border border-gray-700/30" 
+            className={`${theme === "dark"
+                    ? "bg-gradient-to-br from-[#323335] to-[#2a2b2d] border border-gray-700/30"
                     : "bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/60"
-            } rounded-xl shadow-lg hover:shadow-xl p-4 h-[20rem] md:h-[16rem] flex flex-col gap-2 relative transition-all duration-300 cursor-pointer backdrop-blur-sm`}
+                } rounded-xl shadow-lg hover:shadow-xl p-4 h-[20rem] md:h-[16rem] flex flex-col gap-2 relative transition-all duration-300 cursor-pointer backdrop-blur-sm`}
         >
             {renderActiveStatusBadge()}
             {renderExpiryBadge()}
-            
+
             {/* Vehicle Title */}
             <div className="flex flex-col gap-1 mb-2">
                 <h3 className='text-[#2d9bff] font-semibold text-lg tracking-tight'>
@@ -95,40 +93,34 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
             {/* Vehicle Details */}
             <div className="flex flex-col gap-2 text-sm">
                 <div className="flex flex-col gap-1">
-                    <span className={`text-xs font-medium uppercase tracking-wide ${
-                        theme === 'dark' ? "text-gray-400" : "text-gray-500"
-                    }`}>
+                    <span className={`text-xs font-medium uppercase tracking-wide ${theme === 'dark' ? "text-gray-400" : "text-gray-500"
+                        }`}>
                         {t('vin_number') || 'VIN Number'}
                     </span>
-                    <p className={`font-medium ${
-                        theme === 'dark' ? "text-gray-200" : "text-gray-800"
-                    }`}>
+                    <p className={`font-medium ${theme === 'dark' ? "text-gray-200" : "text-gray-800"
+                        }`}>
                         {vehicleVin}
                     </p>
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <span className={`text-xs font-medium uppercase tracking-wide ${
-                        theme === 'dark' ? "text-gray-400" : "text-gray-500"
-                    }`}>
+                    <span className={`text-xs font-medium uppercase tracking-wide ${theme === 'dark' ? "text-gray-400" : "text-gray-500"
+                        }`}>
                         {t('number_plate') || 'License Plate'}
                     </span>
-                    <p className={`font-medium ${
-                        theme === 'dark' ? "text-gray-200" : "text-gray-800"
-                    }`}>
+                    <p className={`font-medium ${theme === 'dark' ? "text-gray-200" : "text-gray-800"
+                        }`}>
                         {vehiclePlate}
                     </p>
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <span className={`text-xs font-medium uppercase tracking-wide ${
-                        theme === 'dark' ? "text-gray-400" : "text-gray-500"
-                    }`}>
+                    <span className={`text-xs font-medium uppercase tracking-wide ${theme === 'dark' ? "text-gray-400" : "text-gray-500"
+                        }`}>
                         {t('mileage') || 'Mileage'}
                     </span>
-                    <p className={`font-medium ${
-                        theme === 'dark' ? "text-gray-200" : "text-gray-800"
-                    }`}>
+                    <p className={`font-medium ${theme === 'dark' ? "text-gray-200" : "text-gray-800"
+                        }`}>
                         {vehicleMileage}
                     </p>
                 </div>
@@ -145,11 +137,11 @@ function VehicleCard({ data, navigable = true, onCardClick }) {
                             e.target.style.display = 'none';
                         }}
                     />
-                    
+
                 </div>
             )}
 
-           
+
         </motion.div>
     );
 

@@ -19,7 +19,7 @@ function Signup() {
     const [image, setImage] = useState(null);
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(false)
-    const [countryCode, setCountryCode] = useState('')
+    const [countryCode, setCountryCode] = useState()
     const [formData, setFormData] = useState({
         name: "",
         lastName: "",
@@ -42,11 +42,27 @@ function Signup() {
     console.log(formData.contactNumber)
 
     const validateForm = () => {
-       
+
         if (formData.password.length < 8) {
             toast.error("Password must be at least 8 characters long!");
             return false;
         }
+
+        if (!/[A-Z]/.test(formData.password)) {
+            toast.error("Password must contain at least one uppercase letter!");
+            return false;
+        }
+
+        if (!/[a-z]/.test(formData.password)) {
+            toast.error("Password must contain at least one lowercase letter!");
+            return false;
+        }
+
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+            toast.error("Password must contain at least one special character!");
+            return false;
+        }
+
         if (formData.password !== formData.confirmPassword) {
             toast.error("Passwords do not match!");
             return false;
@@ -61,10 +77,10 @@ function Signup() {
     const handleSignUp = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-    
+
         const fullContactNumber = `${countryCode}${formData.contactNumber}`;
         const { contactNumber, ...dataToUpload } = formData;
-    
+
         setLoading(true);
         try {
             const response = await portalRegistration({
@@ -72,22 +88,22 @@ function Signup() {
                 contactNumber: fullContactNumber,
                 image: imageFile
             });
-    
+
             if (response.data && response.data.user) {
                 const user = response.data.user;
-    
-              
+
+
                 await addUser({
-                    fireId: Date.now().toString(), 
+                    fireId: Date.now().toString(),
                     userAppId: `company_${user.company_id.toString()}`,
                     userEmail: user.email,
                     userName: user.name,
                     userPhone: user.phNumber,
                     profileImage: `https://carchive.jeuxtesting.com/Profile_Images/${user.image}`,
                     status: user.status.toString(),
-              
+
                 });
-    
+
                 toast.success("Registration successful!");
                 setFormData({
                     name: "",
@@ -108,7 +124,7 @@ function Signup() {
                 });
                 setImage(null);
                 setImageFile(null);
-    
+
                 setTimeout(() => {
                     navigate('/');
                 }, 2000);
@@ -119,7 +135,7 @@ function Signup() {
             setLoading(false);
         }
     };
-    
+
 
 
     return (
@@ -163,12 +179,12 @@ function Signup() {
                     onSubmit={handleSignUp}
                 >
                     <div className=' py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label="User Name" isRequired={true}/>
+                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label="Company Name" />
 
                     </div>
                     <div className='grid md:grid-cols-2 gap-5 py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="name" label="First Name" isRequired={true}/>
-                        <InputField value={formData} setValue={setFormData} fieldKey="lastName" label="Last Name" isRequired={true}/>
+                        <InputField value={formData} setValue={setFormData} fieldKey="name" label="First Name" isRequired={true} />
+                        <InputField value={formData} setValue={setFormData} fieldKey="lastName" label="Last Name" isRequired={true} />
                     </div>
                     <div className='flex lg:flex-row flex-col-reverse'>
                         <div className='w-full lg:w-[70%]'>
@@ -176,14 +192,16 @@ function Signup() {
                                 <div className='w-full sm:w-[25%]'>
                                     <CountryCode setCountryCode={setCountryCode} />
                                 </div>
-                                <InputField value={formData} setValue={setFormData} fieldKey="contactNumber" label="Contact Number" isNumber={true} isRequired={true}/>
+                                <InputField value={formData} setValue={setFormData} fieldKey="contactNumber" label="Contact Number" isNumber={true} isRequired={true} />
                             </div>
-                            <div className='py-2'><InputField label="Email" value={formData} setValue={setFormData} fieldKey="email" isRequired={true}/></div>
-                            <div className='py-2'><InputField label="Password" type="password" value={formData} setValue={setFormData} fieldKey="password" isRequired={true}/></div>
-                            <div className='py-2'><InputField label="Confirm Password" type="password" value={formData} setValue={setFormData} fieldKey="confirmPassword" isRequired={true}/></div>
+                            <div className='py-2'><InputField label="Email" value={formData} setValue={setFormData} fieldKey="email" isRequired={true} /></div>
+
+                            <div className='py-2'><InputField label="Password" type="password" value={formData} setValue={setFormData} fieldKey="password" isRequired={true} /></div>
+
+                            <div className='py-2'><InputField label="Confirm Password" type="password" value={formData} setValue={setFormData} fieldKey="confirmPassword" isRequired={true} /></div>
                         </div>
                         <div className='flex items-center justify-center lg:justify-end w-full lg:w-[30%]'>
-                            <ImageUploader setImageFile={setImageFile} setImage={setImage} image={image}/>
+                            <ImageUploader setImageFile={setImageFile} setImage={setImage} image={image} />
                         </div>
                     </div>
                     <div>
@@ -217,11 +235,11 @@ function Signup() {
                             whileTap={{ scale: 0.95 }}
                             className='bg-[#479cff] w-full md:w-[40%] py-3 md:py-4 rounded-xl text-[1.2rem] font-medium text-white'
                         >
-                             {loading ? (
-                                           <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin" />
-                                         ) : (
-                                           "Sign Up"
-                                         )}
+                            {loading ? (
+                                <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin" />
+                            ) : (
+                                "Sign Up"
+                            )}
                         </motion.button>
                         <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium py-2`}>Already have an account? <Link to='/' className='text-[#479cff]'>Sign In</Link></p>
                     </motion.div>

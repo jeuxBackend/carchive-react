@@ -168,7 +168,7 @@ function Services({ data, setLoading }) {
       const currentDate = new Date();
       const oneMonthFromNow = new Date();
       oneMonthFromNow.setMonth(currentDate.getMonth() + 1);
-      
+
       return expiryDate <= oneMonthFromNow && expiryDate >= currentDate;
     } catch {
       return false;
@@ -206,7 +206,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.insuranceStatus,
       onToggle: () => handleSwitchToggle('insuranceStatus'),
       statusField: 'insuranceStatus',
-      documentType: 'insurance', 
+      documentType: 'insurance',
     },
     {
       title: t('inspection_documents'),
@@ -218,7 +218,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.inspectionStatus,
       onToggle: () => handleSwitchToggle('inspectionStatus'),
       statusField: 'inspectionStatus',
-      documentType: 'inspection', 
+      documentType: 'inspection',
     },
     {
       title: t('registration_documents'),
@@ -228,7 +228,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.registrationStatus,
       onToggle: () => handleSwitchToggle('registrationStatus'),
       statusField: 'registrationStatus',
-      documentType: 'registration', 
+      documentType: 'registration',
     },
     {
       title: t('additional_documents'),
@@ -242,7 +242,7 @@ function Services({ data, setLoading }) {
       switchLoading: switchLoading.additionalStatus,
       onToggle: () => handleSwitchToggle('additionalStatus'),
       statusField: 'additionalStatus',
-      documentType: 'additional', 
+      documentType: 'additional',
     },
     {
       title: t('maintenance_records'),
@@ -271,8 +271,8 @@ function Services({ data, setLoading }) {
           <motion.div
             key={index}
             className={`w-full rounded-xl p-3 sm:p-4 2xl:p-5 ${theme === "dark"
-                ? "bg-[#323335]"
-                : "bg-white border border-[#ececec]"
+              ? "bg-[#323335]"
+              : "bg-white border border-[#ececec]"
               } shadow-md ${item.func || item.route || item.documentType ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''
               } ${item.dangerous ? 'hover:border-red-300' : ''}`}
             variants={itemVariants}
@@ -302,7 +302,7 @@ function Services({ data, setLoading }) {
                     className={`${theme === "dark" ? "text-white" : "text-black"
                       } text-sm sm:text-base font-medium break-words leading-tight ${item.dangerous ? 'text-red-600' : ''
                       }`}
-                    style={{ 
+                    style={{
                       wordBreak: 'break-word',
                       overflowWrap: 'break-word',
                       hyphens: 'auto'
@@ -311,7 +311,7 @@ function Services({ data, setLoading }) {
                     {item.title}
                   </p>
                 </div>
-                
+
                 {item.showArrow && (
                   <IoIosArrowForward
                     className={`text-lg flex-shrink-0 mt-0.5 ${theme === "dark" ? "text-white" : "text-black"
@@ -319,7 +319,7 @@ function Services({ data, setLoading }) {
                   />
                 )}
               </div>
-              
+
               {/* Second Line: Date and Status */}
               {(item.subtitle || item.showSwitch) && (
                 <div className="flex flex-col gap-2">
@@ -338,14 +338,14 @@ function Services({ data, setLoading }) {
                       onClick={(e) => e.stopPropagation()}
                       className="relative flex items-center justify-between gap-2 switch-container"
                     >
-                      <span 
+                      <span
                         className={`text-sm flex-1 min-w-0 pr-2 leading-tight ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
-                        style={{ 
+                        style={{
                           wordBreak: 'break-word',
                           overflowWrap: 'break-word'
                         }}
                       >
-                        {t('share')}
+                        {item.switchChecked ? t('shared') : t('share')}
                       </span>
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <InsuranceSwitch
@@ -379,7 +379,7 @@ function Services({ data, setLoading }) {
                     className={`${theme === "dark" ? "text-white" : "text-black"
                       } text-base sm:text-lg lg:text-xl font-medium leading-tight ${item.dangerous ? 'text-red-600' : ''
                       }`}
-                    style={{ 
+                    style={{
                       wordBreak: 'break-word',
                       overflowWrap: 'break-word',
                       hyphens: 'auto'
@@ -415,10 +415,10 @@ function Services({ data, setLoading }) {
                       onClick={(e) => e.stopPropagation()}
                       className="relative flex items-center gap-2 flex-shrink-0 switch-container"
                     >
-                      <span 
+                      <span
                         className={`text-sm whitespace-nowrap ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}
                       >
-                        {t('share')}
+                        {item.switchChecked ? t('shared') : t('share')}
                       </span>
                       <InsuranceSwitch
                         checked={item.switchChecked}

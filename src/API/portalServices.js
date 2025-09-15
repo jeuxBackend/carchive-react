@@ -34,6 +34,8 @@ export const getCarsbyDriver = (id) => API.get(`portal/getDriverCarsById/${id}`)
 
 // Garages API's
 export const getGaragesList = () => API.get("/portal/getCompanyCarGarages");
+export const getGarageDetail = (id) => API.post("/portal/garages-detail", { id });
+
 
 // Invoices API's
 export const getInvoices = () => API.get("/portal/get-invoices");
