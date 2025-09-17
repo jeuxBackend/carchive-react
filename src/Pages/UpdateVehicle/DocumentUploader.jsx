@@ -554,7 +554,7 @@ const DocumentUploader = ({
 
               {/* Action Buttons */}
               <div className="absolute top-2 right-2 flex gap-1">
-                {isImage(doc, index) && (
+                {/* {isImage(doc, index) && (
                   <button
                     onClick={() => openCropModal(index)}
                     className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-full shadow-lg transition-colors"
@@ -562,7 +562,7 @@ const DocumentUploader = ({
                   >
                     <Crop size={12} />
                   </button>
-                )}
+                )} */}
                 {/* View PDF button for PDF URLs */}
                 {isPDF(doc, index) && typeof doc === 'string' && doc.startsWith('http') && (
                   <button
