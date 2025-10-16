@@ -29,13 +29,13 @@ function AdminGarageOwners() {
   const [bypassLoading, setBypassLoading] = useState({});
   const [totalCount, setTotalCount] = useState(0);
   const [dropdownSelected, setDropdownSelected] = useState("All Garages");
-  const {  setCompanyId } = useGlobalContext();
-  const navigate = useNavigate()
+  const { setCompanyId } = useGlobalContext();
+  const navigate = useNavigate();
 
   const apiMap = {
     "All Garages": getAllAdminGarage,
     "Active Garages": getApproveAdminGarage,
-    "Inactive Garages": getUnapproveAdminGarage,
+    "Inactive Garages": getUnapproveAdminGarage
   };
 
   const fetchAdminGarageData = useCallback(async () => {
@@ -66,22 +66,22 @@ function AdminGarageOwners() {
 
   const rowVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
   };
-   const handleBypassVerification = async (id) => {
-      setBypassLoading(prev => ({ ...prev, [id]: true }));
-      try {
-        const response = await bypassVerification({id: id});
-        console.log("Bypass verification response:", response);
-        // Refresh the data after successful bypass
-        await fetchAdminGarageData();
-        toast.success("Verification bypassed successfully!");
-      } catch (error) {
-        console.error("Error bypassing verification:", error);
-      } finally {
-        setBypassLoading(prev => ({ ...prev, [id]: false }));
-      }
-    };
+  const handleBypassVerification = async (id) => {
+    setBypassLoading((prev) => ({ ...prev, [id]: true }));
+    try {
+      const response = await bypassVerification({ id: id });
+      console.log("Bypass verification response:", response);
+      // Refresh the data after successful bypass
+      await fetchAdminGarageData();
+      toast.success("Verification bypassed successfully!");
+    } catch (error) {
+      console.error("Error bypassing verification:", error);
+    } finally {
+      setBypassLoading((prev) => ({ ...prev, [id]: false }));
+    }
+  };
 
   return (
     <div>
@@ -118,10 +118,11 @@ function AdminGarageOwners() {
               animate="visible"
               variants={{ visible: { transition: { staggerChildren: 0.2 } } }}
               className={`min-w-full rounded-lg transition-all text-center
-            ${theme === "dark"
-                  ? "bg-[#1B1C1E] text-white"
-                  : "bg-white text-[#1B1C1E]"
-                }`}
+            ${
+              theme === "dark"
+                ? "bg-[#1B1C1E] text-white"
+                : "bg-white text-[#1B1C1E]"
+            }`}
             >
               <thead>
                 <tr>
@@ -129,12 +130,15 @@ function AdminGarageOwners() {
                     (heading, index) => (
                       <th key={index} className="py-3 border-0 mb-3">
                         <p
-                          className={`${theme === "dark"
+                          className={`${
+                            theme === "dark"
                               ? "bg-[#323335] border-[#4f4f4f]"
                               : "bg-transparent border border-[#b5b5b7]"
-                            } text-center py-3 border-r border-[#4f4f4f] ${index === 0 ? "rounded-tl-xl" : ""
-                            } ${index === 4 ? "rounded-tr-xl border-r-none" : ""
-                            }`}
+                          } text-center py-3 border-r border-[#4f4f4f] ${
+                            index === 0 ? "rounded-tl-xl" : ""
+                          } ${
+                            index === 4 ? "rounded-tr-xl border-r-none" : ""
+                          }`}
                         >
                           {heading}
                         </p>
@@ -148,24 +152,27 @@ function AdminGarageOwners() {
                   <motion.tr
                     key={index}
                     variants={rowVariants}
-                    className={`${theme === "dark"
+                    className={`${
+                      theme === "dark"
                         ? "hover:bg-gray-800"
                         : "hover:bg-gray-50"
-                      }`}
+                    }`}
                   >
                     <td
-                      className={`py-3 border w-[10%] ${theme === "dark"
+                      className={`py-3 border w-[10%] ${
+                        theme === "dark"
                           ? "border-[#323335]"
                           : "border-[#b5b5b7]"
-                        }`}
+                      }`}
                     >
                       {index + 1}
                     </td>
                     <td
-                      className={`py-3 border w-[25%] ${theme === "dark"
+                      className={`py-3 border w-[25%] ${
+                        theme === "dark"
                           ? "border-[#323335]"
                           : "border-[#b5b5b7]"
-                        }`}
+                      }`}
                     >
                       <div
                         onClick={function () {
@@ -180,37 +187,34 @@ function AdminGarageOwners() {
                           alt="image"
                         />
                         <div className="text-left">
-                        <p className="text-md font-semibold capitalize">
-                          {item?.name || "Name Not Found"}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {item?.email || "Email Not Found"}
-                        </p>
-                        
-
+                          <p className="text-md font-semibold capitalize">
+                            {item?.name || "Name Not Found"}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {item?.email || "Email Not Found"}
+                          </p>
                         </div>
                       </div>
                     </td>
                     <td
-                      className={`py-3 border w-[20%] ${theme === "dark"
+                      className={`py-3 border w-[20%] ${
+                        theme === "dark"
                           ? "border-[#323335]"
                           : "border-[#b5b5b7]"
-                        }`}
+                      }`}
                     >
                       {item?.vatNum ? (
-                        <>
-                          {item?.vatNum ? `${item.vatNum}` : ""}
-
-                        </>
+                        <>{item?.vatNum ? `${item.vatNum}` : ""}</>
                       ) : (
                         "VAT Number not found"
                       )}
                     </td>
                     <td
-                      className={`py-3 border w-[20%] ${theme === "dark"
+                      className={`py-3 border w-[20%] ${
+                        theme === "dark"
                           ? "border-[#323335]"
                           : "border-[#b5b5b7]"
-                        }`}
+                      }`}
                     >
                       {item?.city || item?.street || item?.houseNum ? (
                         <>
@@ -223,10 +227,11 @@ function AdminGarageOwners() {
                       )}
                     </td>
                     <td
-                      className={`py-3 border w-[35%] ${theme === "dark"
+                      className={`py-3 border w-[35%] ${
+                        theme === "dark"
                           ? "border-[#323335]"
                           : "border-[#b5b5b7]"
-                        }`}
+                      }`}
                     >
                       <div className="px-12">
                         <GradientButton
@@ -239,10 +244,11 @@ function AdminGarageOwners() {
                         <button
                           onClick={() => handleBypassVerification(item.id)}
                           disabled={bypassLoading[item.id]}
-                          className={`px-4 mt-2 w-full py-2 rounded-lg text-sm cursor-pointer font-medium transition-all duration-200 ${bypassLoading[item.id]
+                          className={`px-4 mt-2 w-full py-2 rounded-lg text-sm cursor-pointer font-medium transition-all duration-200 ${
+                            bypassLoading[item.id]
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-[#479cff] text-white"
-                            }`}
+                          }`}
                         >
                           {bypassLoading[item.id] ? (
                             <div className="flex items-center justify-center">
@@ -253,13 +259,18 @@ function AdminGarageOwners() {
                           )}
                         </button>
                         <button
-                          onClick={() => {setCompanyId(item.id), navigate('/Admin/Invoices')}}
+                          onClick={() => {
+                            setCompanyId(item.id), navigate("/Admin/Invoices");
+                          }}
                           disabled={bypassLoading[item.id]}
                           className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#479cff] text-white`}
                         >
-                         
-                            Show Invoices
-                        
+                          Show Invoices
+                        </button>
+                        <button
+                          className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#e13f33] text-white`}
+                        >
+                          Delete
                         </button>
                       </div>
                     </td>

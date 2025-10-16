@@ -256,7 +256,7 @@ function DriverDetail({ open, setOpen, full }) {
               </div>
 
               {/* Address Information */}
-              <div className="w-full">
+              {/* <div className="w-full">
                 <h3 className={`${theme === "dark" ? "text-white" : "text-black"} text-lg font-semibold mb-3`}>
                   Address Information
                 </h3>
@@ -270,7 +270,7 @@ function DriverDetail({ open, setOpen, full }) {
                     value={driverDetailData?.zipCode || "Not Available"}
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Additional Information */}
               {full && (

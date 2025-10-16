@@ -3,12 +3,12 @@ import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 import { useTheme } from "../../Contexts/ThemeContext";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Dropdown = ({label, options, selected, onSelect, setSkip}) => {
+const Dropdown = ({ label, options, selected, onSelect, setSkip }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { theme } = useTheme();
   const handleSelect = (item) => {
     onSelect(item);
-    setIsOpen(false); 
+    setIsOpen(false);
   };
   return (
     <div
@@ -26,7 +26,7 @@ const Dropdown = ({label, options, selected, onSelect, setSkip}) => {
           theme === "dark" ? "bg-[#323334] text-white" : "bg-white text-black"
         }`}
       >
-       {label}
+        {label}
         {isOpen ? <FaChevronUp /> : <FaChevronDown />}
       </motion.button>
 
@@ -38,18 +38,26 @@ const Dropdown = ({label, options, selected, onSelect, setSkip}) => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
             className={`absolute w-full mt-2 rounded-md shadow-lg border z-40 border-gray-600 ${
-              theme === "dark" ? "bg-[#323334] text-white" : "bg-white text-black"
+              theme === "dark"
+                ? "bg-[#323334] text-white"
+                : "bg-white text-black"
             }`}
           >
             {options.map((item, index) => (
               <motion.li
                 key={index}
-                whileHover={{ backgroundColor: theme === "dark" ? "#444" : "#f0f0f0" }}
+                whileHover={{
+                  backgroundColor: theme === "dark" ? "#444" : "#f0f0f0"
+                }}
                 className="px-4 py-3 cursor-pointer"
-                onClick={() => {handleSelect(item), setSkip(0)}} 
+                onClick={() => {
+                  handleSelect(item), setSkip(0);
+                }}
               >
                 {item}
+               
               </motion.li>
+              
             ))}
           </motion.ul>
         )}

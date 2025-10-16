@@ -154,21 +154,16 @@ function GarageDetail({ open, setOpen, full }) {
           <DetailDiv label="Email Address" value={garageDetailData?.email || "N/A"} />
           <DetailDiv label="Phone Number" value={garageDetailData?.phone || "N/A"} />
           <DetailDiv label="Full Address" value={garageDetailData?.address || "N/A"} />
-        </div>
-      </div>
 
-      {/* Address Details
-      <div className={`p-4 rounded-lg ${theme === "dark" ? "bg-[#2a2b2d]" : "bg-gray-50"}`}>
-        <h3 className={`text-lg font-semibold mb-4 ${theme === "dark" ? "text-white" : "text-black"}`}>
-          Address Breakdown
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <DetailDiv label="City" value={garageDetailData?.city || "Not Specified"} />
           <DetailDiv label="Street" value={garageDetailData?.street || "Not Specified"} />
           <DetailDiv label="House Number" value={garageDetailData?.houseNum || "Not Specified"} />
           <DetailDiv label="Zip/Postal Code" value={garageDetailData?.zipCode || "Not Specified"} />
         </div>
-      </div> */}
+        </div>
+
+     
+    
 
       {/* Garage Image */}
       {garageDetailData?.image && (
