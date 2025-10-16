@@ -13,10 +13,16 @@ import { RiDeleteBin4Fill } from "react-icons/ri";
 import { IoArchiveSharp, IoShareSocial } from "react-icons/io5";
 import backLight from "../../assets/backLight.png";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
-import { archiveVehicle, delVehicle, releaseVehicle } from "../../API/portalServices";
+import {
+  archiveVehicle,
+  delVehicle,
+  releaseVehicle
+} from "../../API/portalServices";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { GiCartwheel } from "react-icons/gi";
+import { TbDownload } from "react-icons/tb";
+
 
 const Topbar = ({ setSide }) => {
   const [active, setActive] = useState("");
@@ -30,7 +36,7 @@ const Topbar = ({ setSide }) => {
     addRecord,
     setAddRecord,
     addTransfer,
-    setAddTransfer,
+    setAddTransfer
   } = useGlobalContext();
   const dropdownRef = useRef(null);
   const { t } = useTranslation();
@@ -59,7 +65,7 @@ const Topbar = ({ setSide }) => {
     "/Invoices": t("Invoices"),
     "/Drivers": t("Drivers"),
     "/Requests": t("Buying Requests"),
-    "/Notifications": t("notifications"),
+    "/Notifications": t("notifications")
   };
 
   const [loadingArchive, setLoadingArchive] = useState(false);
@@ -74,7 +80,7 @@ const Topbar = ({ setSide }) => {
         toast.success("Vehicle Archived Status Changed Successfully");
         const updatedVehicle = {
           ...vehicle,
-          isArchive: vehicle.isArchive === "1" ? "0" : "1",
+          isArchive: vehicle.isArchive === "1" ? "0" : "1"
         };
         setVehicle(updatedVehicle);
         localStorage.setItem("vehicle", JSON.stringify(updatedVehicle));
@@ -117,36 +123,39 @@ const Topbar = ({ setSide }) => {
         toast.error("Failed to copy link");
       });
   };
-   const releaseCar = async (id) => {
-      if (!id) {
-        toast.error("Vehicle ID is required");
-        return;
+  const releaseCar = async (id) => {
+    if (!id) {
+      toast.error("Vehicle ID is required");
+      return;
+    }
+
+    if (!window.confirm("Are you sure you want to release this vehicle?")) {
+      return;
+    }
+
+    setLoadingRelease(true);
+    try {
+      const response = await releaseVehicle(id);
+      if (response.data) {
+        toast.success("Vehicle Released Successfully");
+        navigate("/Vehicles");
       }
-  
-      
-      if (!window.confirm("Are you sure you want to release this vehicle?")) {
-        return;
-      }
-  
-      setLoadingRelease(true);
-      try {
-        const response = await releaseVehicle(id);
-        if (response.data) {
-          toast.success("Vehicle Released Successfully");
-          navigate("/Vehicles");
-        }
-      } catch (error) {
-        console.error('Release Error:', error);
-        const errorMessage = error.response?.data?.message || "Failed to release vehicle";
-        toast.error(errorMessage);
-      } finally {
-        setLoadingRelease(false);
-      }
-    };
-    const VehicledropdownRef = useRef(null);
-     useEffect(() => {
+    } catch (error) {
+      console.error("Release Error:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to release vehicle";
+      toast.error(errorMessage);
+    } finally {
+      setLoadingRelease(false);
+    }
+  };
+  const VehicledropdownRef = useRef(null);
+  useEffect(() => {
     const handleClickOutside = (event) => {
-      if (VehicledropdownRef.current && !VehicledropdownRef.current.contains(event.target)) {
+      if (
+        VehicledropdownRef.current &&
+        !VehicledropdownRef.current.contains(event.target)
+      ) {
         setOpen(false);
       }
     };
@@ -184,8 +193,9 @@ const Topbar = ({ setSide }) => {
         </motion.div>
 
         <motion.div
-          className={`w-full flex items-center justify-between ${theme === "dark" ? "text-white" : "text-black"
-            }`}
+          className={`w-full flex items-center justify-between ${
+            theme === "dark" ? "text-white" : "text-black"
+          }`}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
@@ -205,7 +215,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('vehicle_details')}
+                  {t("vehicle_details")}
                 </p>
               </div>
             )}
@@ -218,7 +228,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('update_vehicle')}
+                  {t("update_vehicle")}
                 </p>
               </div>
             )}
@@ -231,7 +241,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('maintenance_record')}
+                  {t("maintenance_record")}
                 </p>
               </div>
             )}
@@ -244,7 +254,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('vehicle_requests')}
+                  {t("vehicle_requests")}
                 </p>
               </div>
             )}
@@ -257,7 +267,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('update_vehicle')}
+                  {t("update_vehicle")}
                 </p>
               </div>
             )}
@@ -270,7 +280,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('privacy_policy')}
+                  {t("privacy_policy")}
                 </p>
               </div>
             )}
@@ -283,7 +293,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('about_us')}
+                  {t("about_us")}
                 </p>
               </div>
             )}
@@ -296,7 +306,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('terms_conditions')}
+                  {t("terms_conditions")}
                 </p>
               </div>
             )}
@@ -309,7 +319,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('vehicle_details')}
+                  {t("vehicle_details")}
                 </p>
               </div>
             )}
@@ -322,7 +332,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('view_logs')}
+                  {t("view_logs")}
                 </p>
               </div>
             )}
@@ -335,7 +345,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('vehicle_garages')}
+                  {t("vehicle_garages")}
                 </p>
               </div>
             )}
@@ -348,7 +358,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('language')}
+                  {t("language")}
                 </p>
               </div>
             )}
@@ -361,14 +371,14 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  {t('add_vehicle')}
+                  {t("add_vehicle")}
                 </p>
               </div>
             )}
 
             {active === "/Dashboard" && <p>{t("welcome_back")}</p>}
           </div>
-          { }
+          {}
           <div className="flex items-center gap-2">
             {/* {active === "/Vehicles" && (
               <div
@@ -380,13 +390,25 @@ const Topbar = ({ setSide }) => {
               </div>
             )} */}
             {active === "/Vehicles" && (
-              <Link
-                to="/Add-Vehicle"
-                className="flex items-center gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]"
+              <div
+              className=" flex items-center gap-2"
               >
-                <FiPlus className="text-[1.5rem]" />
-                <span className="sm:block hidden">{t("add_vehicles")}</span>
-              </Link>
+                <div 
+                   className="flex items-center gap-2 py-2 px-3 cursor-pointer sm:px-5 rounded-lg text-white bg-[#2d9bff]"
+                >
+
+                  <TbDownload className=" text-[1.5rem]" />
+                  <button className="sm:block hidden">Import CSV</button>
+                </div>
+
+                <Link
+                  to="/Add-Vehicle"
+                  className="flex items-center gap-2 py-2 px-3 rounded-lg text-white bg-[#2d9bff]"
+                >
+                  <FiPlus className="text-[1.5rem]" />
+                  <span className="sm:block hidden">{t("add_vehicles")}</span>
+                </Link>
+              </div>
             )}
           </div>
           {active.startsWith("/VehicleMaintenence/") && (
@@ -398,60 +420,66 @@ const Topbar = ({ setSide }) => {
               <span className="sm:block hidden">{t("Add Record")}</span>
             </div>
           )}
-           {active.startsWith("/Vehicles/") && (
-        <div className="relative" ref={VehicledropdownRef}>
-          <img
-            src={theme === "dark" ? ham : hamLightCar}
-            alt=""
-            className="w-[2rem] cursor-pointer"
-            onClick={() => setOpen(!open)}
-          />
-          {open && (
-            <div onClick={()=>setOpen(false)} className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg rounded-tl-3xl">
-              <p>
-                <Link to="/Update-Vehicle" className="flex items-center gap-2 p-3">
-                  <BiSolidEditAlt /> {t("edit_vehicle")}
-                </Link>
-              </p>
+          {active.startsWith("/Vehicles/") && (
+            <div className="relative" ref={VehicledropdownRef}>
+              <img
+                src={theme === "dark" ? ham : hamLightCar}
+                alt=""
+                className="w-[2rem] cursor-pointer"
+                onClick={() => setOpen(!open)}
+              />
+              {open && (
+                <div
+                  onClick={() => setOpen(false)}
+                  className="absolute shadow-2xl bg-white z-50 text-[#7587a9] w-[200px] right-4 top-3 rounded-b-3xl flex flex-col rounded-tr-lg rounded-tl-3xl"
+                >
+                  <p>
+                    <Link
+                      to="/Update-Vehicle"
+                      className="flex items-center gap-2 p-3"
+                    >
+                      <BiSolidEditAlt /> {t("edit_vehicle")}
+                    </Link>
+                  </p>
 
-              <p
-                onClick={() => handleDelete(vehicle?.id)}
-                className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
-              >
-                <RiDeleteBin4Fill />
-                {loadingDelete ? t("please_wait") : t("delete_vehicle")}
-              </p>
+                  <p
+                    onClick={() => handleDelete(vehicle?.id)}
+                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+                  >
+                    <RiDeleteBin4Fill />
+                    {loadingDelete ? t("please_wait") : t("delete_vehicle")}
+                  </p>
 
-              <p
-                onClick={() => handleArchive(vehicle?.id)}
-                className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
-              >
-                <IoArchiveSharp />
-                {loadingArchive
-                  ? t("please_wait")
-                  : vehicle?.isArchive === "0"
-                  ? t("archive_vehicle")
-                  : t("unarchive_vehicle")}
-              </p>
+                  <p
+                    onClick={() => handleArchive(vehicle?.id)}
+                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+                  >
+                    <IoArchiveSharp />
+                    {loadingArchive
+                      ? t("please_wait")
+                      : vehicle?.isArchive === "0"
+                      ? t("archive_vehicle")
+                      : t("unarchive_vehicle")}
+                  </p>
 
-              <p
-                onClick={() => releaseCar(vehicle?.id)}
-                className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
-              >
-                <GiCartwheel />
-                {loadingDelete ? t("please_wait") : t("release_vehicle")}
-              </p>
+                  <p
+                    onClick={() => releaseCar(vehicle?.id)}
+                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+                  >
+                    <GiCartwheel />
+                    {loadingDelete ? t("please_wait") : t("release_vehicle")}
+                  </p>
 
-              <p
-                onClick={handleShare}
-                className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
-              >
-                <IoShareSocial /> {t("share")}
-              </p>
+                  <p
+                    onClick={handleShare}
+                    className="flex items-center cursor-pointer gap-2 p-3 border-t-2 rounded-t-4xl border-[#e4e4e4]"
+                  >
+                    <IoShareSocial /> {t("share")}
+                  </p>
+                </div>
+              )}
             </div>
           )}
-        </div>
-      )}
         </motion.div>
       </div>
     </motion.div>

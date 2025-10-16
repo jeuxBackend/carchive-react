@@ -2,13 +2,17 @@ import React, { useCallback, useEffect, useState } from "react";
 import Search from "../../AdminComponents/Search/Search";
 import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import GradientCards from "../../AdminComponents/Cards/GradientCards";
-import { bypassVerification, getAdminCompanies } from "../../API/adminServices";
-import { getApproveAdminCompanies } from "../../API/adminServices";
-import { getUnapproveAdminCompanies } from "../../API/adminServices";
+import {
+  bypassVerification,
+  getAdminCompanies,
+  getApproveAdminCompanies,
+  getUnapproveAdminCompanies
+} from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
 import Pagination from "../../AdminComponents/Pagination/Pagination";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 import { toast } from "react-toastify";
+import { useGlobalContext } from "../../Contexts/GlobalContext"; 
 
 function AdminCompany() {
   const [loading, setLoading] = useState(false);
@@ -20,10 +24,13 @@ function AdminCompany() {
   const [dropdownSelected, setDropdownSelected] = useState("All Company");
   const [bypassLoading, setBypassLoading] = useState({});
 
+ 
+  const { setCompanyId, setCurrentUserCompanyName } = useGlobalContext();
+
   const apiMap = {
     "All Company": getAdminCompanies,
     "Active Company": getApproveAdminCompanies,
-    "Inactive Company": getUnapproveAdminCompanies,
+    "Inactive Company": getUnapproveAdminCompanies
   };
 
   const fetchCompanyData = useCallback(async () => {
@@ -50,19 +57,25 @@ function AdminCompany() {
 
   const totalPages = Math.ceil(totalCount / take);
   const currentPage = Math.floor(skip / take) + 1;
+
   const handleBypassVerification = async (id) => {
-    setBypassLoading(prev => ({ ...prev, [id]: true }));
+    setBypassLoading((prev) => ({ ...prev, [id]: true }));
     try {
       const response = await bypassVerification({ id: id });
       console.log("Bypass verification response:", response);
-      // Refresh the data after successful bypass
       await fetchCompanyData();
       toast.success("Verification bypassed successfully!");
     } catch (error) {
       console.error("Error bypassing verification:", error);
     } finally {
-      setBypassLoading(prev => ({ ...prev, [id]: false }));
+      setBypassLoading((prev) => ({ ...prev, [id]: false }));
     }
+  };
+
+ 
+  const handleCompanySelect = (id, name) => {
+    setCompanyId(id);
+    setCurrentUserCompanyName(name);
   };
 
   return (
@@ -86,34 +99,39 @@ function AdminCompany() {
           />
         </div>
       </div>
+
       {loading ? (
         <div className="flex justify-center items-center h-[75vh]">
           <BeatLoader color="#009eff" loading={loading} mt-4 size={15} />
         </div>
-      ) : (allCompanyData.length > 0 ? (
+      ) : allCompanyData.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-          {/* for all company */}
-          {
-            allCompanyData.map((data, index) => (
-              <div key={index}>
-                <GradientCards
-                  status={data?.status}
-                  fetchAdminCompanyData={fetchCompanyData}
-                  id={data?.id}
-                  img={data?.image || ""}
-                  title={data?.name || "Not Found"}
-                  contact={data?.phNumber || "Not Found"}
-                  handleBypassVerification={handleBypassVerification}
-                  bypassLoading={bypassLoading[data?.id] || false}
-
-
-                />
-              </div>
-            ))}
-
-        </div>) : <div className="h-[73vh] flex items-center justify-center"><NoDataFound /></div>
+          {allCompanyData.map((data, index) => (
+            <div
+              key={index}
+              onClick={() => handleCompanySelect(data?.id, data?.name)} 
+              className="cursor-pointer"
+            >
+              <GradientCards
+                status={data?.status}
+                fetchAdminCompanyData={fetchCompanyData}
+                id={data?.id}
+                img={data?.image || ""}
+                title={data?.name || "Not Found"}
+                contact={data?.phNumber || "Not Found"}
+                handleBypassVerification={handleBypassVerification}
+                bypassLoading={bypassLoading[data?.id] || false}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="h-[73vh] flex items-center justify-center">
+          <NoDataFound />
+        </div>
       )}
-      {allCompanyData.length > 0 &&
+
+      {allCompanyData.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
@@ -122,7 +140,8 @@ function AdminCompany() {
           setSkip={setSkip}
           take={take}
           totalCount={totalCount}
-        />}
+        />
+      )}
     </div>
   );
 }

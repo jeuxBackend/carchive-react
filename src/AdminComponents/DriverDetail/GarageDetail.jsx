@@ -157,7 +157,7 @@ function GarageDetail({ open, setOpen, full }) {
         </div>
       </div>
 
-      {/* Address Details */}
+      {/* Address Details
       <div className={`p-4 rounded-lg ${theme === "dark" ? "bg-[#2a2b2d]" : "bg-gray-50"}`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme === "dark" ? "text-white" : "text-black"}`}>
           Address Breakdown
@@ -168,7 +168,7 @@ function GarageDetail({ open, setOpen, full }) {
           <DetailDiv label="House Number" value={garageDetailData?.houseNum || "Not Specified"} />
           <DetailDiv label="Zip/Postal Code" value={garageDetailData?.zipCode || "Not Specified"} />
         </div>
-      </div>
+      </div> */}
 
       {/* Garage Image */}
       {garageDetailData?.image && (

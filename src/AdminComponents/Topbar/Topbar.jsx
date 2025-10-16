@@ -22,6 +22,8 @@ const Topbar = ({ setSide }) => {
   const [open, setOpen] = useState(false);
   const { setAddInvoice, setAddAbout, setAddPrivacy, setAddTerm } = useGlobalContext();
   const navigate = useNavigate();
+  const { currentUserCompanyName } = useGlobalContext();
+
 
   useEffect(() => {
     setActive(location.pathname);
@@ -83,7 +85,7 @@ const Topbar = ({ setSide }) => {
                   onClick={() => navigate(-1)}
                 />
                 <p className="text-[1rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium">
-                  Luxury Vehicles
+                  {currentUserCompanyName || "Company Details"}
                 </p>
               </div>
             )}

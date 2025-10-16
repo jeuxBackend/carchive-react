@@ -26,6 +26,11 @@ const LogCard = ({ data }) => {
   });
 
   function formatTime(timeString) {
+    
+     if (timeString === null || timeString === undefined) {
+    return '';
+  }
+
     if (typeof timeString === 'string' && timeString.includes(':')) {
       return timeString;
     }
@@ -140,7 +145,7 @@ const LogCard = ({ data }) => {
         </div>
 
         {/* Driver Name */}
-        <div className="flex flex-col">
+        <div className="flex flex-col mr-7">
           <p className="text-[#777e90] font-medium">{t('driver_name') || 'Driver Name'}:</p>
           <p className={theme === "dark" ? "text-white" : "text-black"}>
             {data?.driverName || 'N/A'}

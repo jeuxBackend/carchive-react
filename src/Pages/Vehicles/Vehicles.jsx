@@ -67,7 +67,7 @@ function Vehicles() {
     return (
         <div>
             <TransferVehicle open={addTransfer} setOpen={setAddTransfer}/>
-            <div className='flex items-center justify-center gap-3 md:flex-row flex-col'>
+            <div className='flex items-center justify-center mt-4 md:mt-0 gap-3 md:flex-row flex-col'>
                 <div className='w-full md:w-[25%]'>
                     <Dropdown setValue={setSelectedValue}/>
                 </div>
