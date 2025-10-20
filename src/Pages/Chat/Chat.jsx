@@ -81,8 +81,10 @@ const Chat = () => {
       setGarages(garagesResponse?.data?.data || []);
       console.log("Garages:", garagesResponse?.data?.data);
     } catch (error) {
-      setError("Failed to load data: " + error.message);
+      // setError("Failed to load data: " + error.message);
       console.error("Error fetching data:", error);
+      setUsers([]);
+      setGarages([]);
     } finally {
       setIsLoading(false);
     }
