@@ -58,7 +58,7 @@ function AdminCompanyDetail() {
   const drivers =
     companyDetailData?.drivers?.map((driver) => ({
       id: driver.userId,
-      name: driver.name,
+      name: driver.UserName,
       image: driver.image,
     })) || [];
 
@@ -188,7 +188,7 @@ function AdminCompanyDetail() {
                     <AdminDriverCards
                       key={driver.id}
                       img={driver.image}
-                      name={driver.name}
+                      name={driver.userName}
                       id={driver.id}
                       setSelectedDriverId={setSelectedDriverId}
                       setOpen={setOpen}

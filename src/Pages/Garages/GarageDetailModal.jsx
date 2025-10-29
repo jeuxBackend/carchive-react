@@ -157,7 +157,7 @@ function GarageDetailModal({ open, setOpen, full, setGarageId, garageId }) {
       </div>
 
       {/* Address Details */}
-      <div className={`p-4 rounded-lg ${theme === "dark" ? "bg-[#2a2b2d]" : "bg-gray-50"}`}>
+      {/* <div className={`p-4 rounded-lg ${theme === "dark" ? "bg-[#2a2b2d]" : "bg-gray-50"}`}>
         <h3 className={`text-lg font-semibold mb-4 ${theme === "dark" ? "text-white" : "text-black"}`}>
           Address Breakdown
         </h3>
@@ -167,7 +167,7 @@ function GarageDetailModal({ open, setOpen, full, setGarageId, garageId }) {
           <DetailDiv label="House Number" value={garageDetailData?.houseNum || "Not Specified"} />
           <DetailDiv label="Zip/Postal Code" value={garageDetailData?.zipCode || "Not Specified"} />
         </div>
-      </div>
+      </div> */}
 
       {/* Garage Image */}
       {garageDetailData?.image && (
@@ -262,11 +262,11 @@ function GarageDetailModal({ open, setOpen, full, setGarageId, garageId }) {
                 {/* <StatusBadge status={maintenance.status} /> */}
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-3">
                 <DetailDiv label="Date" value={formatDate(maintenance.date)} />
                 <DetailDiv label="Dealer" value={maintenance.dealerName} />
                 <DetailDiv label="Mileage" value={`${maintenance.millage} km`} />
-                <DetailDiv label="Garage ID" value={maintenance.grageId || "N/A"} />
+                {/* <DetailDiv label="Garage ID" value={maintenance.grageId || "N/A"} /> */}
               </div>
 
               <div className="flex justify-between items-center">
