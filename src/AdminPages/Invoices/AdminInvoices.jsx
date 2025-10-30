@@ -118,7 +118,8 @@ const AdminInvoices = () => {
       // close dropdown immediately
       setDropdownOpenId(null);
       setUpdatingId(id);
-      await adminInvoiceStatus({ id, status: newStatus });
+      const numericStatus = newStatus === 'Paid' ? 1 : 0;
+      await adminInvoiceStatus({ id, status: numericStatus });
       // refresh list
       fetchAdminCompanyDetailData(companyId);
     } catch (error) {
