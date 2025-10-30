@@ -3,7 +3,7 @@ import { useTheme } from "../../Contexts/ThemeContext";
 import { motion } from "framer-motion";
 import AddInvoice from "./AddInvoice";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
-import { adminInvoice, getAdminCompanyDetail } from "../../API/adminServices";
+import { adminInvoice, getAdminCompanyDetail, adminInvoiceStatus } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 import Pagination from "../../AdminComponents/Pagination/Pagination";
@@ -108,6 +108,26 @@ const AdminInvoices = () => {
 
   const filteredInvoices = Array.isArray(invoicesData) ? invoicesData : [];
 
+  const [updatingId, setUpdatingId] = useState(null);
+
+  const [dropdownOpenId, setDropdownOpenId] = useState(null);
+
+  const handleStatusChange = async (id, newStatus) => {
+    // newStatus expected to be 'Paid' or 'Unpaid'
+    try {
+      // close dropdown immediately
+      setDropdownOpenId(null);
+      setUpdatingId(id);
+      await adminInvoiceStatus({ id, status: newStatus });
+      // refresh list
+      fetchAdminCompanyDetailData(companyId);
+    } catch (error) {
+      console.error('Error updating invoice status:', error);
+    } finally {
+      setUpdatingId(null);
+    }
+  }; 
+
   return (
     <>
       <AddInvoice
@@ -194,15 +214,49 @@ const AdminInvoices = () => {
                           className={`py-6 border ${theme === "dark"
                             ? "border-[#323335]"
                             : "border-[#b5b5b7]"
-                            }`}
+                            } relative`}
                         >
-                          <span className={`px-2 py-1 rounded-full text-sm ${
-                            invoice.status === "1" 
-                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" 
-                              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
-                          }`}>
-                            {invoice.status === "1" ? "Paid" : "Pending"}
-                          </span>
+                          <div className="flex items-center justify-center">
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => setDropdownOpenId(dropdownOpenId === invoice.id ? null : invoice.id)}
+                                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium transition-colors focus:outline-none ${invoice.status === "1" ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
+                                aria-haspopup="true"
+                                aria-expanded={dropdownOpenId === invoice.id}
+                              >
+                                {updatingId === invoice.id ? (
+                                  <BeatLoader size={6} color={invoice.status === "1" ? '#16a34a' : '#d97706'} />
+                                ) : (
+                                  <span>{invoice.status === "1" ? 'Paid' : 'Unpaid'}</span>
+                                )}
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.096l3.71-3.865a.75.75 0 111.08 1.04l-4.25 4.424a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+                                </svg>
+                              </button>
+
+                              {dropdownOpenId === invoice.id && (
+                                <div className="absolute right-0 mt-2 w-36 bg-white rounded-md shadow-lg ring-1 ring-black/5 z-10">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleStatusChange(invoice.id, 'Paid')}
+                                    className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center justify-between"
+                                  >
+                                    <span className="text-sm">Paid</span>
+                                    {invoice.status === '1' && <span className="text-green-500">✓</span>}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleStatusChange(invoice.id, 'Unpaid')}
+                                    className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center justify-between"
+                                  >
+                                    <span className="text-sm">Unpaid</span>
+                                    {invoice.status !== '1' && <span className="text-yellow-600">✓</span>}
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
                         </td>
                         <td
                           className={`py-6 border ${theme === "dark"

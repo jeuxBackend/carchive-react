@@ -10,6 +10,7 @@ import { useGlobalContext } from '../../Contexts/GlobalContext';
 import { getAdminVehicles } from '../../API/adminServices';
 import Pagination from '../../AdminComponents/Pagination/Pagination';
 import VehicleDetailsModal from './VehicleDetailsModal';
+import VehicleImportModal from './VehicleImportModal';
 
 function AdminVehicles() {
     const [loading, setLoading] = useState(false);
@@ -22,6 +23,7 @@ function AdminVehicles() {
     const [selectedValue, setSelectedValue] = useState("");
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
     const handleViewDetails = (vehicleData) => {
         setSelectedVehicle(vehicleData);
@@ -37,11 +39,11 @@ function AdminVehicles() {
                 search,
             });
 
-    
+
             const vehicleData = response?.data?.data;
             const count = response?.data?.count;
 
-          
+
             setVehiclesData(Array.isArray(vehicleData) ? vehicleData : []);
             setTotalCount(typeof count === 'number' ? count : Number(count) || 0);
 
@@ -73,22 +75,22 @@ function AdminVehicles() {
     const totalPages = Math.ceil(safeTotalCount / safeTake) || 1;
     const currentPage = Math.floor(safeSkip / safeTake) + 1;
 
-    
+
     const filteredVehicles = Array.isArray(vehiclesData) ? vehiclesData : [];
 
-    
-   
+
+
 
     return (
         <div>
-             <VehicleDetailsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        vehicleData={selectedVehicle}
-        fetchVehicles={fetchVehicles}
-      />
-            <div className='flex items-center justify-center gap-3 md:flex-row flex-col'>
-                <div className='w-full'>
+            <VehicleDetailsModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                vehicleData={selectedVehicle}
+                fetchVehicles={fetchVehicles}
+            />
+            <div className="flex flex-col md:flex-row items-center md:justify-between gap-3">
+                <div className='w-full md:flex-1'>
                     <Search
                         value={search}
                         setValue={(value) => {
@@ -97,7 +99,25 @@ function AdminVehicles() {
                         }}
                     />
                 </div>
+                <div className="w-full md:w-auto">
+                    <button
+                        type="button"
+                        onClick={() => setIsImportModalOpen(true)}
+                        className="w-full md:w-auto px-4 py-2 bg-[#2d9bff] text-white rounded text-sm md:text-base"
+                    >
+                        Import Cars
+                    </button>
+                </div>
             </div>
+
+            <VehicleImportModal
+                isOpen={isImportModalOpen}
+                onClose={() => setIsImportModalOpen(false)}
+                onSuccess={() => {
+                    // refresh list after successful import
+                    fetchVehicles();
+                }}
+            />
 
             {loading ? (
                 <div className="h-[80vh] flex items-center justify-center">
@@ -112,7 +132,7 @@ function AdminVehicles() {
                         transition={{ duration: 0.5 }}
                     >
                         {filteredVehicles.map((data, index) => {
-                            
+
                             const uniqueKey = data?.id || data?.vinNumber || data?.registrationNumber || index;
 
                             return (
@@ -122,7 +142,7 @@ function AdminVehicles() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
                                 >
-                                    <VehicleCard data={data}  navigable={false} onCardClick={() => handleViewDetails(data)}/>
+                                    <VehicleCard data={data} navigable={false} onCardClick={() => handleViewDetails(data)} />
                                 </motion.div>
                             );
                         })}

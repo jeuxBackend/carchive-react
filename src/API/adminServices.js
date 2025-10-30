@@ -37,6 +37,7 @@ export const updateSettings = (data) => postRequest("admin/update-settings", dat
 // Invoice API
 export const addAdminInvoice = (data) => postRequest("admin/add-invoice", data);
 export const adminInvoice = (data) => postRequest("admin/get-invoices-user", data);
+export const adminInvoiceStatus = (data) => postRequest("admin/invoice-status", data);
 
 
 // Vehicle APIs
@@ -45,3 +46,6 @@ export const adminReleaseVehicle = (data) => postRequest("admin/release-car", da
 
 //Bypass Verification API
 export const bypassVerification = (data) => postRequest("admin/bypass-verification", data);
+
+//Import Cars API
+export const importCars = (data) => postRequest("admin/import-cars", data);
