@@ -236,5 +236,6 @@
   "docs_message": "Laissez vide pour utiliser 'Pas de titre'",
   "doc_date": "Laissez vide pour utiliser 'Pas de date'",
   "driver_name": "Nom du conducteur",
-  "Start_Coordinates": "Coordonnées de départ"
+  "Start_Coordinates": "Coordonnées de départ",
+  "import_vehicles": "Importer des véhicules"
 }

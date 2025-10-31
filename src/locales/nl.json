@@ -236,5 +236,6 @@
   "docs_message": "Laat leeg om 'Geen titel' te gebruiken",
   "doc_date": "Laat leeg om 'Geen datum' te gebruiken",
   "driver_name": "Naam bestuurder",
-  "Start_Coordinates": "Startcoördinaten"
+  "Start_Coordinates": "Startcoördinaten",
+  "import_vehicles": "Voertuigen importeren"
 }

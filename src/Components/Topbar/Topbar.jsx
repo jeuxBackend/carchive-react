@@ -393,13 +393,7 @@ const Topbar = ({ setSide }) => {
               <div
               className=" flex items-center gap-2"
               >
-                <div 
-                   className="flex items-center gap-2 py-2 px-3 cursor-pointer sm:px-5 rounded-lg text-white bg-[#2d9bff]"
-                >
-
-                  <TbDownload className=" text-[1.5rem]" />
-                  <button className="sm:block hidden">Import CSV</button>
-                </div>
+                
 
                 <Link
                   to="/Add-Vehicle"

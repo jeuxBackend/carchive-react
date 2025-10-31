@@ -237,7 +237,8 @@
   "docs_message": "Leave empty to use 'No Title'",
   "doc_date": "Leave empty to use 'No Date'",
   "driver_name": "Driver Name",
-  "Start_Coordinates": "Start Coordinates"
+  "Start_Coordinates": "Start Coordinates",
+  "import_vehicles": "Import Vehicles"
  
 
 }
