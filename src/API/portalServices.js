@@ -2,7 +2,7 @@ import API from "./portalAPI";
 
 // AUTH API's
 export const portalLogin = (credentials) => API.post("/login", credentials);
-export const portalRegistration = (data) => API.post("/`registerCompany`", data);
+export const portalRegistration = (data) => API.post("/registerCompany", data);
 export const portalForgot = (data) => API.post("/forgot", data);
 
 // Dashboard API's
