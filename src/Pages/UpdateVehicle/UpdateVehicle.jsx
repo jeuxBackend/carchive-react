@@ -6,7 +6,7 @@ import Switch from "./Switch";
 import DocumentUploader from "./DocumentUploader";
 import BasicDatePicker from "../../Components/Buttons/BasicDatePicker";
 import { toast } from "react-toastify";
-import { updateVehicle, getMakes, deleteCarDocument } from "../../API/portalServices"; // Added deleteCarDocument
+import { updateVehicle, getMakes, deleteCarDocument } from "../../API/portalServices"; 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import MakesDropdown from "../../Components/DropDown/MakesDropDown";
@@ -47,7 +47,7 @@ function UpdateVehicle() {
     mileage: "",
     chassis: "",
     numberPlate: "",
-    additionalExpiry: "",  // Keep for backward compatibility
+    additionalExpiry: "",  
     registrationExpiry: "",
     manufacturingYear: "",
     insuranceStatus: "0",
@@ -57,12 +57,12 @@ function UpdateVehicle() {
     status: "",
   });
 
-  // Function to add a new date field
+
   const addDateField = () => {
     setAdditionalDates([...additionalDates, null]);
   };
 
-  // Function to remove a date field
+  
   const removeDateField = (index) => {
     if (additionalDates.length > 1) {
       const newDates = [...additionalDates];
@@ -73,14 +73,14 @@ function UpdateVehicle() {
     }
   };
 
-  // Function to update a specific date
+  
   const updateDate = (index, newDate) => {
     const updatedDates = [...additionalDates];
     updatedDates[index] = newDate;
     setAdditionalDates(updatedDates);
   };
 
-  // Initialize form with existing vehicle data when component mounts
+
   useEffect(() => {
     if (vehicle) {
       setVehicleData({
@@ -104,16 +104,16 @@ function UpdateVehicle() {
         status: vehicle.status || "0",
       });
 
-      // Initialize additional titles
+     
       if (vehicle.additionalTitles) {
         if (Array.isArray(vehicle.additionalTitles)) {
           setAdditionalTitles(vehicle.additionalTitles);
         }
-        // For backward compatibility - single title string
+      
         else if (typeof vehicle.additionalTitles === 'string') {
           setAdditionalTitles([vehicle.additionalTitles]);
         }
-        // Fallback
+    
         else {
           setAdditionalTitles([]);
         }
@@ -121,16 +121,16 @@ function UpdateVehicle() {
         setAdditionalTitles([]);
       }
 
-      // Initialize additional dates
+    
       if (vehicle.additionalExpiry) {
         if (Array.isArray(vehicle.additionalExpiry)) {
           setAdditionalDates(vehicle.additionalExpiry.map(date => date || ""));
         }
-        // For backward compatibility - single date string
+    
         else if (typeof vehicle.additionalExpiry === 'string' && vehicle.additionalExpiry) {
           setAdditionalDates([vehicle.additionalExpiry]);
         }
-        // Fallback
+      
         else {
           setAdditionalDates([]);
         }
@@ -138,7 +138,7 @@ function UpdateVehicle() {
         setAdditionalDates([]);
       }
 
-      // Initialize document arrays with existing data
+      
       if (vehicle.image && Array.isArray(vehicle.image)) {
         setVehicleImagePreviews(vehicle.image);
       }
@@ -151,7 +151,7 @@ function UpdateVehicle() {
         setInsuranceDocPreviews(vehicle.insuranceDocument);
       }
 
-      // Handle inspectionDocument which could be an array of objects
+   
       if (vehicle.inspectionDocument) {
         if (Array.isArray(vehicle.inspectionDocument)) {
           const formattedDocs = vehicle.inspectionDocument.map(doc =>
@@ -167,14 +167,14 @@ function UpdateVehicle() {
     }
   }, [vehicle]);
 
-  // Function to handle document deletion
+  
   const handleDocumentDelete = async (index, type) => {
     if (!vehicle?.id) {
       console.error("Vehicle ID is missing");
       return;
     }
 
-    // Map the document type to the API expected format
+    
     const docTypeMap = {
       'image': 'image',
       'registration': 'register',
@@ -225,10 +225,7 @@ function UpdateVehicle() {
       return false;
     }
 
-    if (vehicleImages.length === 0 && vehicleImagePreviews.length === 0) {
-      toast.error("Please add at least one vehicle image");
-      return false;
-    }
+    
 
     return true;
   };
@@ -245,14 +242,14 @@ function UpdateVehicle() {
       const newInspectionDocs = inspectionDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
       const newAdditionalDocs = additionalDocs.filter(doc => !(typeof doc === 'string' && doc.startsWith('http')));
 
-      // Format dates properly
+    
       const formattedDates = additionalDates.map(date => {
         if (!date) return '';
-        // If it's already in YYYY-MM-DD format, return as is
+        
         if (typeof date === 'string' && date.match(/^\d{4}-\d{2}-\d{2}$/)) {
           return date;
         }
-        // If it's a Date object or other format, convert using dayjs
+       
         return dayjs(date).format('YYYY-MM-DD');
       });
 

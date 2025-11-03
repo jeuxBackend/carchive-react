@@ -78,9 +78,7 @@ function AddVehicle() {
         if (!vehicleData?.make || !vehicleData?.model || !vehicleData?.vinNumber) {
             toast.error("Vehicle Make, Model, VIN Number fields are required")
         }
-        // else if (vehicleImages.length === 0) {
-        //     toast.error("Vehicle images are required")
-        // }
+     
         else if (vehicleData.vinNumber.length !== 17) {
             toast.error("Vin Number must be 17 characters")
         } else {
