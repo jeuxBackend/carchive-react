@@ -1,4 +1,9 @@
 {
+  "languages": {
+    "english": "Anglais",
+    "french": "Français",
+    "nederlands": "Néerlandais"
+  },
   "dashboard": "Tableau de bord",
   "number_of_vehicles": "Nombre de véhicules",
   "number_of_drivers": "Nombre de conducteurs",
@@ -237,5 +242,23 @@
   "doc_date": "Laissez vide pour utiliser 'Pas de date'",
   "driver_name": "Nom du conducteur",
   "Start_Coordinates": "Coordonnées de départ",
-  "import_vehicles": "Importer des véhicules"
+  "import_vehicles": "Importer des véhicules",
+  "language_english": "Anglais",
+  "language_french": "Français",
+  "language_dutch": "Néerlandais",
+  "select_language": "Choisir la langue",
+  "welcome": "Bienvenue",
+  "sign_email": "Connectez-vous avec votre e-mail",
+  "password": "Mot de passe",
+  "forgot_password": "Mot de passe oublié ?",
+  "dont_have_account": "Vous n'avez pas de compte ?",
+  "sign_up": "S'inscrire",
+  "company_name": "Nom de l'entreprise",
+  "first_name": "Prénom",
+  "last_name": "Nom de famille",
+  "phone_number": "Numéro de téléphone",
+  "confirm_password": "Confirmer le mot de passe",
+  "already_have_account": "Vous avez déjà un compte ?",
+  "sign_in": "Se connecter"
+
 }

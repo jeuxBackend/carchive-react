@@ -1,4 +1,9 @@
 {
+  "languages": {
+    "english": "English",
+    "french": "French",
+    "nederlands": "Nederlands"
+  },
   "dashboard": "Dashboard",
   "number_of_vehicles": "Number of Vehicles",
   "number_of_drivers": "Number of Drivers",
@@ -238,7 +243,23 @@
   "doc_date": "Leave empty to use 'No Date'",
   "driver_name": "Driver Name",
   "Start_Coordinates": "Start Coordinates",
-  "import_vehicles": "Import Vehicles"
- 
+  "import_vehicles": "Import Vehicles",
+  "language_english": "English",
+  "language_french": "French",
+  "language_dutch": "Nederlands",
+  "select_language": "Select Language",
+  "welcome": "Welcome",
+  "sign_email": "Sign in with your email",
+  "password": "Password",
+  "forgot_password": "Forgot Password?",
+  "dont_have_account": "Don't have an account? ",
+  "sign_up": "Sign Up",
+  "company_name": "Company Name",
+  "first_name": "First Name",
+  "last_name": "Last Name",
+  "phone_number": "Phone Number",
+  "confirm_password": "Confirm Password",
+  "already_have_account": "Already have an account? ",
+  "sign_in": "Sign In"
 
 }

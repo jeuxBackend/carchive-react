@@ -12,11 +12,14 @@ import ImageUploader from '../../Components/ImageUploaders/ImageUploader';
 import { toast, ToastContainer } from 'react-toastify';
 import { portalRegistration } from '../../API/portalServices';
 import { addUser } from '../../utils/ChatUtils';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../../Language-Setting/LanguageSwitcher';
 
 function Signup() {
     const navigate = useNavigate();
     const { theme } = useTheme();
     const [image, setImage] = useState(null);
+    const { t } = useTranslation();
     const [imageFile, setImageFile] = useState(null);
     const [loading, setLoading] = useState(false)
     const [countryCode, setCountryCode] = useState()
@@ -168,7 +171,10 @@ function Signup() {
                         onClick={() => navigate(-1)}
                         whileHover={{ scale: 1.1 }}
                     />
-                    <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>Sign Up</p>
+                    <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>{t("sign_up")}</p>
+                    <div className="ml-auto">
+                        <LanguageSwitcher color={true} />
+                    </div>
                 </div>
 
                 <motion.form
@@ -179,12 +185,12 @@ function Signup() {
                     onSubmit={handleSignUp}
                 >
                     <div className=' py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label="Company Name" />
+                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label={t("company_name")} />
 
                     </div>
                     <div className='grid md:grid-cols-2 gap-5 py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="name" label="First Name" isRequired={true} />
-                        <InputField value={formData} setValue={setFormData} fieldKey="lastName" label="Last Name" isRequired={true} />
+                        <InputField value={formData} setValue={setFormData} fieldKey="name" label={t("first_name")} isRequired={true} />
+                        <InputField value={formData} setValue={setFormData} fieldKey="lastName" label={t("last_name")} isRequired={true} />
                     </div>
                     <div className='flex lg:flex-row flex-col-reverse'>
                         <div className='w-full lg:w-[70%]'>
@@ -192,13 +198,13 @@ function Signup() {
                                 <div className='w-full sm:w-[25%]'>
                                     <CountryCode setCountryCode={setCountryCode} />
                                 </div>
-                                <InputField value={formData} setValue={setFormData} fieldKey="contactNumber" label="Contact Number" isNumber={true} isRequired={true} />
+                                <InputField value={formData} setValue={setFormData} fieldKey="contactNumber" label={t("phone_number")} isNumber={true} isRequired={true} />
                             </div>
-                            <div className='py-2'><InputField label="Email" value={formData} setValue={setFormData} fieldKey="email" isRequired={true} /></div>
+                            <div className='py-2'><InputField label={t("Email")} value={formData} setValue={setFormData} fieldKey="email" isRequired={true} /></div>
 
-                            <div className='py-2'><InputField label="Password" type="password" value={formData} setValue={setFormData} fieldKey="password" isRequired={true} /></div>
+                            <div className='py-2'><InputField label={t("password")} type="password" value={formData} setValue={setFormData} fieldKey="password" isRequired={true} /></div>
 
-                            <div className='py-2'><InputField label="Confirm Password" type="password" value={formData} setValue={setFormData} fieldKey="confirmPassword" isRequired={true} /></div>
+                            <div className='py-2'><InputField label={t("confirm_password")} type="password" value={formData} setValue={setFormData} fieldKey="confirmPassword" isRequired={true} /></div>
                         </div>
                         <div className='flex items-center justify-center lg:justify-end w-full lg:w-[30%]'>
                             <ImageUploader setImageFile={setImageFile} setImage={setImage} image={image} />
@@ -207,21 +213,21 @@ function Signup() {
                     <div>
                         <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>Address</p>
                         <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label="Street" value={formData} setValue={setFormData} fieldKey="street" />
-                            <InputField label="House No" value={formData} setValue={setFormData} fieldKey="houseNumber" />
+                            <InputField label={t("street")} value={formData} setValue={setFormData} fieldKey="street" />
+                            <InputField label={t("house_no")} value={formData} setValue={setFormData} fieldKey="houseNumber" />
                         </div>
                         <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label="Zip Code" value={formData} setValue={setFormData} fieldKey="zip" isNumber={true} />
-                            <InputField label="City" value={formData} setValue={setFormData} fieldKey="city" />
+                            <InputField label={t("zipcode")} value={formData} setValue={setFormData} fieldKey="zip" isNumber={true} />
+                            <InputField label={t("city")} value={formData} setValue={setFormData} fieldKey="city" />
                         </div>
                         <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label="Country" value={formData} setValue={setFormData} fieldKey="country" />
+                            <InputField label={t("Country")} value={formData} setValue={setFormData} fieldKey="country" />
                         </div>
                     </div>
                     <div className='pt-2'>
-                        <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>VAT Number</p>
+                        <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>{t("VAT Number")}</p>
                         <div className='py-2'>
-                            <InputField label="VAT Number" value={formData} setValue={setFormData} fieldKey="vatNum" />
+                            <InputField label={t("VAT Number")} value={formData} setValue={setFormData} fieldKey="vatNum" />
                         </div>
                     </div>
                     <motion.div
@@ -238,10 +244,10 @@ function Signup() {
                             {loading ? (
                                 <motion.div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto animate-spin" />
                             ) : (
-                                "Sign Up"
+                                t("sign_up")
                             )}
                         </motion.button>
-                        <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium py-2`}>Already have an account? <Link to='/' className='text-[#479cff]'>Sign In</Link></p>
+                        <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium py-2`}>{t("already_have_account")} <Link to='/' className='text-[#479cff]'>{t("sign_in")}</Link></p>
                     </motion.div>
                 </motion.form>
             </motion.div>

@@ -16,12 +16,14 @@ import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { useNotification } from "../../Contexts/NotificationContext";
 import { useTranslation } from "react-i18next";
 import { addUser } from "../../utils/ChatUtils";
+import LanguageSwitcher from "../../Language-Setting/LanguageSwitcher";
 
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const { i18n } = useTranslation();
+    const {t, i18n } = useTranslation();
+
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -116,6 +118,15 @@ const Login = () => {
 
                 <div className="bg-black/50 w-full h-full fixed top-0" />
 
+            <motion.div 
+                className="fixed top-6 right-6 z-20"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.3 }}
+            >
+                <LanguageSwitcher />
+            </motion.div>
+
 
                 <motion.div
                     className="w-[90%] sm:w-[70%] lg:w-[45%] 2xl:w-[35%] flex flex-col items-center justify-center gap-8"
@@ -139,8 +150,8 @@ const Login = () => {
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                     >
-                        <h1 className="text-3xl font-semibold text-white">Welcome</h1>
-                        <p className="text-lg text-white/80">Sign in with your email</p>
+                        <h1 className="text-3xl font-semibold text-white">{t("welcome")}</h1>
+                        <p className="text-lg text-white/80">{t("sign_email")}</p>
 
 
 
@@ -158,7 +169,7 @@ const Login = () => {
                                 <img src={Mail} alt="Email" className="w-[2rem]" />
                                 <input
                                     type="email"
-                                    placeholder="Email Address"
+                                    placeholder={t("email_address")}
                                     className="border-none outline-none bg-transparent text-white w-full placeholder-white/60"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -173,7 +184,7 @@ const Login = () => {
                                 <img src={Lock} alt="Password" className="w-[2rem]" />
                                 <input
                                     type={isPasswordVisible ? "text" : "password"}
-                                    placeholder="Password"
+                                    placeholder={t("password")}
                                     className="border-none outline-none bg-transparent text-white w-full placeholder-white/60"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -186,7 +197,7 @@ const Login = () => {
 
 
                         <div className="w-full flex items-center justify-end pt-2">
-                            <span onClick={() => setOpen(true)} className="cursor-pointer hover:underline">Forgot Password?</span>
+                            <span onClick={() => setOpen(true)} className="cursor-pointer hover:underline">{t("forgot_password")}</span>
                         </div>
 
 
@@ -207,9 +218,9 @@ const Login = () => {
 
 
                         <div className="w-full flex items-center justify-center gap-2 mt-3 font-medium">
-                            Don't have an account?{" "}
+                            {t("dont_have_account")}
                             <Link to="/Signup" className="text-blue-400 hover:underline">
-                                Sign Up
+                                {t("sign_up")}
                             </Link>
                         </div>
                     </motion.form>

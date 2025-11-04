@@ -1,4 +1,9 @@
 {
+  "languages": {
+    "english": "Engels",
+    "french": "Frans",
+    "nederlands": "Nederlands"
+  },
   "dashboard": "Dashboard",
   "number_of_vehicles": "Aantal voertuigen",
   "number_of_drivers": "Aantal chauffeurs",
@@ -237,5 +242,22 @@
   "doc_date": "Laat leeg om 'Geen datum' te gebruiken",
   "driver_name": "Naam bestuurder",
   "Start_Coordinates": "Startcoördinaten",
-  "import_vehicles": "Voertuigen importeren"
+  "import_vehicles": "Importeer voertuigen",
+  "language_english": "Engels",
+  "language_french": "Frans",
+  "language_dutch": "Nederlands",
+  "select_language": "Selecteer Taal",
+  "welcome": "Welkom",
+  "sign_email": "Aanmelden met uw e-mail",
+  "password": "Wachtwoord",
+  "forgot_password": "Wachtwoord vergeten?",
+  "dont_have_account": "Heb je nog geen account? ",
+  "sign_up": "Aanmelden",
+  "company_name": "Bedrijfsnaam",
+  "first_name": "Voornaam",
+  "last_name": "Achternaam",
+  "phone_number": "Telefoonnummer",
+  "confirm_password": "Bevestig Wachtwoord",
+  "already_have_account": "Heb je al een account? ",
+  "sign_in": "Aanmelden"
 }
