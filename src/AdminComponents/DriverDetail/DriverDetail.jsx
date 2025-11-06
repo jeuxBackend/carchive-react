@@ -7,6 +7,7 @@ import backLight from "../../assets/backLight.png";
 import DetailDiv from "./DetailDiv";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { getAdminDriverDetail } from "../../API/adminServices";
+import { countries } from "country-data";
 
 // Image Modal Component
 const ImageModal = ({ isOpen, onClose, imageUrl, title, theme }) => {
@@ -21,32 +22,28 @@ const ImageModal = ({ isOpen, onClose, imageUrl, title, theme }) => {
       onClick={onClose}
     >
       <motion.div
-        className={`relative max-w-4xl max-h-[90vh] rounded-lg overflow-hidden ${
-          theme === "dark" ? "bg-[#1b1c1e]" : "bg-white"
-        }`}
+        className={`relative max-w-4xl max-h-[90vh] rounded-lg overflow-hidden ${theme === "dark" ? "bg-[#1b1c1e]" : "bg-white"
+          }`}
         initial={{ scale: 0.5 }}
         animate={{ scale: 1 }}
         exit={{ scale: 0.5 }}
         onClick={(e) => e.stopPropagation()}
       >
         <div
-          className={`p-4 border-b ${
-            theme === "dark" ? "border-[#323335]" : "border-gray-200"
-          }`}
+          className={`p-4 border-b ${theme === "dark" ? "border-[#323335]" : "border-gray-200"
+            }`}
         >
           <div className="flex justify-between items-center">
             <h3
-              className={`text-lg font-semibold ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
+              className={`text-lg font-semibold ${theme === "dark" ? "text-white" : "text-black"
+                }`}
             >
               {title}
             </h3>
             <button
               onClick={onClose}
-              className={`text-2xl hover:opacity-70 ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
+              className={`text-2xl hover:opacity-70 ${theme === "dark" ? "text-white" : "text-black"
+                }`}
             >
               ×
             </button>
@@ -69,6 +66,7 @@ const ImageModal = ({ isOpen, onClose, imageUrl, title, theme }) => {
   );
 };
 
+
 function DriverDetail({ open, setOpen, full }) {
   if (!open) return null;
   const { theme } = useTheme();
@@ -78,6 +76,7 @@ function DriverDetail({ open, setOpen, full }) {
   const [driverDetailData, setDriverDetailData] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+
 
   const fetchAdminDriverDetailData = useCallback(async (id) => {
     setLoading(true);
@@ -113,7 +112,7 @@ function DriverDetail({ open, setOpen, full }) {
     }
 
     // If it's just a filename, prepend the base path
-    return `https://carchive.jeuxtesting.com/${basePath}${imageUrl}`;
+    return `https://api.carchive.be/${basePath}${imageUrl}`;
   };
 
   // Helper function to format address
@@ -173,6 +172,20 @@ function DriverDetail({ open, setOpen, full }) {
   console.log("selected driver id:", selectedDriverId);
   console.log("Driver detail data:", driverDetailData);
 
+  // code to extarct country code
+  const getCountryDialCode = (countryCode) => {
+    if (!countryCode) return "";
+
+    const country = countries[countryCode.toUpperCase()];
+
+    if (country && country.countryCallingCodes?.length > 0) {
+      return country.countryCallingCodes[0];
+    }
+
+    return "";
+  };
+
+
   return (
     <motion.div
       className={`bg-black/50 backdrop-blur-lg overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%)] max-h-full poppins`}
@@ -184,10 +197,9 @@ function DriverDetail({ open, setOpen, full }) {
       <div className="flex items-center justify-center py-10 w-full min-h-screen">
         <motion.div
           className={`rounded-xl w-[95%] max-w-4xl p-6 shadow flex flex-col items-center justify-center gap-4
-            ${
-              theme === "dark"
-                ? "bg-[#1b1c1e] border-2 border-[#323335]"
-                : "bg-white border-2 border-[#ECECEC]"
+            ${theme === "dark"
+              ? "bg-[#1b1c1e] border-2 border-[#323335]"
+              : "bg-white border-2 border-[#ECECEC]"
             }`}
           initial={{ scale: 0.5 }}
           animate={{ scale: 1 }}
@@ -203,9 +215,8 @@ function DriverDetail({ open, setOpen, full }) {
               onClick={() => setOpen(false)}
             />
             <p
-              className={`${
-                theme === "dark" ? "text-white" : "text-black"
-              } text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium`}
+              className={`${theme === "dark" ? "text-white" : "text-black"
+                } text-[1.2rem] xxs:text-[1.5rem] sm:text-[2rem] font-medium`}
             >
               Driver Details
             </p>
@@ -213,9 +224,8 @@ function DriverDetail({ open, setOpen, full }) {
 
           {loading ? (
             <div
-              className={`${
-                theme === "dark" ? "text-white" : "text-black"
-              } text-center py-8`}
+              className={`${theme === "dark" ? "text-white" : "text-black"
+                } text-center py-8`}
             >
               Loading driver details...
             </div>
@@ -257,9 +267,8 @@ function DriverDetail({ open, setOpen, full }) {
               {/* Basic Information */}
               <div className="w-full">
                 <h3
-                  className={`${
-                    theme === "dark" ? "text-white" : "text-black"
-                  } text-lg font-semibold mb-3`}
+                  className={`${theme === "dark" ? "text-white" : "text-black"
+                    } text-lg font-semibold mb-3`}
                 >
                   Basic Information
                 </h3>
@@ -267,19 +276,27 @@ function DriverDetail({ open, setOpen, full }) {
                   <DetailDiv
                     label="Driver Name"
                     value={
-                      `${driverDetailData?.name || ""} ${
-                        driverDetailData?.lastName || ""
-                      }`.trim() || "Name Not Found"
+                      `${driverDetailData?.name || ""} ${driverDetailData?.lastName || ""
+                        }`.trim() || "Name Not Found"
                     }
                   />
                   <DetailDiv
                     label="Email"
                     value={driverDetailData?.email || "Email Not Found"}
                   />
-                  <DetailDiv
+                  {/* <DetailDiv
                     label="Phone Number"
                     value={driverDetailData?.phNumber || "Phone Not Found"}
+                  /> */}
+                  <DetailDiv
+                    label="Phone Number"
+                    value={
+                      driverDetailData?.phNumber
+                        ? `${getCountryDialCode(driverDetailData?.phCountryCode)} ${driverDetailData?.phNumber}`
+                        : "Phone Not Found"
+                    }
                   />
+
                   <DetailDiv
                     label="Gender"
                     value={driverDetailData?.gender || "Not Specified"}
@@ -317,9 +334,8 @@ function DriverDetail({ open, setOpen, full }) {
               {full && (
                 <div className="w-full">
                   <h3
-                    className={`${
-                      theme === "dark" ? "text-white" : "text-black"
-                    } text-lg font-semibold mb-3`}
+                    className={`${theme === "dark" ? "text-white" : "text-black"
+                      } text-lg font-semibold mb-3`}
                   >
                     Additional Information
                   </h3>
@@ -360,9 +376,8 @@ function DriverDetail({ open, setOpen, full }) {
               {driverDetailData?.driver && (
                 <div className="w-full">
                   <h3
-                    className={`${
-                      theme === "dark" ? "text-white" : "text-black"
-                    } text-lg font-semibold mb-3`}
+                    className={`${theme === "dark" ? "text-white" : "text-black"
+                      } text-lg font-semibold mb-3`}
                   >
                     Driver Documents
                   </h3>
@@ -372,9 +387,8 @@ function DriverDetail({ open, setOpen, full }) {
                     driverDetailData.driver.documents.length > 0 && (
                       <div className="mb-4">
                         <h4
-                          className={`${
-                            theme === "dark" ? "text-gray-300" : "text-gray-700"
-                          } text-md font-medium mb-2`}
+                          className={`${theme === "dark" ? "text-gray-300" : "text-gray-700"
+                            } text-md font-medium mb-2`}
                         >
                           License Documents (
                           {driverDetailData.driver.documents.length})
@@ -423,9 +437,8 @@ function DriverDetail({ open, setOpen, full }) {
                     driverDetailData.driver.details.length > 0 && (
                       <div className="mb-4">
                         <h4
-                          className={`${
-                            theme === "dark" ? "text-gray-300" : "text-gray-700"
-                          } text-md font-medium mb-2`}
+                          className={`${theme === "dark" ? "text-gray-300" : "text-gray-700"
+                            } text-md font-medium mb-2`}
                         >
                           Additional Details (
                           {driverDetailData.driver.details.length})
@@ -475,9 +488,8 @@ function DriverDetail({ open, setOpen, full }) {
                     (!driverDetailData.driver.details ||
                       driverDetailData.driver.details.length === 0) && (
                       <div
-                        className={`${
-                          theme === "dark" ? "text-gray-400" : "text-gray-600"
-                        } text-center py-4`}
+                        className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"
+                          } text-center py-4`}
                       >
                         No documents available for this driver.
                       </div>
@@ -489,9 +501,8 @@ function DriverDetail({ open, setOpen, full }) {
               {driverDetailData?.cars && driverDetailData.cars.length > 0 && (
                 <div className="w-full">
                   <h3
-                    className={`${
-                      theme === "dark" ? "text-white" : "text-black"
-                    } text-lg font-semibold mb-3`}
+                    className={`${theme === "dark" ? "text-white" : "text-black"
+                      } text-lg font-semibold mb-3`}
                   >
                     Assigned Cars ({driverDetailData.cars.length})
                   </h3>
@@ -499,11 +510,10 @@ function DriverDetail({ open, setOpen, full }) {
                     {driverDetailData.cars.map((car, index) => (
                       <div
                         key={car.id}
-                        className={`p-4 rounded-lg border ${
-                          theme === "dark"
+                        className={`p-4 rounded-lg border ${theme === "dark"
                             ? "bg-[#2a2a2a] border-[#404040]"
                             : "bg-gray-50 border-gray-200"
-                        }`}
+                          }`}
                       >
                         <div className="grid grid-cols-1 md:grid-cols-2  gap-3">
                           <DetailDiv
@@ -556,11 +566,10 @@ function DriverDetail({ open, setOpen, full }) {
                         {car.maintenance && car.maintenance.length > 0 && (
                           <div className="mt-3 pt-3 border-t border-gray-300">
                             <p
-                              className={`${
-                                theme === "dark"
+                              className={`${theme === "dark"
                                   ? "text-gray-300"
                                   : "text-gray-600"
-                              } text-sm font-medium mb-2`}
+                                } text-sm font-medium mb-2`}
                             >
                               Recent Maintenance: {car.maintenance.length}{" "}
                               record(s)
@@ -569,11 +578,10 @@ function DriverDetail({ open, setOpen, full }) {
                               {car.maintenance.map((maintenance, idx) => (
                                 <div
                                   key={maintenance.id}
-                                  className={`${
-                                    theme === "dark"
+                                  className={`${theme === "dark"
                                       ? "text-gray-400"
                                       : "text-gray-500"
-                                  }`}
+                                    }`}
                                 >
                                   • {maintenance.serviceType} -{" "}
                                   {maintenance.date} ({maintenance.dealerName})

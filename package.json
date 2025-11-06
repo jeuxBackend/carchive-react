@@ -19,6 +19,7 @@
     "@react-google-maps/api": "^2.20.7",
     "@tailwindcss/vite": "^4.0.9",
     "axios": "^1.8.1",
+    "country-data": "^0.0.31",
     "dayjs": "^1.11.13",
     "embla-carousel-react": "^8.5.2",
     "firebase": "^11.6.0",

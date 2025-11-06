@@ -13,6 +13,8 @@ import Pagination from "../../AdminComponents/Pagination/Pagination";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 import { toast } from "react-toastify";
 import { useGlobalContext } from "../../Contexts/GlobalContext"; 
+import { countries } from "country-data";
+
 
 function AdminCompany() {
   const [loading, setLoading] = useState(false);
@@ -78,6 +80,20 @@ function AdminCompany() {
     setCurrentUserCompanyName(name);
   };
 
+    // code to extarct country code
+  const getCountryDialCode = (countryCode) => {
+    if (!countryCode) return "";
+
+    const country = countries[countryCode.toUpperCase()];
+
+    if (country && country.countryCallingCodes?.length > 0) {
+      return country.countryCallingCodes[0];
+    }
+
+    return "";
+  };
+
+
   return (
     <div>
       <div className="flex items-center justify-center gap-3 md:flex-row flex-col">
@@ -118,7 +134,7 @@ function AdminCompany() {
                 id={data?.id}
                 img={data?.image || ""}
                 title={data?.name || "Not Found"}
-                contact={data?.phNumber || "Not Found"}
+                contact={data?.phNumber + getCountryDialCode(data?.phCountryCode) || "Not Found"}
                 handleBypassVerification={handleBypassVerification}
                 bypassLoading={bypassLoading[data?.id] || false}
               />

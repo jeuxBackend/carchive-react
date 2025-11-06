@@ -14,12 +14,14 @@ import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { BeatLoader } from "react-spinners";
 import NoDataFound from "../../GlobalComponents/NoDataFound/NoDataFound";
 import { toast } from "react-toastify";
+import { countries } from "country-data";
+
 
 function AdminDrivers() {
   const { theme } = useTheme();
   const { selectedDriverId, setSelectedDriverId } = useGlobalContext();
   const [loading, setLoading] = useState(false);
-  const [bypassLoading, setBypassLoading] = useState({}); // Track loading state for each driver
+  const [bypassLoading, setBypassLoading] = useState({});
   const [open, setOpen] = useState(false);
   const [allDriverData, setAllDriverData] = useState([]);
   const [skip, setSkip] = useState(0);
@@ -68,7 +70,7 @@ function AdminDrivers() {
   const handleBypassVerification = async (id) => {
     setBypassLoading(prev => ({ ...prev, [id]: true }));
     try {
-      const response = await bypassVerification({id: id});
+      const response = await bypassVerification({ id: id });
       console.log("Bypass verification response:", response);
       // Refresh the data after successful bypass
       await fetchAdminDriverData();
@@ -79,6 +81,20 @@ function AdminDrivers() {
       setBypassLoading(prev => ({ ...prev, [id]: false }));
     }
   };
+
+  // code to extarct country code
+  const getCountryDialCode = (countryCode) => {
+    if (!countryCode) return "";
+
+    const country = countries[countryCode.toUpperCase()];
+
+    if (country && country.countryCallingCodes?.length > 0) {
+      return country.countryCallingCodes[0];
+    }
+
+    return "";
+  };
+
 
   return (
     <div>
@@ -176,6 +192,7 @@ function AdminDrivers() {
                       className={`py-3 border w-[30%] ${theme === "dark" ? "border-[#323335]" : "border-[#b5b5b7]"
                         }`}
                     >
+                      {getCountryDialCode(item?.phCountryCode)}
                       {item?.phNumber}
                     </td>
                     <td
@@ -191,11 +208,10 @@ function AdminDrivers() {
                         <button
                           onClick={() => handleBypassVerification(item.id)}
                           disabled={bypassLoading[item.id]}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                            bypassLoading[item.id]
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${bypassLoading[item.id]
                               ? "bg-gray-400 cursor-not-allowed"
                               : "bg-[#479cff] text-white"
-                          }`}
+                            }`}
                         >
                           {bypassLoading[item.id] ? (
                             <div className="flex items-center justify-center">
@@ -205,7 +221,7 @@ function AdminDrivers() {
                             "Bypass Verification"
                           )}
                         </button>
-                         <button
+                        <button
                           className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#e13f33] text-white`}
                         >
                           Delete
