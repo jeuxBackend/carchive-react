@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import hamLight from "../../assets/hamLight.png";
 import ham from "../../assets/hamburger.png";
 import { Link, useNavigate } from "react-router-dom";
-import { activeBlock, bypassVerification } from "../../API/adminServices";
+import { activeBlock, bypassVerification, acceptReject } from "../../API/adminServices";
 import { toast, ToastContainer } from "react-toastify";
 import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { BeatLoader } from "react-spinners";
@@ -16,6 +16,7 @@ function GradientCards({
   id,
   status,
   fetchAdminCompanyData,
+  isPending = false,
 
 }) {
   const { theme } = useTheme();
@@ -23,6 +24,7 @@ function GradientCards({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [bypassLoading, setBypassLoading] = useState({});
+  const [acceptRejectLoading, setAcceptRejectLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleStatus = async () => {
@@ -41,6 +43,27 @@ function GradientCards({
       setLoading(false);
     }
   };
+
+  const handleAcceptReject = async (action) => {
+    setAcceptRejectLoading(true);
+    try {
+      const response = await acceptReject({ 
+        id: id, 
+        status: action // 1 for accept, 0 for reject
+      });
+      if (response) {
+        toast.success(action === 1 ? "Company Accepted Successfully" : "Company Rejected Successfully");
+        console.log(response);
+        fetchAdminCompanyData();
+        setOpen(false);
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setAcceptRejectLoading(false);
+    }
+  };
+
   const handleBypassVerification = async (id) => {
     setBypassLoading(prev => ({ ...prev, [id]: true }));
     try {
@@ -99,38 +122,89 @@ function GradientCards({
                 transition={{ duration: 0.4, type: "spring", stiffness: 120 }}
                 className="bg-white w-[120 p-3 px-4 absolute z-40 top-6 right-6 flex flex-col items-center gap-2 rounded-l-md rounded-br-md rounded-tr-md text-[#7587a9] shadow-lg"
               >
-                <p
-                  className={`${status === "0" ? "text-red-500" : "text-green-500"
-                    } font-medium cursor-pointer`}
-                  onClick={() => handleStatus(id)}
-                >
-                  {loading
-                    ? "Processing..."
-                    : status === "0"
-                      ? "Deactivate"
-                      : "Activate"}
-                </p>
-                <button
-                  onClick={() => handleBypassVerification(id)}
-                  disabled={bypassLoading[id]}
-                  className={`px-4 mt-2 w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 ${bypassLoading[id]
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-[#479cff] text-white"
-                    }`}
-                >
-                  {bypassLoading[id] ? (
-                    <div className="flex items-center justify-center">
-                      <BeatLoader color="#ffffff" size={8} />
-                    </div>
-                  ) : (
-                    "Bypass Verification"
-                  )}
-                </button>
-                 <button
-                  className={`px-4 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#e13f33] text-white`}
-                >
-                  Delete
-                </button>
+                {isPending ? (
+                  // Accept/Reject buttons for pending companies
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAcceptReject(1);
+                      }}
+                      disabled={acceptRejectLoading}
+                      className={`px-4 w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        acceptRejectLoading
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-[#5E99FC] text-white"
+                      }`}
+                    >
+                      {acceptRejectLoading ? (
+                        <div className="flex items-center justify-center">
+                          <BeatLoader color="#ffffff" size={8} />
+                        </div>
+                      ) : (
+                        "Accept"
+                      )}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAcceptReject(0);
+                      }}
+                      disabled={acceptRejectLoading}
+                      className={`px-4 w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        acceptRejectLoading
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-[#212223] text-white"
+                      }`}
+                    >
+                      {acceptRejectLoading ? (
+                        <div className="flex items-center justify-center">
+                          <BeatLoader color="#ffffff" size={8} />
+                        </div>
+                      ) : (
+                        "Reject"
+                      )}
+                    </button>
+                  </>
+                ) : (
+                  // Regular actions for non-pending companies
+                  <>
+                    <p
+                      className={`${
+                        status === "0" ? "text-red-500" : "text-green-500"
+                      } font-medium cursor-pointer`}
+                      onClick={() => handleStatus(id)}
+                    >
+                      {loading
+                        ? "Processing..."
+                        : status === "0"
+                        ? "Deactivate"
+                        : "Activate"}
+                    </p>
+                    <button
+                      onClick={() => handleBypassVerification(id)}
+                      disabled={bypassLoading[id]}
+                      className={`px-4 mt-2 w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                        bypassLoading[id]
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-[#479cff] text-white"
+                      }`}
+                    >
+                      {bypassLoading[id] ? (
+                        <div className="flex items-center justify-center">
+                          <BeatLoader color="#ffffff" size={8} />
+                        </div>
+                      ) : (
+                        "Bypass Verification"
+                      )}
+                    </button>
+                    <button
+                      className={`px-4 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#e13f33] text-white`}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

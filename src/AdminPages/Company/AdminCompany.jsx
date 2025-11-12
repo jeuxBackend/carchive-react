@@ -6,7 +6,9 @@ import {
   bypassVerification,
   getAdminCompanies,
   getApproveAdminCompanies,
-  getUnapproveAdminCompanies
+  getInactiveAdminCompanies,
+  getUnapproveAdminCompanies,
+  acceptReject
 } from "../../API/adminServices";
 import { BeatLoader } from "react-spinners";
 import Pagination from "../../AdminComponents/Pagination/Pagination";
@@ -32,7 +34,8 @@ function AdminCompany() {
   const apiMap = {
     "All Company": getAdminCompanies,
     "Active Company": getApproveAdminCompanies,
-    "Inactive Company": getUnapproveAdminCompanies
+    "Inactive Company": getUnapproveAdminCompanies,
+    "Pending Company": getInactiveAdminCompanies
   };
 
   const fetchCompanyData = useCallback(async () => {
@@ -100,7 +103,7 @@ function AdminCompany() {
         <div className="w-full md:w-[25%]">
           <Dropdown
             label={dropdownSelected}
-            options={["All Company", "Active Company", "Inactive Company"]}
+            options={["All Company", "Active Company", "Inactive Company", "Pending Company"]}
             selected={dropdownSelected}
             onSelect={setDropdownSelected}
             setSkip={setSkip}
@@ -137,6 +140,7 @@ function AdminCompany() {
                 contact={data?.phNumber + getCountryDialCode(data?.phCountryCode) || "Not Found"}
                 handleBypassVerification={handleBypassVerification}
                 bypassLoading={bypassLoading[data?.id] || false}
+                isPending={dropdownSelected === "Pending Company"}
               />
             </div>
           ))}

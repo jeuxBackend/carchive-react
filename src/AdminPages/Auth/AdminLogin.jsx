@@ -40,15 +40,11 @@ const AdminLogin = () => {
       const credentials = { email: email, password: password };
       const response = await adminLogin(credentials);
       if (response.data) {
-        if (response?.data?.user?.userType === "Admin") {
-          toast.warn("Admin Can't Login on Portal!")
+        
           localStorage.setItem("CarchiveAdminToken", response?.data?.data?.token);
           navigate('/Admin')
 
-        } else {
-          toast.warn("Company Can't Login on Admin Side!")
-
-        }
+     
       }
 
 

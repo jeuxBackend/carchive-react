@@ -4,28 +4,36 @@ import API from "./adminAPI";
 const postRequest = (endpoint, data = {}) => API.post(endpoint, data);
 
 // Admin Authentication API
-export const adminLogin = (credentials) => postRequest("login", credentials);
+export const adminLogin = (credentials) => postRequest("admin/login", credentials);
 
 // Dashboard API
 export const getAdminDashboard = () => API.get("admin/dashboard");
+
+// Accept/Reject Garage/Company/Driver APIs
+export const acceptReject = (data) => postRequest("admin/accept-reject-user", data);
 
 // Company APIs
 export const getAdminCompanies = (data) => postRequest("admin/all-companies", data);
 export const getApproveAdminCompanies = (data) => postRequest("admin/approved-companies", data);
 export const getUnapproveAdminCompanies = (data) => postRequest("admin/unapproved-companies", data);
 export const getAdminCompanyDetail = (id) => postRequest("admin/company-detail", { id });
+export const getInactiveAdminCompanies = (data) => postRequest("admin/get-unactive-companys", data);
+
 
 // Driver APIs
 export const getAllAdminDrivers = (data) => postRequest("admin/drivers", data);
 export const getApproveAdminDrivers = (data) => postRequest("admin/approved-drivers", data);
 export const getUnapproveAdminDrivers = (data) => postRequest("admin/unapproved-drivers", data);
 export const getAdminDriverDetail = (id) => postRequest("admin/driver-detail", { id });
+export const getInactiveAdminDrivers = (data) => postRequest("admin/get-unactive-drivers", data);
+export const deleteDriver = (id) => API.get(`admin/deleteDriver/${id}`);
 
 // Garage APIs
 export const getAllAdminGarage = (data) => postRequest("admin/grages", data);
 export const getApproveAdminGarage = (data) => postRequest("admin/approved-grages", data);
 export const getUnapproveAdminGarage = (data) => postRequest("admin/unapproved-grages", data);
 export const getAdminGarageDetail = (id) => postRequest("admin/garages-detail", { id });
+export const getInactiveGarages = (data) => postRequest("admin/get-unactive-grages", data);
 
 // Active/Block APIs
 export const activeBlock = (id) => postRequest("admin/active-block", { id });

@@ -8,7 +8,7 @@ import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import Search from "../../AdminComponents/Search/Search";
 import GradientButton from "../../AdminComponents/Logout/GradientButton";
 import Pagination from "../../AdminComponents/Pagination/Pagination";
-import { bypassVerification, getAllAdminGarage } from "../../API/adminServices";
+import { bypassVerification, getAllAdminGarage, getInactiveGarages, acceptReject } from "../../API/adminServices";
 import { getApproveAdminGarage } from "../../API/adminServices";
 import { getUnapproveAdminGarage } from "../../API/adminServices";
 import GarageDetail from "../../AdminComponents/DriverDetail/GarageDetail";
@@ -27,6 +27,7 @@ function AdminGarageOwners() {
   const [take, setTake] = useState(10);
   const [search, setSearch] = useState("");
   const [bypassLoading, setBypassLoading] = useState({});
+  const [acceptRejectLoading, setAcceptRejectLoading] = useState({});
   const [totalCount, setTotalCount] = useState(0);
   const [dropdownSelected, setDropdownSelected] = useState("All Garages");
   const { setCompanyId } = useGlobalContext();
@@ -35,7 +36,8 @@ function AdminGarageOwners() {
   const apiMap = {
     "All Garages": getAllAdminGarage,
     "Active Garages": getApproveAdminGarage,
-    "Inactive Garages": getUnapproveAdminGarage
+    "Inactive Garages": getUnapproveAdminGarage,
+    "Pending Garages": getInactiveGarages
   };
 
   const fetchAdminGarageData = useCallback(async () => {
@@ -83,6 +85,25 @@ function AdminGarageOwners() {
     }
   };
 
+  const handleAcceptReject = async (id, action) => {
+    setAcceptRejectLoading((prev) => ({ ...prev, [id]: true }));
+    try {
+      const response = await acceptReject({ 
+        id: id, 
+        status: action // 1 for accept, 0 for reject
+      });
+      if (response) {
+        toast.success(action === 1 ? "Garage Accepted Successfully" : "Garage Rejected Successfully");
+        console.log(response);
+        await fetchAdminGarageData();
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setAcceptRejectLoading((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
   return (
     <div>
       <GarageDetail open={open} setOpen={setOpen} full />
@@ -90,7 +111,7 @@ function AdminGarageOwners() {
         <div className="w-full md:w-[25%]">
           <Dropdown
             label={dropdownSelected}
-            options={["All Garages", "Active Garages", "Inactive Garages"]}
+            options={["All Garages", "Active Garages", "Inactive Garages", "Pending Garages"]}
             selected={dropdownSelected}
             onSelect={setDropdownSelected}
             setSkip={setSkip}
@@ -234,44 +255,87 @@ function AdminGarageOwners() {
                       }`}
                     >
                       <div className="px-12">
-                        <GradientButton
-                          driverData={fetchAdminGarageData}
-                          driverId={item?.id}
-                          name={
-                            item?.status === "0" ? "Deactivate" : "Activate"
-                          }
-                        />
-                        <button
-                          onClick={() => handleBypassVerification(item.id)}
-                          disabled={bypassLoading[item.id]}
-                          className={`px-4 mt-2 w-full py-2 rounded-lg text-sm cursor-pointer font-medium transition-all duration-200 ${
-                            bypassLoading[item.id]
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-[#479cff] text-white"
-                          }`}
-                        >
-                          {bypassLoading[item.id] ? (
-                            <div className="flex items-center justify-center">
-                              <BeatLoader color="#ffffff" size={8} />
-                            </div>
-                          ) : (
-                            "Bypass Verification"
-                          )}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setCompanyId(item.id), navigate("/Admin/Invoices");
-                          }}
-                          disabled={bypassLoading[item.id]}
-                          className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#479cff] text-white`}
-                        >
-                          Show Invoices
-                        </button>
-                        <button
-                          className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#e13f33] text-white`}
-                        >
-                          Delete
-                        </button>
+                        {dropdownSelected === "Pending Garages" ? (
+                          // Accept/Reject buttons for pending garages
+                          <>
+                            <button
+                              onClick={() => handleAcceptReject(item.id, 1)}
+                              disabled={acceptRejectLoading[item.id]}
+                              className={`px-4 w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                acceptRejectLoading[item.id]
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-[#5E99FC] text-white"
+                              }`}
+                            >
+                              {acceptRejectLoading[item.id] ? (
+                                <div className="flex items-center justify-center">
+                                  <BeatLoader color="#ffffff" size={8} />
+                                </div>
+                              ) : (
+                                "Accept"
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleAcceptReject(item.id, 0)}
+                              disabled={acceptRejectLoading[item.id]}
+                              className={`px-4 mt-2 w-full py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                acceptRejectLoading[item.id]
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-[#212223] text-white"
+                              }`}
+                            >
+                              {acceptRejectLoading[item.id] ? (
+                                <div className="flex items-center justify-center">
+                                  <BeatLoader color="#ffffff" size={8} />
+                                </div>
+                              ) : (
+                                "Reject"
+                              )}
+                            </button>
+                          </>
+                        ) : (
+                          // Regular actions for non-pending garages
+                          <>
+                            <GradientButton
+                              driverData={fetchAdminGarageData}
+                              driverId={item?.id}
+                              name={
+                                item?.status === "0" ? "Deactivate" : "Activate"
+                              }
+                            />
+                            <button
+                              onClick={() => handleBypassVerification(item.id)}
+                              disabled={bypassLoading[item.id]}
+                              className={`px-4 mt-2 w-full py-2 rounded-lg text-sm cursor-pointer font-medium transition-all duration-200 ${
+                                bypassLoading[item.id]
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-[#479cff] text-white"
+                              }`}
+                            >
+                              {bypassLoading[item.id] ? (
+                                <div className="flex items-center justify-center">
+                                  <BeatLoader color="#ffffff" size={8} />
+                                </div>
+                              ) : (
+                                "Bypass Verification"
+                              )}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setCompanyId(item.id), navigate("/Admin/Invoices");
+                              }}
+                              disabled={bypassLoading[item.id]}
+                              className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#479cff] text-white`}
+                            >
+                              Show Invoices
+                            </button>
+                            <button
+                              className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#e13f33] text-white`}
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </motion.tr>

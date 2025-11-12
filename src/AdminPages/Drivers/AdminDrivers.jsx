@@ -6,7 +6,7 @@ import DriverDetail from "../../AdminComponents/DriverDetail/DriverDetail";
 import Dropdown from "../../AdminComponents/DropDown/Dropdown";
 import Search from "../../AdminComponents/Search/Search";
 import GradientButton from "../../AdminComponents/Logout/GradientButton";
-import { bypassVerification, getAllAdminDrivers } from "../../API/adminServices";
+import { bypassVerification, getAllAdminDrivers, getInactiveAdminDrivers, acceptReject, deleteDriver } from "../../API/adminServices";
 import { getApproveAdminDrivers } from "../../API/adminServices";
 import { getUnapproveAdminDrivers } from "../../API/adminServices";
 import Pagination from "../../AdminComponents/Pagination/Pagination";
@@ -22,6 +22,9 @@ function AdminDrivers() {
   const { selectedDriverId, setSelectedDriverId } = useGlobalContext();
   const [loading, setLoading] = useState(false);
   const [bypassLoading, setBypassLoading] = useState({});
+ 
+  const [acceptRejectLoading, setAcceptRejectLoading] = useState({});
+  const [deleteLoading, setDeleteLoading] = useState({});
   const [open, setOpen] = useState(false);
   const [allDriverData, setAllDriverData] = useState([]);
   const [skip, setSkip] = useState(0);
@@ -34,6 +37,7 @@ function AdminDrivers() {
     "All Drivers": getAllAdminDrivers,
     "Active Drivers": getApproveAdminDrivers,
     "Inactive Drivers": getUnapproveAdminDrivers,
+    "Pending Drivers": getInactiveAdminDrivers
   };
 
   const fetchAdminDriverData = useCallback(async () => {
@@ -95,6 +99,41 @@ function AdminDrivers() {
     return "";
   };
 
+  const handleAcceptReject = async (id, action) => {
+    setAcceptRejectLoading((prev) => ({ ...prev, [id]: true }));
+    try {
+      const response = await acceptReject({ 
+        id: id, 
+        status: action // 1 for accept, 0 for reject
+      });
+      if (response) {
+        toast.success(action === 1 ? "Driver Accepted Successfully" : "Driver Rejected Successfully");
+        console.log(response);
+        await fetchAdminDriverData();
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setAcceptRejectLoading((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
+  const handleDeleteDriver = async (id) => {
+    setDeleteLoading((prev) => ({ ...prev, [id]: true }));
+    try {
+      const response = await deleteDriver(id);
+      if (response) {
+        toast.success("Driver Deleted Successfully");
+        console.log(response);
+        await fetchAdminDriverData();
+      }
+    } catch (error) {
+      toast.error("Failed to delete driver");
+      console.error("Error deleting driver:", error);
+    } finally {
+      setDeleteLoading((prev) => ({ ...prev, [id]: false }));
+    }
+  };
 
   return (
     <div>
@@ -103,7 +142,7 @@ function AdminDrivers() {
         <div className="w-full md:w-[25%]">
           <Dropdown
             label={dropdownSelected}
-            options={["All Drivers", "Active Drivers", "Inactive Drivers"]}
+            options={["All Drivers", "Active Drivers", "Inactive Drivers", "Pending Drivers"]}
             selected={dropdownSelected}
             onSelect={setDropdownSelected}
             setSkip={setSkip}
@@ -226,6 +265,88 @@ function AdminDrivers() {
                         >
                           Delete
                         </button>
+                        {dropdownSelected === "Pending Drivers" ? (
+                          // Accept/Reject buttons for pending drivers
+                          <>
+                            <button
+                              onClick={() => handleAcceptReject(item.id, 1)}
+                              disabled={acceptRejectLoading[item.id]}
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                acceptRejectLoading[item.id]
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-[#5E99FC] text-white"
+                              }`}
+                            >
+                              {acceptRejectLoading[item.id] ? (
+                                <div className="flex items-center justify-center">
+                                  <BeatLoader color="#ffffff" size={8} />
+                                </div>
+                              ) : (
+                                "Accept"
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleAcceptReject(item.id, 0)}
+                              disabled={acceptRejectLoading[item.id]}
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                acceptRejectLoading[item.id]
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-[#212223] text-white"
+                              }`}
+                            >
+                              {acceptRejectLoading[item.id] ? (
+                                <div className="flex items-center justify-center">
+                                  <BeatLoader color="#ffffff" size={8} />
+                                </div>
+                              ) : (
+                                "Reject"
+                              )}
+                            </button>
+                          </>
+                        ) : (
+                          // Regular actions for non-pending drivers
+                          <>
+                            <GradientButton
+                              driverData={fetchAdminDriverData}
+                              name={item?.status === "0" ? "Deactivate" : "Activate"}
+                              driverId={item?.id}
+                            />
+                            <button
+                              onClick={() => handleBypassVerification(item.id)}
+                              disabled={bypassLoading[item.id]}
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                bypassLoading[item.id]
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-[#479cff] text-white"
+                              }`}
+                            >
+                              {bypassLoading[item.id] ? (
+                                <div className="flex items-center justify-center">
+                                  <BeatLoader color="#ffffff" size={8} />
+                                </div>
+                              ) : (
+                                "Bypass Verification"
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteDriver(item.id)}
+                              disabled={deleteLoading[item.id]}
+                              className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 ${
+                                deleteLoading[item.id]
+                                  ? "bg-gray-400 cursor-not-allowed"
+                                  : "bg-[#e13f33] hover:bg-red-600 text-white"
+                              }`}
+                            >
+                              {deleteLoading[item.id] ? (
+                                <div className="flex items-center justify-center">
+                                  <BeatLoader color="#ffffff" size={8} />
+                                </div>
+                              ) : (
+                                "Delete"
+                              )}
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </motion.tr>
