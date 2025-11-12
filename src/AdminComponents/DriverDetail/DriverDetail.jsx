@@ -9,6 +9,7 @@ import { useGlobalContext } from "../../Contexts/GlobalContext";
 import { getAdminDriverDetail } from "../../API/adminServices";
 import { countries } from "country-data";
 
+
 // Image Modal Component
 const ImageModal = ({ isOpen, onClose, imageUrl, title, theme }) => {
   if (!isOpen) return null;

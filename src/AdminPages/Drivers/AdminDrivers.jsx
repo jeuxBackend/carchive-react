@@ -239,32 +239,6 @@ function AdminDrivers() {
                         }`}
                     >
                       <div className="flex flex-col gap-2 px-4">
-                        <GradientButton
-                          driverData={fetchAdminDriverData}
-                          name={item?.status === "0" ? "Deactivate" : "Activate"}
-                          driverId={item?.id}
-                        />
-                        <button
-                          onClick={() => handleBypassVerification(item.id)}
-                          disabled={bypassLoading[item.id]}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${bypassLoading[item.id]
-                              ? "bg-gray-400 cursor-not-allowed"
-                              : "bg-[#479cff] text-white"
-                            }`}
-                        >
-                          {bypassLoading[item.id] ? (
-                            <div className="flex items-center justify-center">
-                              <BeatLoader color="#ffffff" size={8} />
-                            </div>
-                          ) : (
-                            "Bypass Verification"
-                          )}
-                        </button>
-                        <button
-                          className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#e13f33] text-white`}
-                        >
-                          Delete
-                        </button>
                         {dropdownSelected === "Pending Drivers" ? (
                           // Accept/Reject buttons for pending drivers
                           <>
@@ -328,7 +302,7 @@ function AdminDrivers() {
                                 "Bypass Verification"
                               )}
                             </button>
-                            <button
+                            {/* <button
                               onClick={() => handleDeleteDriver(item.id)}
                               disabled={deleteLoading[item.id]}
                               className={`px-4 mt-2 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 ${
@@ -344,7 +318,7 @@ function AdminDrivers() {
                               ) : (
                                 "Delete"
                               )}
-                            </button>
+                            </button> */}
                           </>
                         )}
                       </div>

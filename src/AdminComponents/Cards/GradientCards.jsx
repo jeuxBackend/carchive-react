@@ -198,11 +198,11 @@ function GradientCards({
                         "Bypass Verification"
                       )}
                     </button>
-                    <button
+                    {/* <button
                       className={`px-4 w-full py-2 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 bg-[#e13f33] text-white`}
                     >
                       Delete
-                    </button>
+                    </button> */}
                   </>
                 )}
               </motion.div>
