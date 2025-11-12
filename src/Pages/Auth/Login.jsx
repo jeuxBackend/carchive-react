@@ -87,7 +87,7 @@ const Login = () => {
                             // Continue with login even if Firebase user creation fails
                         }
 
-                        toast.success("Login successful! Notifications are enabled.");
+                       
 
                         navigate('/Dashboard');
                         i18n.changeLanguage(response?.data?.user?.lang);
