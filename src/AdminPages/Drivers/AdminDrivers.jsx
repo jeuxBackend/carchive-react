@@ -142,7 +142,7 @@ function AdminDrivers() {
         <div className="w-full md:w-[25%]">
           <Dropdown
             label={dropdownSelected}
-            options={["All Drivers", "Active Drivers", "Inactive Drivers", "Pending Drivers"]}
+            options={["All Drivers", "Active Drivers", "Inactive Drivers"]}
             selected={dropdownSelected}
             onSelect={setDropdownSelected}
             setSkip={setSkip}
