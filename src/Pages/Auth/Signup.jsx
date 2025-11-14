@@ -185,7 +185,7 @@ function Signup() {
                     onSubmit={handleSignUp}
                 >
                     <div className=' py-2'>
-                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label={t("company_name")} />
+                        <InputField value={formData} setValue={setFormData} fieldKey="userName" label={t("company_name")} isRequired={true} />
 
                     </div>
                     <div className='grid md:grid-cols-2 gap-5 py-2'>
@@ -213,21 +213,21 @@ function Signup() {
                     <div>
                         <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>Address</p>
                         <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label={t("street")} value={formData} setValue={setFormData} fieldKey="street" />
-                            <InputField label={t("house_no")} value={formData} setValue={setFormData} fieldKey="houseNumber" />
+                            <InputField label={t("street")} value={formData} setValue={setFormData} fieldKey="street" isRequired={true} />
+                            <InputField label={t("house_no")} value={formData} setValue={setFormData} fieldKey="houseNumber" isRequired={true} />
                         </div>
                         <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label={t("zipcode")} value={formData} setValue={setFormData} fieldKey="zip" isNumber={true} />
-                            <InputField label={t("city")} value={formData} setValue={setFormData} fieldKey="city" />
+                            <InputField label={t("zipcode")} value={formData} setValue={setFormData} fieldKey="zip" isNumber={true} isRequired={true} />
+                            <InputField label={t("city")} value={formData} setValue={setFormData} fieldKey="city" isRequired={true} />
                         </div>
                         <div className='grid md:grid-cols-2 gap-5 py-2'>
-                            <InputField label={t("Country")} value={formData} setValue={setFormData} fieldKey="country" />
+                            <InputField label={t("Country")} value={formData} setValue={setFormData} fieldKey="country" isRequired={true} />
                         </div>
                     </div>
                     <div className='pt-2'>
                         <p className={`${theme === "dark" ? "text-white" : "text-black"} font-medium text-[2rem]`}>{t("VAT Number")}</p>
                         <div className='py-2'>
-                            <InputField label={t("VAT Number")} value={formData} setValue={setFormData} fieldKey="vatNum" />
+                            <InputField label={t("VAT Number")} value={formData} setValue={setFormData} fieldKey="vatNum" isRequired={true} />
                         </div>
                     </div>
                     <motion.div
